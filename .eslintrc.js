@@ -10,6 +10,12 @@ module.exports = {
     node: true,
   },
   rules: {
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     'no-console': 'warn',
     'no-var': 'error',
     semi: 'error',
