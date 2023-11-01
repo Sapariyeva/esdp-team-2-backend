@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix --color",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -26,8 +27,17 @@
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.2",
     "nodemon": "^3.0.1",
-    "tsconfig-paths": "^4.2.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "tsconfig-paths": "^4.2.0"
+  },
+
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "prettier --write --ignore-unknown",
+      "eslint --fix --color"
+    ]
   }
 }
