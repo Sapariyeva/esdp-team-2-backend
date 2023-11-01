@@ -10,6 +10,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    'no-console': 'warn',
     'no-var': 'error',
     semi: 'error',
     indent: ['error', 2, { SwitchCase: 1 }],
