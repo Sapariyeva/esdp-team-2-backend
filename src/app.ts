@@ -2,9 +2,6 @@ import express from 'express';
 import { Application, RequestHandler } from 'express';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import 'reflect-metadata';
 import { appDataSource } from './config/dataSource';
 class App {
   public app: Application;
@@ -29,8 +26,6 @@ class App {
   }
   private initAssets() {
     this.app.use(express.json());
-    this.app.use(cors());
-    this.app.use(cookieParser());
   }
   public async listen() {
     await appDataSource.initialize();
