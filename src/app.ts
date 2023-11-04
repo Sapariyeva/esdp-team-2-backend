@@ -1,8 +1,7 @@
-import express from 'express';
-import { Application, RequestHandler } from 'express';
+import express, { Application, RequestHandler } from 'express';
+import { appDataSource } from './config/dataSource';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
-
 class App {
   public app: Application;
   public port: number;
@@ -26,10 +25,15 @@ class App {
   }
   private initAssets() {
     this.app.use(express.json());
+    this.app.use(express.static('public'));
   }
-  public listen() {
+  public async listen() {
+    await appDataSource.initialize();
     this.app.listen(this.port, () => {
       console.log(`⚡️ Server is listening on port http://localhost:${this.port}`);
+    });
+    process.on('exit', () => {
+      appDataSource.destroy();
     });
   }
 }
