@@ -1,8 +1,7 @@
-import express from 'express';
-import { Application, RequestHandler } from 'express';
+import express, { Application, RequestHandler } from 'express';
+import { appDataSource } from './config/dataSource';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
-import { appDataSource } from './config/dataSource';
 class App {
   public app: Application;
   public port: number;
@@ -26,6 +25,7 @@ class App {
   }
   private initAssets() {
     this.app.use(express.json());
+    this.app.use(express.static('public'));
   }
   public async listen() {
     await appDataSource.initialize();
