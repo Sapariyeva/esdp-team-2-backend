@@ -23,4 +23,7 @@ export class Token {
     this.refresh_token = jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '7d' });
     return this.refresh_token;
   }
+  generateAccessToken() {
+    return jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '15s' });
+  }
 }
