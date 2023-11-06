@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { City } from './city.entity';
+import { User } from './user.entity';
+import { Education } from './education.entity copy';
 
 @Entity('psychologist')
 export class Psychologist {
@@ -9,10 +12,10 @@ export class Psychologist {
   user_id!: string;
 
   @Column()
-  education!: string;
+  educationId!: string;
 
   @Column()
-  city!: string;
+  cityId!: string;
 
   @Column()
   format!: string;
@@ -37,4 +40,15 @@ export class Psychologist {
 
   @Column()
   publish!: boolean;
+
+  @OneToOne(() => City)
+  @JoinColumn({ name: 'cityId' })
+  city!: City;
+
+  @OneToMany(() => Education, (education) => education.psychologist)
+  educations!: Education[];
+
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 }
