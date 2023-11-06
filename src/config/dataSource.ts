@@ -1,5 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
+import { User } from '../entities/user.entity';
+import { Token } from '../entities/token.entity';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
@@ -7,12 +9,12 @@ const options: DataSourceOptions & SeederOptions = {
   port: 3306,
   database: 'psyhelp_online',
   username: 'root',
-  password: 'Nailchik1n',
-  synchronize: false,
+  password: 'password',
+  synchronize: true,
   logging: true,
-  entities: ['src/entities/*.ts'],
+  entities: [User, Token],
   seeds: [],
-  factories: ['src/db/factories/*.ts'],
+  factories: [],
 };
 
 export const appDataSource = new DataSource(options);
