@@ -1,9 +1,9 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { City } from './city.entity';
 import { User } from './user.entity';
 import { Education } from './education.entity copy';
 
-@Entity('psychologist')
+@Entity('psychologists')
 export class Psychologist {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -41,7 +41,7 @@ export class Psychologist {
   @Column()
   publish!: boolean;
 
-  @OneToOne(() => City)
+  @ManyToOne(() => City)
   @JoinColumn({ name: 'cityId' })
   city!: City;
 
