@@ -13,6 +13,6 @@ export class AuthRouter implements IRoute {
   }
 
   private init() {
-    this.router.post('/sessions');
+    this.router.post('/sessions', this.controller.signIn);
   }
 }

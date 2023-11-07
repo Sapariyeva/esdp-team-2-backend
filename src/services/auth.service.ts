@@ -1,3 +1,4 @@
+import { SignInUserDto } from '../dto/signInUser.dto';
 import { UserRepository } from '../repositories/user.repository';
 
 export class AuthService {
@@ -7,7 +8,7 @@ export class AuthService {
     this.repository = new UserRepository();
   }
 
-  signIn = async (singInUserDto: SignInUserDto): Promise<IUser> => {
+  signIn = async (singInUserDto: SignInUserDto) => {
     return await this.repository.signIn(singInUserDto);
   };
 }
