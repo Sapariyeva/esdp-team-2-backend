@@ -24,6 +24,6 @@ export class Token {
     return this.refresh_token;
   }
   generateAccessToken() {
-    return jwt.sign({ id: this.user_id, role: this.user.role }, config.secretKey, { expiresIn: '30m' });
+    return jwt.sign({ id: this.user_id }, config.secretKey, { expiresIn: '30m' });
   }
 }
