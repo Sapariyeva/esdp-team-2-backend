@@ -5,13 +5,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: true })
-  username!: string;
-
-  @Column({ unique: true })
+  @Column({ nullable: true, unique: true })
   email!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   phone!: string;
 
   @Column()
@@ -21,18 +18,18 @@ export class User {
   password!: string;
 
   @Column({ default: 'user' })
-  role!: 'admin' | 'user';
+  role!: 'user' | 'admin';
 
   @BeforeInsert()
   async hashPassword() {
     const SALT_WORK_FACTOR = 10;
     if (this.password) {
       const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-      const hashedPassword = await bcrypt.hash(this.password, salt);
-      this.password = hashedPassword;
+      this.password = await bcrypt.hash(this.password, salt);
     }
   }
   async comparePassword(password: string): Promise<boolean> {
     return await bcrypt.compare(password, this.password);
   }
 }
+
