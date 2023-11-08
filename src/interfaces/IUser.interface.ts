@@ -1,9 +1,13 @@
 export interface IUser {
   id: number;
-  username?: string;
   email: string;
   phone: string;
   date_of_birth: Date;
   password: string;
-  role: 'admin' | 'patient' | 'psychologist';
+  role: 'user' | 'admin';
+}
+
+export interface IUserTokenData extends IUser {
+  refreshToken: string;
+  accessToken: string;
 }
