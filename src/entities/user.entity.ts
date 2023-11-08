@@ -8,10 +8,10 @@ export class User {
   @Column({ nullable: true })
   username!: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ unique: true })
   email!: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ unique: true })
   phone!: string;
 
   @Column()
@@ -20,8 +20,8 @@ export class User {
   @Column({ nullable: false })
   password!: string;
 
-  @Column({ default: 'patient' })
-  role!: 'admin' | 'patient' | 'psychologist';
+  @Column({ default: 'user' })
+  role!: 'admin' | 'user';
 
   @BeforeInsert()
   async hashPassword() {
