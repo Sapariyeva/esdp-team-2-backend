@@ -32,4 +32,3 @@ export class User {
     return await bcrypt.compare(password, this.password);
   }
 }
-

@@ -43,14 +43,17 @@ export class AuthController {
     }
   };
 
-  signIn: RequestHandler = async (req, res) => {
+  signIn: RequestHandler = async (req, res, next) => {
     try {
       const signInUserDto = plainToInstance(SignInUserDto, req.body);
+      await this.validateDto(signInUserDto);
       const user = await this.service.signIn(signInUserDto);
-      this.setRefreshTokenCookie(res, user.tokens.refreshToken);
-      return res.send(user);
+      if (!user) throw ApiError.BadRequest('User not exist');
+      if (user) this.setRefreshTokenCookie(res, user.refreshToken);
+      const userData = this.mapUserDataToUserDto(user);
+      res.send(userData);
     } catch (e) {
-      return res.status(400).send({ error: { message: (e as Error).message } });
+      next(e);
     }
   };
 
@@ -61,7 +64,7 @@ export class AuthController {
   private mapUserDataToUserDto(userData: IUser): UserDto {
     return plainToInstance(UserDto, userData, { excludeExtraneousValues: true });
   }
-  private async validateDto(dto: SignUpUserDto) {
+  private async validateDto(dto: SignUpUserDto | SignInUserDto) {
     const errors = await validate(dto, {
       whitelist: true,
       validationError: { target: false, value: false },

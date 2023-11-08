@@ -5,6 +5,7 @@ import { SignInUserDto } from '../dto/signInUser.dto';
 import { TokenRepository } from './token.repository';
 import { SignUpUserDto } from '../dto/signUpUser.dto';
 import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { ApiError } from '../helpers/api-error';
 
 export class UserRepository extends Repository<User> {
   private tokenRepository: TokenRepository;
@@ -27,15 +28,18 @@ export class UserRepository extends Repository<User> {
     };
   }
   async signIn(signInUserDto: SignInUserDto) {
-    const user = await this.findOne({ where: { email: signInUserDto.email } });
-    if (!user) throw new Error('User not exist');
+    const user = await this.emailOrPhoneSearchUser(signInUserDto);
+    if (!user) return null;
+
     const isMatch = await user.comparePassword(signInUserDto.password);
 
-    if (!isMatch) throw new Error('Login or password is wrong');
+    if (!isMatch) throw ApiError.BadRequest('Login or password is wrong');
 
-    const tokens = await this.tokenRepository.generateTokens();
-    await this.tokenRepository.saveToken(user.id, tokens.refreshToken);
-    return { tokens, email: user.email };
+    const tokens = await this.generateAndSaveTokens(user);
+    return {
+      ...tokens,
+      ...user,
+    };
   }
 
   async refresh(userData: IUser): Promise<IUserTokenData | null> {
@@ -55,7 +59,7 @@ export class UserRepository extends Repository<User> {
     return tokens;
   }
 
-  private async emailOrPhoneSearchUser(dto: SignUpUserDto) {
+  private async emailOrPhoneSearchUser(dto: SignUpUserDto | SignInUserDto) {
     const { email, phone } = dto;
     return email ? await this.findOne({ where: { email } }) : await this.findOne({ where: { phone } });
   }
