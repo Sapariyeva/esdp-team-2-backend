@@ -55,7 +55,7 @@ export class UserRepository extends Repository<User> {
     return tokens;
   }
 
-  private async emailOrPhoneSearchUser(dto: SignUpUserDto | SignInUserDto) {
+  private async emailOrPhoneSearchUser(dto: SignUpUserDto) {
     const { email, phone } = dto;
     return email ? await this.findOne({ where: { email } }) : await this.findOne({ where: { phone } });
   }
