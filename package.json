@@ -8,7 +8,8 @@
     "dev": "nodemon",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix --color",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "seed": "node -r tsconfig-paths/register -r ts-node/register src/db/init.seeds.ts"
   },
   "keywords": [],
   "author": "",

@@ -9,7 +9,7 @@ export class Token {
   id!: number;
 
   @Column({ nullable: false })
-  user_id!: string;
+  user_id!: number;
 
   @Column({ nullable: true })
   refresh_token!: string;
@@ -20,7 +20,10 @@ export class Token {
 
   @BeforeInsert()
   generateRefreshToken() {
-    this.refresh_token = jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '7d' });
+    this.refresh_token = jwt.sign({ id: this.user_id }, config.secretKey, { expiresIn: '30d' });
     return this.refresh_token;
+  }
+  generateAccessToken() {
+    return jwt.sign({ id: this.user_id }, config.secretKey, { expiresIn: '30m' });
   }
 }
