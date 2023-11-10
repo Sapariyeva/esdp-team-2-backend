@@ -10,14 +10,13 @@ import { Universities } from '../entities/universities.entity';
 import { City } from '../entities/city.entity';
 import { Education } from '../entities/education.entity copy';
 
-
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
   host: 'localhost',
   port: 3306,
   database: 'psyhelp_online',
   username: 'root',
-  password: 'root',
+  password: '123123dd',
   synchronize: true,
   logging: true,
   entities: [User, Token, Psychologist, Universities, City, Education],

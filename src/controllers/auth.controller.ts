@@ -57,6 +57,17 @@ export class AuthController {
     }
   };
 
+  signOut: RequestHandler = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.cookies;
+      const token = await this.service.signOut(refreshToken);
+      res.clearCookie('refreshToken');
+      res.send(token);
+    } catch (e) {
+      next(e);
+    }
+  };
+
   private setRefreshTokenCookie(res: Response, refreshToken: string): void {
     res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
   }
