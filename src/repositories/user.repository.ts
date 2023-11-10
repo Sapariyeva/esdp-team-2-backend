@@ -53,6 +53,11 @@ export class UserRepository extends Repository<User> {
       ...user,
     };
   }
+
+  async signOut(refreshToken: string) {
+    return await this.tokenRepository.removeToken(refreshToken);
+  }
+
   private async generateAndSaveTokens(userData: IUser) {
     const tokens = await this.tokenRepository.generateTokens();
     await this.tokenRepository.saveToken(userData.id, tokens.refreshToken);

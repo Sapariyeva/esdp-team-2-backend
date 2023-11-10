@@ -17,5 +17,6 @@ export class AuthRouter implements IRoute {
     this.router.post('/sessions', this.controller.signIn);
     this.router.post('/register', this.controller.signUp);
     this.router.get('/refresh-token', validateRefreshToken, this.controller.refresh);
+    this.router.post('/logout', this.controller.signOut);
   }
 }

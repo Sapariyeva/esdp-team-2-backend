@@ -36,6 +36,10 @@ export class TokenRepository extends Repository<Token> {
     return await this.findOne({ where: { refresh_token: refreshToken } });
   }
 
+  async removeToken(refreshToken: string) {
+    return await this.delete({ refresh_token: refreshToken });
+  }
+
   async saveToken(userId: number, refreshToken: string) {
     const tokenData = await this.findOne({ where: { user_id: userId } });
     if (tokenData) {

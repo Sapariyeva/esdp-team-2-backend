@@ -18,4 +18,7 @@ export class AuthService {
   refresh = async (userData: IUser) => {
     return await this.repository.refresh(userData);
   };
+  signOut = async (refreshToken: string) => {
+    return await this.repository.signOut(refreshToken);
+  };
 }
