@@ -1,24 +1,24 @@
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
 import { appDataSource } from '../config/dataSource';
-import { SignInUserDto } from '../dto/signInUser.dto';
-import { TokenRepository } from './token.repository';
-import { SignUpUserDto } from '../dto/signUpUser.dto';
-import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { SignInPatientDto } from '../dto/signInPatient.dto';
+import { SignUpPatientDto } from '../dto/signUpPatient.dto';
 import { ApiError } from '../helpers/api-error';
+import { Patient } from '../entities/patient.entity';
+import { PatientTokenRepository } from './patientToken.repository';
+import { IPatient, IPatientTokenData } from '../interfaces/IPatient.interface';
 
-export class UserRepository extends Repository<User> {
-  private tokenRepository: TokenRepository;
+export class PatientRepository extends Repository<Patient> {
+  private tokenRepository: PatientTokenRepository;
   constructor() {
-    super(User, appDataSource.createEntityManager());
-    this.tokenRepository = new TokenRepository();
+    super(Patient, appDataSource.createEntityManager());
+    this.tokenRepository = new PatientTokenRepository();
   }
 
-  async singUp(signUpUserDto: SignUpUserDto) {
+  async singUp(signUpUserDto: SignUpPatientDto) {
     const candidate = await this.emailOrPhoneSearchUser(signUpUserDto);
     if (candidate) return null;
 
-    const userData = await this.create(signUpUserDto);
+    const userData = this.create(signUpUserDto);
     await this.save(userData);
 
     const tokens = await this.generateAndSaveTokens(userData);
@@ -27,12 +27,11 @@ export class UserRepository extends Repository<User> {
       ...userData,
     };
   }
-  async signIn(signInUserDto: SignInUserDto) {
+  async signIn(signInUserDto: SignInPatientDto) {
     const user = await this.emailOrPhoneSearchUser(signInUserDto);
     if (!user) return null;
 
     const isMatch = await user.comparePassword(signInUserDto.password);
-
     if (!isMatch) throw ApiError.BadRequest('Login or password is wrong');
 
     const tokens = await this.generateAndSaveTokens(user);
@@ -42,7 +41,7 @@ export class UserRepository extends Repository<User> {
     };
   }
 
-  async refresh(userData: IUser): Promise<IUserTokenData | null> {
+  async refresh(userData: IPatient): Promise<IPatientTokenData | null> {
     const user = await this.findOne({ where: { id: userData.id } });
     if (!user) return null;
 
@@ -58,13 +57,13 @@ export class UserRepository extends Repository<User> {
     return await this.tokenRepository.removeToken(refreshToken);
   }
 
-  private async generateAndSaveTokens(userData: IUser) {
+  private async generateAndSaveTokens(userData: IPatient) {
     const tokens = await this.tokenRepository.generateTokens();
     await this.tokenRepository.saveToken(userData.id, tokens.refreshToken);
     return tokens;
   }
 
-  private async emailOrPhoneSearchUser(dto: SignUpUserDto | SignInUserDto) {
+  private async emailOrPhoneSearchUser(dto: SignUpPatientDto | SignInPatientDto) {
     const { email, phone } = dto;
     return email ? await this.findOne({ where: { email } }) : await this.findOne({ where: { phone } });
   }

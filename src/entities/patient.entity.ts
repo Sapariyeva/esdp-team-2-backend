@@ -19,7 +19,7 @@ export class Patient implements IPatient {
   @Column({ default: 'patient' })
   role!: 'patient';
 
-  @Column()
+  @Column({ nullable: true })
   name!: string;
 
   @BeforeInsert()

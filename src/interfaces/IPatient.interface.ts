@@ -6,3 +6,8 @@ export interface IPatient {
   password: string;
   name: string;
 }
+
+export interface IPatientTokenData extends IPatient {
+  refreshToken: string;
+  accessToken: string;
+}

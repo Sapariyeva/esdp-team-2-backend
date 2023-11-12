@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { AuthService } from '../services/auth.service';
 import { plainToInstance } from 'class-transformer';
-import { SignInUserDto } from '../dto/signInUser.dto';
-import { SignUpUserDto } from '../dto/signUpUser.dto';
-import { UserDto } from '../dto/user.dto';
-import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { SignInPatientDto } from '../dto/signInPatient.dto';
+import { SignUpPatientDto } from '../dto/signUpPatient.dto';
+import { PatientDto } from '../dto/patient.dto';
 import { Response } from 'express';
 import { validate } from 'class-validator';
 import { ApiError } from '../helpers/api-error';
 import { formatErrors } from '../helpers/formatErrors';
+import { IPatient, IPatientTokenData } from '../interfaces/IPatient.interface';
 
 export class AuthController {
   private service: AuthService;
@@ -19,25 +19,26 @@ export class AuthController {
 
   signUp: RequestHandler = async (req, res, next) => {
     try {
-      const signUpUserDto = plainToInstance(SignUpUserDto, req.body);
-      await this.validateDto(signUpUserDto);
+      const signUpPatientDto = plainToInstance(SignUpPatientDto, req.body);
+      await this.validateDto(signUpPatientDto);
 
-      const userData = await this.service.signUp(signUpUserDto);
-      if (!userData) throw ApiError.BadRequest('Пользователь с такими данными уже зарегистрирован');
+      const patientData = await this.service.signUp(signUpPatientDto);
+      if (!patientData) throw ApiError.BadRequest('Пользователь с такими данными уже зарегистрирован');
 
-      this.setRefreshTokenCookie(res, userData.refreshToken);
-      res.send(this.mapUserDataToUserDto(userData));
+      this.setRefreshTokenCookie(res, patientData.refreshToken);
+      res.send(this.mapUserDataToUserDto(patientData));
     } catch (e) {
       next(e);
     }
   };
   refresh: RequestHandler = async (req, res, next) => {
     try {
-      const userTokenData = req.customLocals.userTokenData;
-      if (!userTokenData) throw ApiError.UnauthorizedError();
+      const patientTokenData = req.customLocals.patientTokenData;
 
-      const refreshedUserData = await this.service.refresh(userTokenData);
-      this.handleSuccessfulRefresh(res, refreshedUserData);
+      if (!patientTokenData) throw ApiError.UnauthorizedError();
+
+      const refreshedPatientData = await this.service.refresh(patientTokenData);
+      this.handleSuccessfulRefresh(res, refreshedPatientData);
     } catch (e) {
       next(e);
     }
@@ -45,12 +46,13 @@ export class AuthController {
 
   signIn: RequestHandler = async (req, res, next) => {
     try {
-      const signInUserDto = plainToInstance(SignInUserDto, req.body);
-      await this.validateDto(signInUserDto);
-      const user = await this.service.signIn(signInUserDto);
-      if (!user) throw ApiError.BadRequest('User not exist');
-      if (user) this.setRefreshTokenCookie(res, user.refreshToken);
-      const userData = this.mapUserDataToUserDto(user);
+      const signInUserDto = plainToInstance(SignInPatientDto, req.body);
+      console.log(await this.validateDto(signInUserDto));
+      const patient = await this.service.signIn(signInUserDto);
+      if (!patient) throw ApiError.BadRequest('Пользователь с такими данными не найден!');
+
+      this.setRefreshTokenCookie(res, patient.refreshToken);
+      const userData = this.mapUserDataToUserDto(patient);
       res.send(userData);
     } catch (e) {
       next(e);
@@ -72,17 +74,17 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
   }
 
-  private mapUserDataToUserDto(userData: IUser): UserDto {
-    return plainToInstance(UserDto, userData, { excludeExtraneousValues: true });
+  private mapUserDataToUserDto(patientData: IPatient): PatientDto {
+    return plainToInstance(PatientDto, patientData, { excludeExtraneousValues: true });
   }
-  private async validateDto(dto: SignUpUserDto | SignInUserDto) {
+  private async validateDto(dto: SignUpPatientDto | SignInPatientDto) {
     const errors = await validate(dto, {
       whitelist: true,
       validationError: { target: false, value: false },
     });
     if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', formatErrors(errors));
   }
-  private handleSuccessfulRefresh(res: Response, refreshedUserData: IUserTokenData | null) {
+  private handleSuccessfulRefresh(res: Response, refreshedUserData: IPatientTokenData | null) {
     if (!refreshedUserData) throw ApiError.BadRequest('User not exist');
     this.setRefreshTokenCookie(res, refreshedUserData.refreshToken);
     res.send(this.mapUserDataToUserDto(refreshedUserData));

@@ -1,24 +1,24 @@
+import { IsString, IsNotEmpty, IsPhoneNumber, ValidateIf, IsEmail } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, ValidateIf } from 'class-validator';
 import { IsExistEmailOrPhone } from '../validators/IsExistEmailOrPhone';
 
-export class SignInUserDto {
+export class SignUpPatientDto {
   @Expose()
   @IsEmail({}, { message: 'Введите действительный адрес электронной почты' })
-  @ValidateIf((o) => o.phone === null)
+  @ValidateIf((o) => o.phone === null || o.phone.length < 0)
   @Transform(({ value }) => (value === '' ? null : value))
   @IsExistEmailOrPhone('phone', { message: 'Одно из полей email или phone должно быть заполнено!' })
-  email!: string;
+  email?: string;
 
   @Expose()
   @IsPhoneNumber('KZ', { message: 'Поле phone должно быть действительным номером телефона Казахстана' })
-  @ValidateIf((o) => (o.email === null && typeof o.phone === 'string') || (typeof o.email === 'string' && typeof o.phone === 'string'))
+  @ValidateIf((o) => o.email === null || o.email.length < 0)
   @Transform(({ value }) => (value === '' ? null : value))
   @IsExistEmailOrPhone('email', { message: 'Одно из полей email или phone должно быть заполнено!' })
-  phone!: string;
+  phone?: string;
 
   @Expose()
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Поле password обязательное' })
   password!: string;
 }
