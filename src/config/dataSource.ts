@@ -16,7 +16,7 @@ const options: DataSourceOptions & SeederOptions = {
   port: 3306,
   database: 'psyhelp_online',
   username: 'root',
-  password: '123123dd',
+  password: '123123',
   synchronize: true,
   logging: true,
   entities: [Patient, PatientToken, Psychologist, PsychologistToken, City, Certificate],
