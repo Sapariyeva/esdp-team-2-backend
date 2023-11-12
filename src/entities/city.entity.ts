@@ -1,10 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import ICity from '../interfaces/ICity.interface';
 
 @Entity('cities')
-export class City {
+export class City implements ICity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ unique: true })
   name!: string;
 }
