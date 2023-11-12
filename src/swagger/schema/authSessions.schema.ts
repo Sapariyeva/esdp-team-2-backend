@@ -19,7 +19,7 @@ import { object, string, TypeOf } from 'zod';
  *          default: 87777777777
  *        password:
  *          type: string
- *          default: 123456
+ *          default: 123123
  *    LoginUserResponse:
  *      type: object
  *      properties:
