@@ -1,20 +1,17 @@
 import { Expose } from 'class-transformer';
 
-export class UserDto {
+export class PatientDto {
   @Expose()
   id?: number;
 
   @Expose()
-  username?: string;
+  name?: string;
 
   @Expose()
   email?: string;
 
   @Expose()
   phone?: string;
-
-  @Expose()
-  date_of_birth!: string;
 
   @Expose()
   role!: string;

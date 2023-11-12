@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { ApiError } from '../helpers/api-error';
-import { TokenRepository } from '../repositories/token.repository';
+import { PatientTokenRepository } from '../repositories/patientToken.repository';
 
 export const validateRefreshToken: RequestHandler = async (req, res, next) => {
-  const tokenRepository = new TokenRepository();
+  const tokenRepository = new PatientTokenRepository();
   try {
     const refreshToken = req.cookies.refreshToken;
     const userTokenData = tokenRepository.validateRefreshToken(refreshToken);
@@ -11,7 +11,7 @@ export const validateRefreshToken: RequestHandler = async (req, res, next) => {
     if (!userTokenData) {
       throw ApiError.UnauthorizedError();
     }
-    req.customLocals.userTokenData = userTokenData;
+    req.customLocals.patientTokenData = userTokenData;
     next();
   } catch (error) {
     next(error);

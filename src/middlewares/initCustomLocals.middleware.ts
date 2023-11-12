@@ -3,7 +3,7 @@ import ICustomLocals from '../interfaces/ICustomLocals.interface';
 
 const initCustomLocals = (): RequestHandler => (req, res, next) => {
   const initialCustomLocals: ICustomLocals = {
-    userTokenData: undefined,
+    patientTokenData: undefined,
   };
   req.customLocals = initialCustomLocals;
 

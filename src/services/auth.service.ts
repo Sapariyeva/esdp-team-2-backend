@@ -1,22 +1,22 @@
-import { SignInUserDto } from '../dto/signInUser.dto';
-import { UserRepository } from '../repositories/user.repository';
-import { SignUpUserDto } from '../dto/signUpUser.dto';
-import { IUser } from '../interfaces/IUser.interface';
+import { SignInPatientDto } from '../dto/signInPatient.dto';
+import { PatientRepository } from '../repositories/patient.repository';
+import { SignUpPatientDto } from '../dto/signUpPatient.dto';
+import { IPatientTokenData } from '../interfaces/IPatient.interface';
 
 export class AuthService {
-  private repository: UserRepository;
+  private repository: PatientRepository;
 
   constructor() {
-    this.repository = new UserRepository();
+    this.repository = new PatientRepository();
   }
-  signUp = async (signUpUserDto: SignUpUserDto) => {
-    return await this.repository.singUp(signUpUserDto);
+  signUp = async (signUpPatientDto: SignUpPatientDto) => {
+    return await this.repository.singUp(signUpPatientDto);
   };
-  signIn = async (singInUserDto: SignInUserDto) => {
-    return await this.repository.signIn(singInUserDto);
+  signIn = async (singInPatientDto: SignInPatientDto) => {
+    return await this.repository.signIn(singInPatientDto);
   };
-  refresh = async (userData: IUser) => {
-    return await this.repository.refresh(userData);
+  refresh = async (patientData: IPatientTokenData) => {
+    return await this.repository.refresh(patientData);
   };
   signOut = async (refreshToken: string) => {
     return await this.repository.signOut(refreshToken);

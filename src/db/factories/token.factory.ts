@@ -1,8 +1,8 @@
 import { setSeederFactory } from 'typeorm-extension';
-import { Token } from '../../entities/token.entity';
+import { PatientToken } from '../../entities/patientToken.entity';
 
-export const TokenFactory = setSeederFactory(Token, () => {
-  const token = new Token();
+export const TokenFactory = setSeederFactory(PatientToken, () => {
+  const token = new PatientToken();
   token.generateAccessToken();
   token.generateRefreshToken();
   return token;
