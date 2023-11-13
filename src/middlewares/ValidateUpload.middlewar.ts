@@ -1,9 +1,10 @@
 import { randomUUID } from 'crypto';
-import multer from 'multer';
 import path from 'path';
 import config from '../config';
+import { Request } from 'express';
+import multer, { FileFilterCallback } from 'multer';
 
-const storage = multer.diskStorage({
+const fileStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, config.uploadPath);
   },
@@ -12,4 +13,14 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage });
+const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  cb(null, true);
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+    throw new Error('Изображение должно быть в формате PNG, JPG или JPEG.');
+  }
+};
+
+export const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
