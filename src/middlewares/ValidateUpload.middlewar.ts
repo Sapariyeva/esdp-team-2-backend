@@ -3,6 +3,7 @@ import path from 'path';
 import config from '../config';
 import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
+import { ApiError } from '../helpers/api-error';
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -19,7 +20,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
     cb(null, true);
   } else {
     cb(null, false);
-    throw new Error('Изображение должно быть в формате PNG, JPG или JPEG.');
+    throw ApiError.BadRequest('Изображение должно быть в формате PNG, JPG или JPEG.');
   }
 };
 
