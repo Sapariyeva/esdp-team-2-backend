@@ -68,6 +68,21 @@ function routes(app: Express) {
    *       400:
    *         description: Bad request
    */
-  app.get('/refresh-token', (req: Request, res: Response) => res.sendStatus(200));
+  app.get('/auth/refresh-token', (req: Request, res: Response) => res.sendStatus(200));
+
+  /**
+   * @openapi
+   * /auth/logout:
+   *  post:
+   *     tags:
+   *     - Auth
+   *     description: Responds if the app is up and running
+   *     responses:
+   *       200:
+   *         description: Success
+   *       400:
+   *         description: Bad request
+   */
+  app.get('/auth/logout', (req: Request, res: Response) => res.sendStatus(200));
 }
 export default routes;
