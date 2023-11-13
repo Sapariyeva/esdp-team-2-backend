@@ -3,6 +3,7 @@ import { appDataSource } from './config/dataSource';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
 import { errorsHandler } from './middlewares/errorsHandler.middleware';
+import swaggerDocs from './swagger/swagger';
 class App {
   public app: Application;
   public port: number;
@@ -37,6 +38,8 @@ class App {
     process.on('exit', () => {
       appDataSource.destroy();
     });
+
+    swaggerDocs(this.app, this.port);
   }
 }
 
