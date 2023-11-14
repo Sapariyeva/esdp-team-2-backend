@@ -1,11 +1,8 @@
-import ICity from './ICity.interface';
+import { ICity } from './ICity.interface';
+import { IUser } from './IUser.interface';
 
-interface IPsychologist {
+export interface IPsychologist {
   id: number;
-  email: string | null;
-  phone: string | null;
-  role: 'psychologist' | 'psychologist-admin';
-  password: string;
   fullName: string;
   format: 'online' | 'offline';
   cost: number;
@@ -16,8 +13,8 @@ interface IPsychologist {
   description: string;
   education: string;
   isPublish: boolean;
+  userId: number;
+  user?: IUser;
   cityId: number;
   city?: ICity;
 }
-
-export default IPsychologist;

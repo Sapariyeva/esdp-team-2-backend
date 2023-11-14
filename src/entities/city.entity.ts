@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import ICity from '../interfaces/ICity.interface';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ICity } from '../interfaces/ICity.interface';
+import { Psychologist } from './psychologist.entity';
 
 @Entity('cities')
 export class City implements ICity {
@@ -8,4 +9,7 @@ export class City implements ICity {
 
   @Column({ unique: true })
   name!: string;
+
+  @OneToMany(() => Psychologist, (psychologist) => psychologist.city)
+  psychologists?: Psychologist[];
 }

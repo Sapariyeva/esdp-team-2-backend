@@ -1,10 +1,8 @@
-import IPsychologist from './IPsychologist.interface';
+import { IPsychologist } from './IPsychologist.interface';
 
-interface ICertificate {
+export interface ICertificate {
   id: number;
   sertificate: string;
   psychologistId: number;
   psychologist?: IPsychologist;
 }
-
-export default ICertificate;

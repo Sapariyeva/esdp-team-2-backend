@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import ICertificate from '../interfaces/ICertificate.interface';
+import { ICertificate } from '../interfaces/ICertificate.interface';
 import { Psychologist } from './psychologist.entity';
 
 @Entity('certificates')
