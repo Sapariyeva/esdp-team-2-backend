@@ -1,23 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { City } from './city.entity';
-import IPsychologist from '../interfaces/IPsychologist.interface';
+import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { User } from './user.entity';
 
 @Entity('psychologists')
 export class Psychologist implements IPsychologist {
   @PrimaryGeneratedColumn()
   id!: number;
-
-  @Column({ nullable: true, unique: true })
-  email!: string;
-
-  @Column({ nullable: true, unique: true })
-  phone!: string;
-
-  @Column({ default: 'psychologist' })
-  role!: 'psychologist' | 'psychologist-admin';
-
-  @Column()
-  password!: string;
 
   @Column({ name: 'full_name' })
   fullName!: string;
@@ -27,9 +16,6 @@ export class Psychologist implements IPsychologist {
 
   @Column()
   cost!: number;
-
-  @Column()
-  educationId!: string;
 
   @Column()
   gender!: 'male' | 'female';
@@ -58,4 +44,11 @@ export class Psychologist implements IPsychologist {
   @ManyToOne(() => City)
   @JoinColumn({ name: 'city_id' })
   city?: City;
+
+  @Column({ name: 'user_id' })
+  userId!: number;
+
+  @OneToOne(() => User, (user) => user.psychologist)
+  @JoinColumn({ name: 'user_id' })
+  user?: User;
 }
