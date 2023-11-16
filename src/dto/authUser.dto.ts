@@ -1,19 +1,20 @@
 import { Expose, Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, ValidateIf } from 'class-validator';
 import { IsExistEmailOrPhone } from '../validators/IsExistEmailOrPhone';
+import { UserRole } from '../interfaces/UserRole.enum';
 
-export class SignInPatientDto {
+export class AuthUserDto {
   @Expose()
   @IsEmail({}, { message: 'Введите действительный адрес электронной почты' })
-  @ValidateIf((o) => o.phone === null || o.phone.length < 0)
+  @ValidateIf((o) => o.phone === null || o.phone === undefined)
   @Transform(({ value }) => (value === '' ? null : value))
   @IsExistEmailOrPhone('phone', { message: 'Одно из полей email или phone должно быть заполнено!' })
   email?: string;
 
   @Expose()
-  @IsPhoneNumber('KZ', { message: 'Поле phone должно быть действительным номером телефона Казахстана' })
-  @ValidateIf((o) => o.email === null || o.email.length < 0)
-  @Transform(({ value }) => (value === '' ? null : value))
+  @IsPhoneNumber('KZ', { message: 'Пожалуйста, предоставьте правильный номер телефона' })
+  @ValidateIf((o) => o.email === null || o.email === undefined)
+  @Transform(({ value }) => (value === '' || value === undefined ? null : value))
   @IsExistEmailOrPhone('email', { message: 'Одно из полей email или phone должно быть заполнено!' })
   phone?: string;
 
@@ -21,4 +22,9 @@ export class SignInPatientDto {
   @IsString()
   @IsNotEmpty({ message: 'Поле password обязательное' })
   password!: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty({ message: 'Поле password обязательное' })
+  role!: UserRole;
 }
