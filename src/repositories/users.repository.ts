@@ -27,7 +27,7 @@ export class UsersRepository extends Repository<User> {
 
       user.roles = this.addUserRole(user.roles, existingRole);
       const tokens = await this.generateAndSaveTokens(user);
-      const userData = await this.findUserByIdWithRelations(user.id, userDto.role);
+      const userData = await this.findUserByIdWithRelations(user.id, existingRole.name);
       if (!userData) return null;
       return { ...userData, role: existingRole.name, ...tokens };
     }
@@ -35,7 +35,7 @@ export class UsersRepository extends Repository<User> {
     const newUser = this.create(userDto);
     newUser.roles = [existingRole];
     const tokens = await this.generateAndSaveTokens(newUser);
-    const userData = await this.findUserByIdWithRelations(newUser.id);
+    const userData = await this.findUserByIdWithRelations(newUser.id, existingRole.name);
     if (!userData) return null;
 
     return {
