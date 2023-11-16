@@ -1,12 +1,11 @@
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserRole } from '../interfaces/UserRole.enum';
 import config from '../config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { IUser } from '../interfaces/IUser.interface';
 import { Role } from './role.entity';
 import { Patient } from './patient.entity';
 import { Psychologist } from './psychologist.entity';
+import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
 
 @Entity('users')
 export class User implements IUser {
@@ -28,9 +27,9 @@ export class User implements IUser {
   @Column({ name: 'refresh_token' })
   refreshToken!: string;
 
-  @ManyToMany(() => Role, (role) => role.users, { cascade: true, eager: true })
+  @ManyToMany(() => Role, (role) => role.users, { cascade: true })
   @JoinTable()
-  roles?: UserRole[];
+  roles?: Role[];
 
   @OneToOne(() => Patient, (patient) => patient.user)
   patient?: Patient;
@@ -51,13 +50,19 @@ export class User implements IUser {
     return await bcrypt.compare(password, this.password);
   }
 
-  @BeforeInsert()
   generateRefreshToken() {
-    this.refreshToken = jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '1m' });
+    this.refreshToken = jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '30d' });
     return this.refreshToken;
   }
 
   generateAccessToken() {
-    return jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '15s' });
+    return jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '15min' });
+  }
+
+  validateRefreshToken(token: string): IUserTokenData | null {
+    return jwt.verify(token, config.secretKey) as IUserTokenData;
+  }
+  validateAccessToken(token: string): IUserTokenData | null {
+    return jwt.verify(token, config.secretKey) as IUserTokenData;
   }
 }

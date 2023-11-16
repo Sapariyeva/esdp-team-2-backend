@@ -5,7 +5,7 @@ import { registerUserSchema } from './schema/authRegister.schema';
 function routes(app: Express) {
   /**
    * @openapi
-   * /auth/sessions:
+   * /auth/login:
    *   post:
    *     tags:
    *       - Auth
@@ -27,7 +27,7 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.post('/auth/sessions', validateResource(loginUserSchema));
+  app.post('/auth/login', validateResource(loginUserSchema));
 
   /**
    * @openapi

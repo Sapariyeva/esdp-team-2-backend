@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { City } from './city.entity';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { City } from './city.entity';
 import { User } from './user.entity';
 
 @Entity('psychologists')

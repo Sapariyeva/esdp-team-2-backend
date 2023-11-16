@@ -1,7 +1,7 @@
-import { IPatientTokenData } from './IPatient.interface';
+import { IUserTokenData } from './IUser.interface';
 
 interface ICustomLocals {
-  patientTokenData?: IPatientTokenData;
+  patientTokenData?: IUserTokenData;
 }
 
 export default ICustomLocals;

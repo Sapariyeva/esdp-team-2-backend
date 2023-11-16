@@ -1,10 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-import { IRole } from '../interfaces/IRole.interface';
-import { UserRole } from '../interfaces/UserRole.enum';
 import { User } from './user.entity';
+import { UserRole } from '../interfaces/UserRole.enum';
 
 @Entity('roles')
-export class Role implements IRole {
+export class Role {
   @PrimaryGeneratedColumn()
   id!: number;
 

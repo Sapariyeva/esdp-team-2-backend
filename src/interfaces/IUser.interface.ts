@@ -1,6 +1,6 @@
 import { IPatient } from './IPatient.interface';
 import { IPsychologist } from './IPsychologist.interface';
-import { UserRole } from './UserRole.enum';
+import { IRole } from './IRole.interface';
 
 export interface IUser {
   id: number;
@@ -9,7 +9,7 @@ export interface IUser {
   phone: string | null;
   password: string;
   refreshToken: string;
-  roles?: UserRole[];
+  roles?: IRole[];
   patient?: IPatient | null;
   psychologist?: IPsychologist | null;
 }
