@@ -10,7 +10,7 @@ const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: N
     });
     next();
   } catch (e) {
-    return res.status(400).send('Incorrect validation');
+    res.status(400).send('Incorrect validation');
   }
 };
 
