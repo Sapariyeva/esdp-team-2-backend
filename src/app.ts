@@ -2,8 +2,6 @@ import express, { Application, RequestHandler } from 'express';
 import { appDataSource } from './config/dataSource';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
-import { errorsHandler } from './middlewares/errorsHandler.middleware';
-import swaggerDocs from './swagger/swagger';
 class App {
   public app: Application;
   public port: number;
@@ -14,7 +12,6 @@ class App {
     this.initAssets();
     this.initMiddlewares(appInit.middlewares);
     this.initRoutes(appInit.controllers);
-    this.app.use(errorsHandler);
   }
   private initMiddlewares(middlewares: RequestHandler[]) {
     middlewares.forEach((middleware) => {
@@ -38,8 +35,6 @@ class App {
     process.on('exit', () => {
       appDataSource.destroy();
     });
-
-    swaggerDocs(this.app, this.port);
   }
 }
 

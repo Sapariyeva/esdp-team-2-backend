@@ -25,9 +25,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "files": [
-    "./src/@types/requestLocals.d.ts",
-  ],
   "include": ["src/**/*.ts", "src/*.d.ts" ],
   "exclude": ["node_modules"]
 }
