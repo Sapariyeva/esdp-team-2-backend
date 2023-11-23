@@ -1,7 +1,12 @@
 import { ValidationError } from 'class-validator';
+import { IErrorItem } from './api-error';
 
-export const formatErrors = (errors: ValidationError[]) => {
-  const updatedErrors: { type: string; messages: string[] }[] = [];
+interface IFormatErrorsHandler {
+  (errors: ValidationError[]): IErrorItem[];
+}
+
+export const formatErrors: IFormatErrorsHandler = (errors) => {
+  const updatedErrors: IErrorItem[] = [];
 
   errors.forEach((e) => {
     if (e.constraints) {
