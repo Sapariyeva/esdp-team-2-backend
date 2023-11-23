@@ -38,9 +38,12 @@ export class UsersRepository extends Repository<User> {
     const userData = await this.findUserByIdWithRelations(newUser.id, existingRole.name);
     if (!userData) return null;
 
+    const accessToken = userData.generateAccessToken();
     return {
       ...userData,
-      ...tokens,
+      role: existingRole.name,
+      refreshToken: tokens.refreshToken,
+      accessToken,
     };
   }
 
