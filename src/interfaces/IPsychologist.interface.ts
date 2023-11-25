@@ -4,6 +4,7 @@ import { ICity } from './ICity.interface';
 import { IPhoto } from './IPhoto.interface';
 import { ITechnique } from './ITechnique.interface';
 import { ITherapyMethod } from './ITherapyMethod.interface';
+import { ISymptom } from './ISymptom.interface';
 
 export interface IPsychologist {
   id: number;
@@ -30,4 +31,5 @@ export interface IPsychologist {
   photo: IPhoto[];
   techniques?: ITechnique[];
   therapyMethod?: ITherapyMethod[];
+  symptoms?: ISymptom[];
 }
