@@ -37,6 +37,9 @@ export class User implements IUser {
   @OneToOne(() => Psychologist, (psychologist) => psychologist.user)
   psychologist?: Psychologist;
 
+  @Column({ nullable: true, default: false })
+  isActivated!: boolean;
+
   @BeforeInsert()
   async hashPassword() {
     const SALT_WORK_FACTOR = 10;

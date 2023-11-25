@@ -23,4 +23,7 @@ export class AuthService {
   refresh = async (userData: IUserTokenData) => {
     return await this.repository.refresh(userData);
   };
+  activate = async (refreshToken: string) => {
+    return await this.repository.activate(refreshToken);
+  };
 }

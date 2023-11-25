@@ -131,4 +131,17 @@ export class UsersRepository extends Repository<User> {
       relations: { roles: true, [entityType]: true },
     });
   }
+
+  async activate(refreshToken: string) {
+    const userActive = await this.findOne({
+      where: {
+        refreshToken: refreshToken,
+      },
+    });
+
+    if (userActive) {
+      userActive.isActivated = true;
+      await this.save(userActive);
+    }
+  }
 }
