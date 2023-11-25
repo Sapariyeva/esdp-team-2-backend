@@ -10,6 +10,9 @@ export class City implements ICity {
   @Column({ unique: true })
   name!: string;
 
+  @Column({ default: 'Казахстан' })
+  country!: string;
+
   @OneToMany(() => Psychologist, (psychologist) => psychologist.city)
   psychologists?: Psychologist[];
 }
