@@ -28,7 +28,7 @@ export interface IPsychologist {
   certificates?: ICertificate[];
   city?: ICity;
   cityId: number;
-  photo: IPhoto[];
+  photo?: IPhoto[];
   techniques?: ITechnique[];
   therapyMethod?: ITherapyMethod[];
   symptoms?: ISymptom[];
