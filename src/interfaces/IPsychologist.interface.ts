@@ -1,22 +1,29 @@
 import { ICertificate } from './ICertificate.interface';
-import { ICity } from './ICity.interface';
 import { IUser } from './IUser.interface';
+import { ICity } from './ICity.interface';
+import { IPhoto } from './IPhoto.interface';
 
 export interface IPsychologist {
   id: number;
   fullName: string;
+  gender: 'male' | 'female';
+  birthDay: Date;
+  address: string;
+  description: string;
+  video: string | null;
+  experienceYears: number;
+  languages: string;
+  education: string;
   format: 'online' | 'offline';
   cost: number;
-  gender: 'male' | 'female';
-  video: string | null;
-  photo: string;
-  experienceYears: number;
-  description: string;
-  education: string;
+  consultationType: string;
+  selfTherapy: string;
+  lgbt: boolean;
   isPublish: boolean;
   userId: number;
   user?: IUser;
-  cityId: number;
-  city?: ICity;
   certificates?: ICertificate[];
+  city?: ICity;
+  cityId: number;
+  photo: IPhoto[];
 }
