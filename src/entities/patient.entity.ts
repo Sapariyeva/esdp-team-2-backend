@@ -14,7 +14,7 @@ export class Patient implements IPatient {
   @Column({ name: 'user_id' })
   userId!: number;
 
-  @ManyToMany(() => Psychologist)
+  @ManyToMany(() => Psychologist, { cascade: true })
   @JoinTable()
   favorites?: Psychologist[];
 
