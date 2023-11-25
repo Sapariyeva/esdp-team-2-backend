@@ -7,8 +7,6 @@ import { validate } from 'class-validator';
 import { formatErrors } from '../helpers/formatErrors';
 import { IUser } from '../interfaces/IUser.interface';
 import { UserDto } from '../dto/user.dto';
-import mailer from '../email/nodemailer';
-import { EmailMessage } from '../interfaces/email/IEmailMessage';
 
 export class AuthController {
   private service: AuthService;
@@ -27,25 +25,11 @@ export class AuthController {
 
       this.setRefreshTokenCookie(res, userData.refreshToken);
       const user = this.mapUserDataToUserDto(userData);
-      const message = {
-        to: req.body.email,
-        subject: 'Подтверждение почты',
-        html: `<h2>Вы зарегистрировались</h2>
-        <i>Ваши данные:</i>
-        <ul>
-          <li>login: ${req.body.email}</li>
-          <li>password: ${req.body.password}</li>
-        </ul>
-
-        <a href="http://localhost:8000/activate/">Подтвердить почту</a>
-        `,
-      } as unknown as EmailMessage;
       const isActivated = req.query.isActivated === 'true';
       if (isActivated) {
         const refreshToken = req.cookies.refreshToken;
         this.service.signIn(refreshToken);
       }
-      mailer(message);
       res.send(user);
     } catch (e) {
       next(e);
