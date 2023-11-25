@@ -4,9 +4,11 @@ import { City } from './city.entity';
 import { User } from './user.entity';
 import { Certificate } from './certificate.entity';
 import { TherapyMethod } from './therapyMethod.entity';
-import { Techniques } from './techniques.entity';
 import { Photo } from './photo.entity';
 import { Patient } from './patient.entity';
+import { Symptom } from './symptom.entity';
+import { Technique } from './technique.entity';
+import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
 
 @Entity('psychologists')
 export class Psychologist implements IPsychologist {
@@ -41,7 +43,7 @@ export class Psychologist implements IPsychologist {
   experienceYears!: number;
 
   @Column()
-  languages!: string;
+  languages!: 'Kazakh' | 'Russia | English';
 
   @Column({ type: 'longtext' })
   education!: string;
@@ -50,10 +52,10 @@ export class Psychologist implements IPsychologist {
   format!: 'online' | 'offline';
 
   @Column({ name: 'consultation_type' })
-  consultationType!: string;
+  consultationType!: 'solo' | 'duo';
 
-  @Column({ name: 'self_therapy' })
-  selfTherapy!: string;
+  @Column({ name: 'self_therapy', nullable: true })
+  selfTherapy!: number;
 
   @Column({ default: false })
   lgbt!: boolean;
@@ -64,29 +66,29 @@ export class Psychologist implements IPsychologist {
   @Column({ name: 'city_id' })
   cityId!: number;
 
-  @ManyToMany(() => Techniques, (techniques) => techniques.psychologist, { cascade: true })
+  @ManyToMany(() => Technique, (techniques) => techniques.psychologists, { cascade: true })
   @JoinTable()
-  techniques?: Techniques[];
+  techniques?: Technique[];
 
-  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologist, { cascade: true })
+  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologists, { cascade: true })
   @JoinTable()
-  therapyMethod?: TherapyMethod[];
+  therapyMethod?: ITherapyMethod[];
 
-  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologist, { cascade: true })
+  @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true })
   @JoinTable()
   symptoms?: TherapyMethod[];
 
-  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologist, { cascade: true })
+  @ManyToMany(() => Patient, (patient) => patient.favorites, { cascade: true })
   @JoinTable()
   favorites?: Patient[];
 
-  @ManyToOne(() => Photo, { eager: true })
+  @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true })
   @JoinColumn({ name: 'photo_id' })
   photo!: Photo[];
 
   @OneToOne(() => User, (user) => user.psychologist)
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user?: User;
 
   @ManyToOne(() => City, (city) => city.psychologists)
   @JoinColumn({ name: 'city_id' })

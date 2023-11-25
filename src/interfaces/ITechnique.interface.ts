@@ -1,4 +1,4 @@
-export interface ITechniques {
+export interface ITechnique {
   id: number;
   name: string;
 }

@@ -1,9 +1,9 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Psychologist } from './psychologist.entity';
-import { ISymptoms } from '../interfaces/ISymptoms.interface';
+import { ISymptom } from '../interfaces/ISymptom.interface';
 
 @Entity('symptoms')
-export class Symptom implements ISymptoms {
+export class Symptom implements ISymptom {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -11,5 +11,5 @@ export class Symptom implements ISymptoms {
   name!: string;
 
   @ManyToMany(() => Psychologist, (psychologist) => psychologist.symptoms)
-  psychologist?: Psychologist[];
+  psychologists?: Psychologist[];
 }

@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IPhoto } from '../interfaces/IPhoto.interface';
+import { Psychologist } from './psychologist.entity';
 
 @Entity('photos')
 export class Photo implements IPhoto {
@@ -9,6 +10,10 @@ export class Photo implements IPhoto {
   @Column({ unique: true })
   photo!: string;
 
-  @Column()
+  @Column({ name: 'psychologist_id' })
   psychologistId!: number;
+
+  @OneToOne(() => Psychologist, (psychologist) => psychologist.photo)
+  @JoinColumn({ name: 'psychologist_id' })
+  psychologist?: Psychologist;
 }
