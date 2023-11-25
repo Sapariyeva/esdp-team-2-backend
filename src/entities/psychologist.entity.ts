@@ -42,7 +42,7 @@ export class Psychologist implements IPsychologist {
   experienceYears!: number;
 
   @Column()
-  languages!: 'Kazakh' | 'Russia | English';
+  languages!: 'Kazakh' | 'Russia' | 'English';
 
   @Column({ type: 'longtext' })
   education!: string;
