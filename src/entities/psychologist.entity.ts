@@ -76,7 +76,7 @@ export class Psychologist implements IPsychologist {
 
   @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true })
   @JoinTable()
-  symptoms?: TherapyMethod[];
+  symptoms?: Symptom[];
 
   @ManyToMany(() => Patient, (patient) => patient.favorites, { cascade: true })
   @JoinTable()
