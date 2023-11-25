@@ -8,7 +8,6 @@ import { Photo } from './photo.entity';
 import { Patient } from './patient.entity';
 import { Symptom } from './symptom.entity';
 import { Technique } from './technique.entity';
-import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
 
 @Entity('psychologists')
 export class Psychologist implements IPsychologist {
@@ -72,7 +71,7 @@ export class Psychologist implements IPsychologist {
 
   @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologists, { cascade: true })
   @JoinTable()
-  therapyMethod?: ITherapyMethod[];
+  therapyMethod?: TherapyMethod[];
 
   @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true })
   @JoinTable()
