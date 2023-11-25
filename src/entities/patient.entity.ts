@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IPatient } from '../interfaces/IPatient.interface';
 import { User } from './user.entity';
 import { Psychologist } from './psychologist.entity';
@@ -19,6 +19,6 @@ export class Patient implements IPatient {
   favorites?: Psychologist[];
 
   @OneToOne(() => User, (user) => user.patient)
-  @JoinColumn({ name: 'user_id' })
+  @JoinTable({ name: 'user_id' })
   user?: User;
 }

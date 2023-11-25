@@ -10,7 +10,7 @@ export interface IPsychologist {
   id: number;
   fullName: string;
   gender: 'male' | 'female';
-  birthDay: Date;
+  birthday: Date;
   address: string;
   description: string;
   video: string | null;

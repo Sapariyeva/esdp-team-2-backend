@@ -23,7 +23,7 @@ export class Psychologist implements IPsychologist {
   gender!: 'male' | 'female';
 
   @Column()
-  birthDay!: Date;
+  birthday!: Date;
 
   @Column({ nullable: true })
   address!: string;
