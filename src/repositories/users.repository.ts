@@ -144,4 +144,15 @@ export class UsersRepository extends Repository<User> {
       await this.save(userActive);
     }
   }
+  async reactivation(refreshToken: string) {
+    const userReactivation = await this.findOne({
+      where: {
+        refreshToken: refreshToken,
+      },
+    });
+    if (userReactivation) {
+      userReactivation.isActivated = true;
+      await this.save(userReactivation);
+    }
+  }
 }

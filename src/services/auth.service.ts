@@ -12,21 +12,7 @@ export class AuthService {
   }
 
   signUp = async (userDto: AuthUserDto) => {
-    if (userDto.email) {
-      const message = {
-        to: userDto.email,
-        subject: 'Подтверждение почты',
-        html: `<h2>Вы зарегистрировались</h2>
-          <i>Ваши данные:</i>
-          <ul>
-            <li>login: ${userDto.email}</li>
-            <li>password: ${userDto.password}</li>
-          </ul>
-          <a href="http://localhost:8000/activate/">Подтвердить почту</a>
-        `,
-      } as unknown as EmailMessage;
-      mailer(message);
-    }
+    this.emailSendMessage(userDto);
     return await this.repository.signUp(userDto);
   };
 
@@ -42,5 +28,26 @@ export class AuthService {
   };
   activate = async (refreshToken: string) => {
     return await this.repository.activate(refreshToken);
+  };
+  reactivation = async (refreshToken: string, userDto: AuthUserDto) => {
+    this.emailSendMessage(userDto);
+    return await this.repository.reactivation(refreshToken);
+  };
+  private emailSendMessage = async (userDto: AuthUserDto) => {
+    if (userDto.email) {
+      const message = {
+        to: userDto.email,
+        subject: 'Подтверждение почты',
+        html: `<h2>Вы зарегистрировались</h2>
+          <i>Ваши данные:</i>
+          <ul>
+            <li>login: ${userDto.email}</li>
+            <li>password: ${userDto.password}</li>
+          </ul>
+          <a href="http://localhost:8000/activate/">Подтвердить почту</a>
+        `,
+      } as unknown as EmailMessage;
+      mailer(message);
+    }
   };
 }

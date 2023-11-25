@@ -85,6 +85,17 @@ export class AuthController {
     }
   };
 
+  reactivation: RequestHandler = async (req, res, next) => {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      const userDto = plainToInstance(AuthUserDto, req.body);
+      await this.service.reactivation(refreshToken, userDto);
+      res.send('You reactivation email');
+    } catch (e) {
+      next(e);
+    }
+  };
+
   private setRefreshTokenCookie(res: Response, refreshToken: string): void {
     res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
   }
