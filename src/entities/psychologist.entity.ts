@@ -5,7 +5,6 @@ import { User } from './user.entity';
 import { Certificate } from './certificate.entity';
 import { TherapyMethod } from './therapyMethod.entity';
 import { Photo } from './photo.entity';
-import { Patient } from './patient.entity';
 import { Symptom } from './symptom.entity';
 import { Technique } from './technique.entity';
 
@@ -76,10 +75,6 @@ export class Psychologist implements IPsychologist {
   @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true })
   @JoinTable()
   symptoms?: Symptom[];
-
-  @ManyToMany(() => Patient, (patient) => patient.favorites, { cascade: true })
-  @JoinTable()
-  favorites?: Patient[];
 
   @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true })
   photo?: Photo[];
