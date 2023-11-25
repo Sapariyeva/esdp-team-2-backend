@@ -82,8 +82,7 @@ export class Psychologist implements IPsychologist {
   favorites?: Patient[];
 
   @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true })
-  @JoinColumn({ name: 'photo_id' })
-  photo!: Photo[];
+  photo?: Photo[];
 
   @OneToOne(() => User, (user) => user.psychologist)
   @JoinColumn({ name: 'user_id' })
