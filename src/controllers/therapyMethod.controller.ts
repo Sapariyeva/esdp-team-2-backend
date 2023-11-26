@@ -56,4 +56,14 @@ export class TherapyMethodController {
       next(e);
     }
   };
+
+  public deleteOneTherapyMethod: RequestHandler = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await this.service.deleteOneTherapyMethod(Number(id));
+      res.status(200).send({ message: 'Метод терапии удален' });
+    } catch (e) {
+      next(e);
+    }
+  };
 }

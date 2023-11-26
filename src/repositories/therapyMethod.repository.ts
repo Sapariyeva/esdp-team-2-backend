@@ -35,4 +35,8 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
       throw new Error(`Therapy method with ID ${id} not found.`);
     }
   };
+
+  public deleteOneTherapyMethod = async (id: number): Promise<void> => {
+    await this.delete(id);
+  };
 }

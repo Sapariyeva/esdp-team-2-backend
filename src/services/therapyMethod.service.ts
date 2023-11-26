@@ -24,4 +24,8 @@ export class TherapyMethodService {
   public updateOneTherapyMethod = async (id: number, updatedData: Partial<TherapyMethodDto>) => {
     return await this.repository.updateOneTherapyMethod(id, updatedData);
   };
+
+  public deleteOneTherapyMethod = async (id: number): Promise<void> => {
+    return await this.repository.deleteOneTherapyMethod(id);
+  };
 }
