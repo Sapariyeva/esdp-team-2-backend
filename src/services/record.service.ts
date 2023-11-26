@@ -2,6 +2,7 @@ import { RecordDto } from '../dto/record.dto';
 import { IRecord } from '../interfaces/IRecord.interface';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
 import { RecordRepository } from '../repositories/record.repository';
+import { ApiError } from '../helpers/api-error';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -29,6 +30,11 @@ export class RecordService {
   };
 
   public cancelRecord = async (Record: IRecord) => {
-    return await this.repository.CancelRecord(Record);
+    const newRecord = await this.getOneRecord(Record.id as number);
+    if (newRecord != null) {
+      newRecord.isCanceled = true;
+      return await this.repository.CancelRecord(Record);
+    }
+    return ApiError.BadRequest('Нельзя отменить запись');
   };
 }

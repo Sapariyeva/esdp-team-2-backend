@@ -25,7 +25,7 @@ export class RecordRepository extends Repository<Record> {
     });
   };
 
-  public CancelRecord = async () => {
-    return await this.save();
+  public CancelRecord = async (record: IRecord) => {
+    return await this.save(record as RecordDto);
   };
 }

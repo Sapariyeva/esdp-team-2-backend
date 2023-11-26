@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Psychologist } from '../entities/psychologist.entity';
 import { PsychologistDto } from '../dto/psychologist.dto';
@@ -23,8 +23,8 @@ export class PsychologistRepository extends Repository<Psychologist> {
     return await this.save(newPsychologist);
   };
 
-  public findOnePsychologist = async (id: number): Promise<IPsychologist | null> => {
-    return await this.findOne({ where: { id } });
+  public findOnePsychologist = async (where: FindOptionsWhere<Psychologist>): Promise<IPsychologist | null> => {
+    return await this.findOne({ where });
   };
 
   public findPsychologists = async (): Promise<IPsychologist[]> => {
