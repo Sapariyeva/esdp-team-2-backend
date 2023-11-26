@@ -13,6 +13,7 @@ export class TherapyMethodRouter implements IRoute {
   }
 
   private init() {
+    this.router.get('/', this.controller.getAllTherapyMethod);
     this.router.post('/create', this.controller.createTherapyMethod);
   }
 }

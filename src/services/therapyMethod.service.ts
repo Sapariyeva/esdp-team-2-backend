@@ -1,4 +1,5 @@
 import { TherapyMethodDto } from '../dto/therapyMethod.dto';
+import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
 import { TherapyMethodRepository } from '../repositories/therapyMethod.repository';
 
 export class TherapyMethodService {
@@ -10,5 +11,8 @@ export class TherapyMethodService {
 
   public createTherapyMethod = async (therapyMethodDto: TherapyMethodDto) => {
     return await this.repository.createTherapyMethod(therapyMethodDto);
+  };
+  public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
+    return await this.repository.getAllTherapyMethod();
   };
 }
