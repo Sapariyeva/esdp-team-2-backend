@@ -1,14 +1,8 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
-import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { IsNotEmpty, IsString } from 'class-validator';
 export class TherapyMethodDto {
   @Expose()
-  id?: number;
-
-  @Expose()
+  @IsString()
   @IsNotEmpty({ message: 'Поле name обязательное' })
   name!: string;
-
-  @Expose()
-  psychologist?: IPsychologist;
 }

@@ -10,7 +10,8 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
   }
 
   public createTherapyMethod = async (therapyMethodDto: TherapyMethodDto) => {
-    return await this.save(therapyMethodDto);
+    const therapyMethod = this.create({ ...therapyMethodDto });
+    return await this.save(therapyMethod);
   };
 
   public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
@@ -24,16 +25,8 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
     return therapyMethod;
   };
 
-  public updateOneTherapyMethod = async (id: number, updatedData: Partial<TherapyMethodDto>) => {
-    const therapyMethod = await this.findOne({
-      where: { id },
-    });
-    if (therapyMethod) {
-      const updatedTherapyMethod = await this.update(id, updatedData);
-      return updatedTherapyMethod;
-    } else {
-      throw new Error(`Therapy method with ID ${id} not found.`);
-    }
+  public updateOneTherapyMethod = async (updatedTherapyMethod: ITherapyMethod) => {
+    return await this.save(updatedTherapyMethod);
   };
 
   public deleteOneTherapyMethod = async (id: number): Promise<void> => {

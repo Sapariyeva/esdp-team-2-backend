@@ -1,8 +1,10 @@
 import { RequestHandler } from 'express';
 import { TherapyMethodService } from '../services/therapyMethod.service';
-import { plainToClass } from 'class-transformer';
 import { TherapyMethodDto } from '../dto/therapyMethod.dto';
 import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
+import DtoManager from '../helpers/dtoManager';
+import { ApiError } from '../helpers/api-error';
+import validateNumber from '../helpers/validateNumber';
 
 export class TherapyMethodController {
   private service: TherapyMethodService;
@@ -12,9 +14,10 @@ export class TherapyMethodController {
   }
 
   public createTherapyMethod: RequestHandler = async (req, res, next) => {
-    const therapyMethodDto = plainToClass(TherapyMethodDto, req.body);
     try {
-      const therapyMethod = await this.service.createTherapyMethod(therapyMethodDto);
+      const { dto, errors } = await DtoManager.createDto(TherapyMethodDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+      const therapyMethod = await this.service.createTherapyMethod(dto);
       res.send(therapyMethod);
     } catch (e) {
       next(e);
@@ -32,13 +35,11 @@ export class TherapyMethodController {
 
   public getOneTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const therapyMethod = await this.service.getOneTherapyMethod(Number(id));
-      if (therapyMethod) {
-        res.send(therapyMethod);
-      } else {
-        res.status(400).send({ message: `Метод терапии с таким id:${id} не найден` });
-      }
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+      const therapyMethod = await this.service.getOneTherapyMethod(id);
+      if (!therapyMethod) throw ApiError.NotFound('Не удалось найти метод терапии');
+      res.send(therapyMethod);
     } catch (error) {
       next(error);
     }
@@ -46,12 +47,15 @@ export class TherapyMethodController {
 
   public updateOneTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const updatedData = req.body;
-      const therapyMethod = await this.service.updateOneTherapyMethod(Number(id), updatedData);
-      if (therapyMethod) {
-        res.status(200).send({ message: 'Метод терапии обновлен' });
-      }
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+      const { dto, errors } = await DtoManager.createDto(TherapyMethodDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+      const therapyMethod = await this.service.getOneTherapyMethod(id);
+      if (!therapyMethod) throw ApiError.NotFound('Не удалось найти метод терапии');
+
+      const updateTherapyMethod = await this.service.updateOneTherapyMethod({ ...therapyMethod, ...dto });
+      res.send(updateTherapyMethod);
     } catch (e) {
       next(e);
     }
@@ -59,9 +63,10 @@ export class TherapyMethodController {
 
   public deleteOneTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
-      const { id } = req.params;
-      await this.service.deleteOneTherapyMethod(Number(id));
-      res.status(200).send({ message: 'Метод терапии удален' });
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+      await this.service.deleteOneTherapyMethod(id);
+      res.json({ id });
     } catch (e) {
       next(e);
     }
