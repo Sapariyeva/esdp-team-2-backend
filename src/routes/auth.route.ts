@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
 import { AuthController } from '../controllers/auth.controller';
 import { validateRefreshToken } from '../middlewares/validateRefreshToken.middleware';
+import authenticateUser from '../middlewares/authenticateUser';
 
 export class AuthRouter implements IRoute {
   public path = '/auth';
@@ -18,7 +19,7 @@ export class AuthRouter implements IRoute {
     this.router.post('/login', this.controller.signIn);
     this.router.post('/logout', this.controller.signOut);
     this.router.get('/refresh-token', validateRefreshToken, this.controller.refresh);
-    this.router.get('/activate', this.controller.activate);
+    this.router.get('/activate', authenticateUser, this.controller.activateEmail);
     this.router.get('/reactivation', this.controller.reactivation);
   }
 }

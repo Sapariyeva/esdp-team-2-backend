@@ -75,10 +75,11 @@ export class AuthController {
       next(e);
     }
   };
-  activate: RequestHandler = async (req, res, next) => {
+  activateEmail: RequestHandler = async (req, res, next) => {
     try {
-      const refreshToken = req.cookies.refreshToken;
-      await this.service.activate(refreshToken);
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const id = req.customLocals.userJwtPayload.id;
+      await this.service.activateEmail(id);
       res.send('User activated successfully');
     } catch (error) {
       next(error);
@@ -88,8 +89,7 @@ export class AuthController {
   reactivation: RequestHandler = async (req, res, next) => {
     try {
       const refreshToken = req.cookies.refreshToken;
-      const userDto = plainToInstance(AuthUserDto, req.body);
-      await this.service.reactivation(refreshToken, userDto);
+      await this.service.sendConfirmationLinkToEmail(refreshToken);
       res.send('You reactivation email');
     } catch (e) {
       next(e);

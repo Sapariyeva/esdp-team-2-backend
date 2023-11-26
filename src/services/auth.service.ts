@@ -26,12 +26,11 @@ export class AuthService {
   refresh = async (userData: IUserTokenData) => {
     return await this.repository.refresh(userData);
   };
-  activate = async (refreshToken: string) => {
-    return await this.repository.activate(refreshToken);
+  activateEmail = async (id: number) => {
+    return await this.repository.activateEmail(id);
   };
-  reactivation = async (refreshToken: string, userDto: AuthUserDto) => {
+  sendConfirmationLinkToEmail = async (userDto: AuthUserDto) => {
     this.emailSendMessage(userDto);
-    return await this.repository.reactivation(refreshToken);
   };
   private emailSendMessage = async (userDto: AuthUserDto) => {
     if (userDto.email) {

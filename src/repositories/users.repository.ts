@@ -132,10 +132,10 @@ export class UsersRepository extends Repository<User> {
     });
   }
 
-  async activate(refreshToken: string) {
+  async activateEmail(id: number) {
     const userActive = await this.findOne({
       where: {
-        refreshToken: refreshToken,
+        id,
       },
     });
 
@@ -144,15 +144,15 @@ export class UsersRepository extends Repository<User> {
       await this.save(userActive);
     }
   }
-  async reactivation(refreshToken: string) {
-    const userReactivation = await this.findOne({
+  async sendConfirmationLinkToEmail(id: number) {
+    const confirmLinkToEmail = await this.findOne({
       where: {
-        refreshToken: refreshToken,
+        id: id,
       },
     });
-    if (userReactivation) {
-      userReactivation.isActivated = true;
-      await this.save(userReactivation);
+    if (confirmLinkToEmail) {
+      confirmLinkToEmail.isActivated = true;
+      await this.save(confirmLinkToEmail);
     }
   }
 }
