@@ -12,7 +12,15 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
   public createTherapyMethod = async (therapyMethodDto: TherapyMethodDto) => {
     return await this.save(therapyMethodDto);
   };
+
   public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
     return await this.find();
+  };
+
+  public getOneTherapyMethod = async (id: number) => {
+    const therapyMethod = await this.findOne({
+      where: { id },
+    });
+    return therapyMethod;
   };
 }

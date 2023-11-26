@@ -22,11 +22,25 @@ export class TherapyMethodController {
   };
 
   public getAllTherapyMethod: RequestHandler = async (req, res, next) => {
-    const therapyMethod: ITherapyMethod[] = await this.service.getAllTherapyMethod();
     try {
+      const therapyMethod: ITherapyMethod[] = await this.service.getAllTherapyMethod();
       res.send(therapyMethod);
     } catch (e) {
       next(e);
+    }
+  };
+
+  public getOneTherapyMethod: RequestHandler = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const therapyMethod = await this.service.getOneTherapyMethod(Number(id));
+      if (therapyMethod) {
+        res.send(therapyMethod);
+      } else {
+        res.status(400).send({ message: `Метод терапии с таким id:${id} не найден` });
+      }
+    } catch (error) {
+      next(error);
     }
   };
 }

@@ -15,4 +15,8 @@ export class TherapyMethodService {
   public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
     return await this.repository.getAllTherapyMethod();
   };
+
+  public getOneTherapyMethod = async (id: number): Promise<ITherapyMethod | null> => {
+    return await this.repository.getOneTherapyMethod(id);
+  };
 }
