@@ -1,5 +1,4 @@
 import { Repository } from 'typeorm';
-import { TherapyMethod } from '../entities/therapyMethod.entity';
 import { appDataSource } from '../config/dataSource';
 
 import { Record } from '../entities/record.entity';
@@ -8,7 +7,7 @@ import { IRecord } from '../interfaces/IRecord.interface';
 
 export class RecordRepository extends Repository<Record> {
   constructor() {
-    super(TherapyMethod, appDataSource.createEntityManager());
+    super(Record, appDataSource.createEntityManager());
   }
 
   public createRecord = async (RecordDto: RecordDto) => {
