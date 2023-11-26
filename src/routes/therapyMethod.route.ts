@@ -16,5 +16,6 @@ export class TherapyMethodRouter implements IRoute {
     this.router.get('/', this.controller.getAllTherapyMethod);
     this.router.get('/:id', this.controller.getOneTherapyMethod);
     this.router.post('/create', this.controller.createTherapyMethod);
+    this.router.put('/edit/:id', this.controller.updateOneTherapyMethod);
   }
 }

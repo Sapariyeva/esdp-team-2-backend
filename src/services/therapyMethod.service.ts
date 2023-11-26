@@ -12,11 +12,16 @@ export class TherapyMethodService {
   public createTherapyMethod = async (therapyMethodDto: TherapyMethodDto) => {
     return await this.repository.createTherapyMethod(therapyMethodDto);
   };
+
   public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
     return await this.repository.getAllTherapyMethod();
   };
 
   public getOneTherapyMethod = async (id: number): Promise<ITherapyMethod | null> => {
     return await this.repository.getOneTherapyMethod(id);
+  };
+
+  public updateOneTherapyMethod = async (id: number, updatedData: Partial<TherapyMethodDto>) => {
+    return await this.repository.updateOneTherapyMethod(id, updatedData);
   };
 }

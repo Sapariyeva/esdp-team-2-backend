@@ -43,4 +43,17 @@ export class TherapyMethodController {
       next(error);
     }
   };
+
+  public updateOneTherapyMethod: RequestHandler = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+      const therapyMethod = await this.service.updateOneTherapyMethod(Number(id), updatedData);
+      if (therapyMethod) {
+        res.status(200).send({ message: 'Метод терапии обновлен' });
+      }
+    } catch (e) {
+      next(e);
+    }
+  };
 }

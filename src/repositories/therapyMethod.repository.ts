@@ -23,4 +23,16 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
     });
     return therapyMethod;
   };
+
+  public updateOneTherapyMethod = async (id: number, updatedData: Partial<TherapyMethodDto>) => {
+    const therapyMethod = await this.findOne({
+      where: { id },
+    });
+    if (therapyMethod) {
+      const updatedTherapyMethod = await this.update(id, updatedData);
+      return updatedTherapyMethod;
+    } else {
+      throw new Error(`Therapy method with ID ${id} not found.`);
+    }
+  };
 }
