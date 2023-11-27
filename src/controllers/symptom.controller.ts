@@ -3,6 +3,8 @@ import { SymptomService } from '../services/symptom.service';
 import validateNumber from '../helpers/validateNumber';
 import { ApiError } from '../helpers/api-error';
 import { ISymptom } from '../interfaces/ISymptom.interface';
+import DtoManager from '../helpers/dtoManager';
+import { SymptomDto } from '../dto/symptom.dto';
 
 export class SymptomController {
   private service: SymptomService;
@@ -35,11 +37,10 @@ export class SymptomController {
 
   createSymptom: RequestHandler = async (req, res, next) => {
     try {
-      const symptomData = { ...req.body };
-      const { symptomDto, errors } = await this.service.getSymptomDto(symptomData, { isValidate: true });
+      const { dto, errors } = await DtoManager.createDto(SymptomDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
-      const newSymptom = await this.service.createSymptom(symptomDto);
+      const newSymptom = await this.service.createSymptom(dto);
       if (!newSymptom) throw ApiError.BadRequest('Не удалось создать!');
 
       res.send(newSymptom);
@@ -53,11 +54,13 @@ export class SymptomController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const symptom: ISymptom | undefined = await this.service.getSymptom(id);
+      const symptom: ISymptom | null = await this.service.getSymptom(id);
       if (!symptom) throw ApiError.NotFound('Не удалось найти симптом!');
 
-      await this.service.deleteSymptom(id);
-      res.status(200).send({ message: 'Симптом успешно удалён' });
+      const result = await this.service.deleteSymptom(id);
+      if (!result) throw ApiError.BadRequest('Не удалось удалить!');
+
+      res.send({ id });
     } catch (error) {
       next(error);
     }
@@ -68,14 +71,13 @@ export class SymptomController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const symptom: ISymptom | undefined = await this.service.getSymptom(id);
+      const symptom: ISymptom | null = await this.service.getSymptom(id);
       if (!symptom) throw ApiError.NotFound('Не удалось найти симптом!');
 
-      const symptomData = { ...req.body };
-      const { symptomDto, errors } = await this.service.getSymptomDto(symptomData, { isValidate: true });
+      const { dto, errors } = await DtoManager.createDto(SymptomDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
-      const updatedSymptom = await this.service.editSymptom(id, symptomDto);
+      const updatedSymptom = await this.service.editSymptom(symptom, dto);
       if (!updatedSymptom) throw ApiError.BadRequest('Не удалось изменить!');
 
       res.send(updatedSymptom);
