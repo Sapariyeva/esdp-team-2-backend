@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express';
-import { TherapyMethodDto } from '../dto/therapyMethod.dto';
 import DtoManager from '../helpers/dtoManager';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
@@ -50,7 +49,7 @@ export class TechniqueController {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
-      const { dto, errors } = await DtoManager.createDto(TherapyMethodDto, req.body, { isValidate: true });
+      const { dto, errors } = await DtoManager.createDto(TechniqueDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
       const technique = await this.service.getOneTechnique(id);
       if (!technique) throw ApiError.NotFound('Не удалось найти технику');

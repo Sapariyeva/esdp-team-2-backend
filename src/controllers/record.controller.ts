@@ -45,7 +45,7 @@ export class RecordController {
     }
   };
 
-  public CancelRecord: RequestHandler = async (req, res, next) => {
+  public cancelRecord: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');

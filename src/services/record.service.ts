@@ -3,6 +3,8 @@ import { IRecord } from '../interfaces/IRecord.interface';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
 import { RecordRepository } from '../repositories/record.repository';
 import { ApiError } from '../helpers/api-error';
+import { FindOptionsWhere } from 'typeorm';
+import { Psychologist } from '../entities/psychologist.entity';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -14,7 +16,7 @@ export class RecordService {
   }
 
   public createRecord = async (RecordDto: RecordDto) => {
-    const psychologist = await this.repositoryPsycho.findOnePsychologist(RecordDto.psychologistId);
+    const psychologist = await this.repositoryPsycho.findOnePsychologist(RecordDto.psychologistId as FindOptionsWhere<Psychologist>);
     RecordDto.cityId = psychologist?.cityId as number;
     RecordDto.cost = psychologist?.cost as number;
     RecordDto.broadcast = 'some link';
@@ -33,7 +35,7 @@ export class RecordService {
     const newRecord = await this.getOneRecord(Record.id as number);
     if (newRecord != null) {
       newRecord.isCanceled = true;
-      return await this.repository.CancelRecord(Record);
+      return await this.repository.cancelRecord(Record);
     }
     return ApiError.BadRequest('Нельзя отменить запись');
   };
