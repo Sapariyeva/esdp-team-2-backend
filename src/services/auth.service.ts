@@ -1,5 +1,5 @@
 import { UsersRepository } from '../repositories/users.repository';
-import { IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 import { EmailMessage } from '../interfaces/email/IEmailMessage';
 import mailer from '../email/nodemailer';
@@ -29,10 +29,16 @@ export class AuthService {
   activateEmail = async (id: number) => {
     return await this.repository.activateEmail(id);
   };
-  sendConfirmationLinkToEmail = async (userDto: AuthUserDto) => {
-    this.emailSendMessage(userDto);
+  sendConfirmationLinkToEmail = async (id: number) => {
+    return await this.repository.sendConfirmationLinkToEmail(id);
   };
-  private emailSendMessage = async (userDto: AuthUserDto) => {
+  findOneUser = async (id: number): Promise<IUser | null> => {
+    const user = await this.repository.findOneUser({ id });
+
+    if (!user) return null;
+    return user;
+  };
+  emailSendMessage = async (userDto: AuthUserDto) => {
     if (userDto.email) {
       const message = {
         to: userDto.email,
@@ -41,7 +47,6 @@ export class AuthService {
           <i>Ваши данные:</i>
           <ul>
             <li>login: ${userDto.email}</li>
-            <li>password: ${userDto.password}</li>
           </ul>
           <a href="http://localhost:8000/activate/">Подтвердить почту</a>
         `,

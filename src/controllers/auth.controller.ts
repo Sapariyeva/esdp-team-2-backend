@@ -86,11 +86,16 @@ export class AuthController {
     }
   };
 
-  reactivation: RequestHandler = async (req, res, next) => {
+  sendConfirmationLinkToEmail: RequestHandler = async (req, res, next) => {
     try {
-      const refreshToken = req.cookies.refreshToken;
-      await this.service.sendConfirmationLinkToEmail(refreshToken);
-      res.send('You reactivation email');
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const id = req.customLocals.userJwtPayload.id;
+
+      const user = await this.service.findOneUser(id);
+      if (!user) throw ApiError.BadRequest('Данный пользователь не найден');
+      await this.service.emailSendMessage(req.body);
+      await this.service.activateEmail(id);
+      res.send('Письмо для повторного подтверждение отправлено на почту');
     } catch (e) {
       next(e);
     }

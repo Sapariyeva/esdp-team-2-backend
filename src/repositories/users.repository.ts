@@ -1,11 +1,11 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { User } from '../entities/user.entity';
 import { ApiError } from '../helpers/api-error';
 import { RoleRepository } from './role.repository';
 import { UserRole } from '../interfaces/UserRole.enum';
 import { Role } from '../entities/role.entity';
-import { IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 
 export class UsersRepository extends Repository<User> {
@@ -155,4 +155,7 @@ export class UsersRepository extends Repository<User> {
       await this.save(confirmLinkToEmail);
     }
   }
+  findOneUser = async (where: FindOptionsWhere<User>): Promise<IUser | null> => {
+    return await this.findOne({ where });
+  };
 }
