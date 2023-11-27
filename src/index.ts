@@ -8,7 +8,6 @@ import initCustomLocals from './middlewares/initCustomLocals.middleware';
 import { SymptomRouter } from './routes/symptom.route';
 import { TherapyMethodRouter } from './routes/therapyMethod.route';
 
-
 const app = new App({
   port: 8000,
   middlewares: [initCustomLocals(), logger(), cookieParser(), cors()],
