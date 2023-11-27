@@ -139,22 +139,11 @@ export class UsersRepository extends Repository<User> {
       },
     });
 
-    if (userActive) {
+    if (userActive?.email) {
       userActive.isActivated = true;
       await this.save(userActive);
     }
     return userActive;
-  }
-  async sendConfirmationLinkToEmail(id: number) {
-    const confirmLinkToEmail = await this.findOne({
-      where: {
-        id: id,
-      },
-    });
-    if (confirmLinkToEmail) {
-      confirmLinkToEmail.isActivated = true;
-      await this.save(confirmLinkToEmail);
-    }
   }
   findOneUser = async (where: FindOptionsWhere<User>): Promise<IUser | null> => {
     return await this.findOne({ where });

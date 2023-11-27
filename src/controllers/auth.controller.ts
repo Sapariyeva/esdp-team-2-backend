@@ -75,7 +75,7 @@ export class AuthController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const id = req.customLocals.userJwtPayload.id;
       const user = await this.service.activateEmail(id);
-      if (!user) throw ApiError.BadRequest('Данный пользователь не найден');
+      if (!user?.email) throw ApiError.BadRequest('Email не существует');
       res.send('User activated successfully');
     } catch (error) {
       next(error);
@@ -87,8 +87,7 @@ export class AuthController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const id = req.customLocals.userJwtPayload.id;
       const user = await this.service.findOneUser(id);
-      if (!user) throw ApiError.BadRequest('Данный пользователь не найден');
-      if (!user.email) throw ApiError.BadRequest('Email не существует');
+      if (!user?.email) throw ApiError.BadRequest('Email не существует');
       await this.service.emailSendMessage(user.email);
       res.send('Письмо для повторного подтверждение отправлено на почту');
     } catch (e) {

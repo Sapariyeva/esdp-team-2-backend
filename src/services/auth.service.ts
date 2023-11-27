@@ -30,9 +30,6 @@ export class AuthService {
   activateEmail = async (id: number) => {
     return await this.repository.activateEmail(id);
   };
-  sendConfirmationLinkToEmail = async (id: number) => {
-    return await this.repository.sendConfirmationLinkToEmail(id);
-  };
   findOneUser = async (id: number): Promise<IUser | null> => {
     return await this.repository.findOneUser({ id });
   };
