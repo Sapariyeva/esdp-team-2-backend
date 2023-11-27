@@ -10,6 +10,7 @@ export interface IUser {
   phone: string | null;
   password: string;
   refreshToken: string;
+  isActivated: boolean;
   roles?: IRole[];
   patient?: IPatient | null;
   psychologist?: IPsychologist | null;

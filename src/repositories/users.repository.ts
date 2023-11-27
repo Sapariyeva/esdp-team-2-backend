@@ -143,6 +143,7 @@ export class UsersRepository extends Repository<User> {
       userActive.isActivated = true;
       await this.save(userActive);
     }
+    return userActive;
   }
   async sendConfirmationLinkToEmail(id: number) {
     const confirmLinkToEmail = await this.findOne({

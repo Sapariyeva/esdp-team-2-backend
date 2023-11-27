@@ -27,6 +27,9 @@ export class User implements IUser {
   @Column({ name: 'refresh_token' })
   refreshToken!: string;
 
+  @Column({ default: false })
+  isActivated!: boolean;
+
   @ManyToMany(() => Role, (role) => role.users, { cascade: true })
   @JoinTable()
   roles?: Role[];
@@ -36,9 +39,6 @@ export class User implements IUser {
 
   @OneToOne(() => Psychologist, (psychologist) => psychologist.user)
   psychologist?: Psychologist;
-
-  @Column({ nullable: true, default: false })
-  isActivated!: boolean;
 
   @BeforeInsert()
   async hashPassword() {

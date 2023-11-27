@@ -12,8 +12,9 @@ export class AuthService {
   }
 
   signUp = async (userDto: AuthUserDto) => {
-    this.emailSendMessage(userDto);
-    return await this.repository.signUp(userDto);
+    const user = await this.repository.signUp(userDto);
+    if (user?.email) this.emailSendMessage(user.email);
+    return user;
   };
 
   signIn = async (userDto: AuthUserDto) => {
@@ -33,22 +34,19 @@ export class AuthService {
     return await this.repository.sendConfirmationLinkToEmail(id);
   };
   findOneUser = async (id: number): Promise<IUser | null> => {
-    const user = await this.repository.findOneUser({ id });
-
-    if (!user) return null;
-    return user;
+    return await this.repository.findOneUser({ id });
   };
-  emailSendMessage = async (userDto: AuthUserDto) => {
-    if (userDto.email) {
+  emailSendMessage = async (email: string) => {
+    if (email) {
       const message = {
-        to: userDto.email,
+        to: email,
         subject: 'Подтверждение почты',
         html: `<h2>Вы зарегистрировались</h2>
           <i>Ваши данные:</i>
           <ul>
-            <li>login: ${userDto.email}</li>
+            <li>login: ${email}</li>
           </ul>
-          <a href="http://localhost:8000/activate/">Подтвердить почту</a>
+          <a href="http://localhost:8000/auth/activate/">Подтвердить почту</a>
         `,
       } as unknown as EmailMessage;
       mailer(message);
