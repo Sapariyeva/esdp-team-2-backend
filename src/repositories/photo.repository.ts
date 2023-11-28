@@ -17,4 +17,8 @@ export class PhotoRepository extends Repository<Photo> {
     await this.save(newPhoto);
     return newPhoto;
   };
+
+  public deletePhoto = async (id: number): Promise<void> => {
+    await this.delete(id);
+  };
 }

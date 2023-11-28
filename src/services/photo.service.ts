@@ -20,4 +20,7 @@ export class PhotoService {
   public findOnePsychologist = async (userId: number): Promise<IPsychologist | null> => {
     return await this.repositoryPsychologist.findOnePsychologist({ userId });
   };
+  public deletePhoto = async (id: number): Promise<void> => {
+    return await this.repository.deletePhoto(id);
+  };
 }
