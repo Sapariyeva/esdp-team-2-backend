@@ -10,9 +10,10 @@ export class PhotoRepository extends Repository<Photo> {
   }
 
   public createPhoto = async (photoDto: PhotoDto): Promise<IPhoto> => {
-    const { photo } = photoDto;
+    const { photo, psychologistId } = photoDto;
     const newPhoto = new Photo();
     newPhoto.photo = photo;
+    newPhoto.psychologistId = psychologistId;
     await this.save(newPhoto);
     return newPhoto;
   };

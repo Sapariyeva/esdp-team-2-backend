@@ -1,5 +1,7 @@
 import { RequestHandler } from 'express';
 import { PhotoService } from '../services/photo.service';
+import { PhotoDto } from '../dto/photo.dto';
+import DtoManager from '../helpers/dtoManager';
 import { ApiError } from '../helpers/api-error';
 
 export class PhotoController {
@@ -12,11 +14,24 @@ export class PhotoController {
   public createPhoto: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      if (!req.files || Array.isArray(req.files)) throw ApiError.BadRequest('Ошибка при обработке изображений');
-      const { id: userId } = req.customLocals.userJwtPayload;
-      const photo: string = req.files.photo[0].filename;
-      const psychologistRawData = { ...req.body, userId, photo };
-      await this.service.createPhoto(psychologistRawData);
+
+      const userId = req.customLocals.userJwtPayload.id;
+      if (!userId) throw ApiError.BadRequest('Не верно указан id пользователя');
+
+      const { dto } = await DtoManager.createDto(PhotoDto, req.body, { isValidate: true });
+      console.log(userId);
+
+      const psychologist = await this.service.findOnePsychologist(userId);
+      console.log(psychologist?.userId);
+      if (!psychologist) throw ApiError.BadRequest('Не верно указан id психолога');
+
+      dto.psychologistId = psychologist.id;
+
+      if (req.file) dto.photo = req.file.filename;
+
+      const photo = await this.service.createPhoto(dto);
+
+      res.send(photo);
     } catch (e) {
       next(e);
     }

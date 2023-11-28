@@ -17,11 +17,11 @@ export class PsychologistService {
     this.repository = new PsychologistRepository();
   }
 
-  public createPsychologist = async (psychologistDto: PsychologistDto, certificateList: string[]): Promise<IPsychologist | null> => {
-    const { id } = await this.repository.savePsychologist(psychologistDto, certificateList);
+  // public createPsychologist = async (psychologistDto: PsychologistDto, certificateList: string[]): Promise<IPsychologist | null> => {
+  //   const { id } = await this.repository.savePsychologist(psychologistDto, certificateList);
 
-    return await this.repository.findOnePsychologist({ id });
-  };
+  //   return await this.repository.findOnePsychologist({ id });
+  // };
 
   public getOnePsychologist = async (id: number): Promise<IPsychologist | null> => {
     return await this.repository.findOnePsychologist({ id });

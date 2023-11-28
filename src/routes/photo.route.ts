@@ -15,6 +15,6 @@ export class PhotoRouter implements IRoute {
   }
 
   private init() {
-    this.router.post('/create', authenticateUser, upload.fields([{ name: 'photo', maxCount: 1 }]), this.controller.createPhoto);
+    this.router.post('/create', authenticateUser, upload.single('photo'), this.controller.createPhoto);
   }
 }
