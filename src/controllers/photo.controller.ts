@@ -19,10 +19,8 @@ export class PhotoController {
       if (!userId) throw ApiError.BadRequest('Не верно указан id пользователя');
 
       const { dto } = await DtoManager.createDto(PhotoDto, req.body, { isValidate: true });
-      console.log(userId);
 
       const psychologist = await this.service.findOnePsychologist(userId);
-      console.log(psychologist?.userId);
       if (!psychologist) throw ApiError.BadRequest('Не верно указан id психолога');
 
       dto.psychologistId = psychologist.id;
