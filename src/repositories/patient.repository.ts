@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { IPatient } from '../interfaces/IPatient.interface';
 import { Patient } from '../entities/patient.entity';
@@ -28,14 +28,19 @@ export class PatientRepository extends Repository<IPatient> {
     const updatedPatient = this.merge(patient, dto);
     return await this.save(updatedPatient);
   }
-  async addToFavorites(patient: IPatient, psychologist: IPsychologist): Promise<IPsychologist[] | undefined> {
-    const isAlreadyAdded = patient.favorites?.some((fav) => fav === psychologist);
+  async changeToFavorites(patient: IPatient, psychologist: IPsychologist): Promise<IPsychologist[] | undefined> {
+    const isAlreadyAdded = patient.favorites?.some((fav) => fav.id === psychologist.id);
     if (!isAlreadyAdded) {
       patient.favorites = [...(patient.favorites || []), psychologist];
-      this.save(patient);
-      return patient.favorites;
+    } else {
+      patient.favorites?.filter((fav) => fav !== psychologist);
     }
-
-    return;
+    this.save(patient);
+    if (patient.favorites) {
+      return patient.favorites;
+    } else return;
   }
+  public findOnePatient = async (where: FindOptionsWhere<Patient>): Promise<IPatient | null> => {
+    return await this.findOne({ where });
+  };
 }

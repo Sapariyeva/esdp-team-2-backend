@@ -8,9 +8,11 @@ import { PsychologistService } from '../services/psychologist.service';
 
 export class PatientController {
   private service: PatientService;
+  private psychologistService: PsychologistService;
 
   constructor() {
     this.service = new PatientService();
+    this.psychologistService = new PsychologistService();
   }
 
   getPatients: RequestHandler = async (req, res, next) => {
@@ -39,15 +41,17 @@ export class PatientController {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
 
-      const { dto, errors } = await DtoManager.createDto(PatientDto, req.body, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+      const { id: userId } = req.customLocals.userJwtPayload;
 
-      const userExists = await this.service.checkUserExists(dto.userId);
+      const userExists = await this.service.checkUserExists(userId);
       if (!userExists) throw ApiError.NotFound('Пользователь с указанным user_id не найден.');
 
-      const { id } = req.customLocals.userJwtPayload;
-      const isPatientAllowed: boolean = await this.service.isPatientCreatable(id);
+      const isPatientAllowed: boolean = await this.service.isPatientCreatable(userId);
       if (!isPatientAllowed) throw ApiError.BadRequest('Данные пациента у текущего пользователя уже существуют');
+
+      const patientRawData = { ...req.body, userId };
+      const { dto, errors } = await DtoManager.createDto(PatientDto, patientRawData, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const newPatient = await this.service.createPatient(dto);
       if (!newPatient) throw ApiError.BadRequest('Не удалось создать пациента!');
@@ -77,13 +81,19 @@ export class PatientController {
 
   editPatient: RequestHandler = async (req, res, next) => {
     try {
-      const id = validateNumber(req.params.id);
-      if (!id) throw ApiError.BadRequest('Не верно указан id');
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
 
-      const patient = await this.service.getPatient(id);
+      const patientId = validateNumber(req.params.id);
+      if (!patientId) throw ApiError.BadRequest('Не верно указан id');
+
+      const patient = await this.service.getPatient(patientId);
       if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
 
-      const { dto, errors } = await DtoManager.createDto(PatientDto, req.body, { isValidate: true });
+      if (patient?.userId !== userId) throw ApiError.Forbidden();
+
+      const patientRawData = { ...req.body, userId };
+      const { dto, errors } = await DtoManager.createDto(PatientDto, patientRawData, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const updatedPatient = await this.service.editPatient(patient, dto);
@@ -95,22 +105,21 @@ export class PatientController {
     }
   };
 
-  addToFavorites: RequestHandler = async (req, res, next) => {
+  changeToFavorites: RequestHandler = async (req, res, next) => {
     try {
       const patientId = validateNumber(req.params.id);
       if (!patientId) throw ApiError.BadRequest('Не верно указан id пациента');
 
       const patient = await this.service.getPatient(patientId);
-      if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
+      if (!patient || !Array.isArray(patient?.favorites)) throw ApiError.NotFound('Не удалось найти пациента!');
 
       const psychologistId = validateNumber(req.body.psychologistId);
       if (!psychologistId) throw ApiError.BadRequest('Не верно указан id психолога');
 
-      const psychologistService = new PsychologistService();
-      const psychologist = await psychologistService.getOnePsychologist(psychologistId);
+      const psychologist = await this.psychologistService.getOnePsychologist(psychologistId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
-      const updatedFavorites = await this.service.addToFavorites(patient, psychologist);
+      const updatedFavorites = await this.service.changeToFavorites(patient, psychologist);
       if (!updatedFavorites) throw ApiError.BadRequest('Не удалось добавить в избранное!');
 
       res.send(updatedFavorites);

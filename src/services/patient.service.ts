@@ -6,9 +6,11 @@ import { UsersRepository } from '../repositories/users.repository';
 
 export class PatientService {
   private repository: PatientRepository;
+  private usersRepository: UsersRepository;
 
   constructor() {
     this.repository = new PatientRepository();
+    this.usersRepository = new UsersRepository();
   }
 
   getPatients = async (): Promise<IPatient[]> => {
@@ -28,16 +30,15 @@ export class PatientService {
   editPatient = async (patient: IPatient, dto: PatientDto) => {
     return await this.repository.editPatient(patient, dto);
   };
-  addToFavorites = async (patient: IPatient, psychologist: IPsychologist) => {
-    return await this.repository.addToFavorites(patient, psychologist);
+  changeToFavorites = async (patient: IPatient, psychologist: IPsychologist) => {
+    return await this.repository.changeToFavorites(patient, psychologist);
   };
   checkUserExists = async (userId: number): Promise<boolean> => {
-    const usersRepository = new UsersRepository();
-    const user = await usersRepository.findOneUser({ id: userId });
+    const user = await this.usersRepository.findOneUser({ id: userId });
     return !!user;
   };
   isPatientCreatable = async (userId: number): Promise<boolean> => {
-    const patient = await this.repository.getPatient(userId);
-    return !!patient;
+    const patient = await this.repository.findOnePatient({ userId });
+    return !patient;
   };
 }
