@@ -1,14 +1,6 @@
-import { plainToInstance } from 'class-transformer';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
-import { validate } from 'class-validator';
-import { IErrorItem } from '../helpers/api-error';
-import { formatErrors } from '../helpers/formatErrors';
-
-interface IGetPsychologistDto {
-  (data: unknown, options: { isValidate: boolean }): Promise<{ psychologistDto: PsychologistDto; errors: IErrorItem[] }>;
-}
 
 export class PsychologistService {
   private repository: PsychologistRepository;
@@ -17,9 +9,12 @@ export class PsychologistService {
     this.repository = new PsychologistRepository();
   }
 
-  public createPsychologist = async (psychologistDto: PsychologistDto, certificateList: string[]): Promise<IPsychologist | null> => {
-    const { id } = await this.repository.savePsychologist(psychologistDto, certificateList);
-
+  public createPsychologist = async (
+    psychologistDto: PsychologistDto,
+    certificateList: string[],
+    photosList: string[],
+  ): Promise<IPsychologist | null> => {
+    const { id } = await this.repository.savePsychologist(psychologistDto, certificateList, photosList);
     return await this.repository.findOnePsychologist({ id });
   };
 
@@ -31,26 +26,20 @@ export class PsychologistService {
     return await this.repository.findPsychologists();
   };
 
-  public getPsychologistDto: IGetPsychologistDto = async (data, options = { isValidate: false }) => {
-    const psychologistDto: PsychologistDto = plainToInstance(PsychologistDto, data, { excludeExtraneousValues: true });
-    let errors: IErrorItem[] = [];
-
-    if (options.isValidate) {
-      const errorsRaw = await validate(psychologistDto, {
-        whitelist: true,
-        validationError: { target: false, value: false },
-      });
-
-      errors = formatErrors(errorsRaw);
-    }
-
-    return { psychologistDto, errors };
+  public editPsychologist = async (psychologist: IPsychologist, psychologistDto: PsychologistDto) => {
+    await this.repository.editPsychologist(psychologist, psychologistDto);
+    return this.getOnePsychologist(psychologist.id);
   };
 
-  public isPsychologistCreatable = async (userId: number): Promise<boolean> => {
-    const psychologist = await this.repository.findOnePsychologist({ userId });
+  public publishPsychologist = async (id: number) => {
+    return await this.repository.publishPsychologist(id);
+  };
 
-    if (psychologist) return false;
-    return true;
+  public deletePsychologist = async (id: number) => {
+    return await this.repository.deletePsychologist(id);
+  };
+
+  public getOnePsychologistByUserId = async (userId: number): Promise<IPsychologist | null> => {
+    return await this.repository.findOnePsychologist({ userId });
   };
 }
