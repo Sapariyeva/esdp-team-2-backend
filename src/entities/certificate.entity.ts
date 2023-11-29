@@ -13,7 +13,7 @@ export class Certificate implements ICertificate {
   @Column({ name: 'psychologist_id' })
   psychologistId!: number;
 
-  @ManyToOne(() => Psychologist)
+  @ManyToOne(() => Psychologist, { cascade: true })
   @JoinColumn({ name: 'psychologist_id' })
   psychologist?: Psychologist;
 }
