@@ -23,7 +23,6 @@ export class PsychologistRouter implements IRoute {
     );
     this.router.get('/:id', this.controller.getOnePsychologistHandler);
     this.router.get('/', this.controller.getPsychologistsHandler);
-    this.router.post('/', this.controller.getPsychologistsHandler);
     this.router.post('/:id/publish', this.controller.publishPsychologistHandler);
     this.router.delete('/:id', this.controller.deletePsychologistHandler);
     this.router.put('/edit/:id', this.controller.editPsychologistHandler);
