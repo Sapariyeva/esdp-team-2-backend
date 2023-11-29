@@ -29,7 +29,6 @@ export class PsychologistRepository extends Repository<Psychologist> {
       certificates,
       photos,
     });
-
     return await this.save(newPsychologist);
   };
 
@@ -40,9 +39,9 @@ export class PsychologistRepository extends Repository<Psychologist> {
   public findPsychologists = async (): Promise<IPsychologist[]> => {
     return await this.find();
   };
-  async editPsychologist(id: number, dto: PsychologistDto): Promise<IPsychologist | null> {
-    await this.update(id, dto);
-    return await this.findOnePsychologist({ id });
+  async editPsychologist(psychologist: IPsychologist, dto: PsychologistDto) {
+    const result = await this.update(psychologist.id, dto);
+    return result.affected ? psychologist.id : null;
   }
 
   public publishPsychologist = async (id: number): Promise<number | null> => {

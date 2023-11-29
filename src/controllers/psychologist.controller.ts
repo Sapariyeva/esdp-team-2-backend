@@ -19,21 +19,21 @@ export class PsychologistController {
   public createPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
-      if (!req.files || Array.isArray(req.files)) throw ApiError.BadRequest('Ошибка при обработке изображений');
-
       const { id: userId } = req.customLocals.userJwtPayload;
-      const isPsychologistAllowed: boolean = await this.service.isPsychologistCreatable(userId);
-      if (!isPsychologistAllowed) throw ApiError.BadRequest('Данные психолога у текущего пользователя уже существуют');
 
-      const psychologistRawData = { ...req.body, userId };
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, psychologistRawData, { isValidate: true });
+      if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
+        throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
+
+      const isUserExists: IPsychologist | null = await this.service.getOnePsychologistByUserId(userId);
+      if (isUserExists) throw ApiError.BadRequest('Данные психолога у текущего пользователя уже существуют');
+
+      const { dto, errors } = await DtoManager.createDto(PsychologistDto, { ...req.body, userId }, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const certificateList: string[] = req.files.certificates.map((file) => file.filename);
       const photosList: string[] = req.files.photos.map((file) => file.filename);
-      const newPsychologist = await this.service.createPsychologist(dto, certificateList, photosList);
 
+      const newPsychologist = await this.service.createPsychologist(dto, certificateList, photosList);
       if (!newPsychologist) throw ApiError.BadRequest('Не удалось создать психолога');
 
       res.send(newPsychologist);
@@ -67,16 +67,16 @@ export class PsychologistController {
 
   public editPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = validateNumber(req.params.id);
-      if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
 
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, req.body, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
-
-      const psychologist: IPsychologist | null = await this.service.getOnePsychologist(id);
+      const psychologist = await this.service.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
-      const updatedPsychologist = await this.service.editPsychologist(id, dto);
+      const { dto, errors } = await DtoManager.createDto(PsychologistDto, { ...req.body, userId }, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
+      const updatedPsychologist = await this.service.editPsychologist(psychologist, dto);
       if (!updatedPsychologist) throw ApiError.BadRequest('При обновлении статуса психолога возникла ошибка.');
 
       res.send(updatedPsychologist);

@@ -22,7 +22,7 @@ export class Psychologist implements IPsychologist {
   @Column()
   gender!: 'male' | 'female';
 
-  @Column()
+  @Column({ type: Date })
   birthday!: Date;
 
   @Column({ nullable: true })
@@ -41,7 +41,7 @@ export class Psychologist implements IPsychologist {
   experienceYears!: number;
 
   @Column()
-  languages!: 'kazakh' | 'russia' | 'english';
+  languages!: 'kazakh' | 'russian' | 'english';
 
   @Column({ type: 'longtext' })
   education!: string;
@@ -76,9 +76,6 @@ export class Psychologist implements IPsychologist {
   @JoinTable()
   symptoms?: Symptom[];
 
-  @OneToMany(() => Photo, (photo) => photo.psychologist, { eager: true })
-  photos?: Photo[];
-
   @OneToOne(() => User, (user) => user.psychologist)
   @JoinColumn({ name: 'user_id' })
   user?: User;
@@ -87,6 +84,9 @@ export class Psychologist implements IPsychologist {
   @JoinColumn({ name: 'city_id' })
   city?: City;
 
-  @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { eager: true })
+  @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true, eager: true })
+  photos?: Photo[];
+
+  @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { cascade: true, eager: true })
   certificates?: Certificate[];
 }

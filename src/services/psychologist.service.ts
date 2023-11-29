@@ -26,8 +26,9 @@ export class PsychologistService {
     return await this.repository.findPsychologists();
   };
 
-  public editPsychologist = async (id: number, psychologistDto: PsychologistDto) => {
-    return await this.repository.editPsychologist(id, psychologistDto);
+  public editPsychologist = async (psychologist: IPsychologist, psychologistDto: PsychologistDto) => {
+    await this.repository.editPsychologist(psychologist, psychologistDto);
+    return this.getOnePsychologist(psychologist.id);
   };
 
   public publishPsychologist = async (id: number) => {
@@ -38,9 +39,7 @@ export class PsychologistService {
     return await this.repository.deletePsychologist(id);
   };
 
-  public isPsychologistCreatable = async (userId: number): Promise<boolean> => {
-    const psychologist = await this.repository.findOnePsychologist({ userId });
-
-    return !psychologist;
+  public getOnePsychologistByUserId = async (userId: number): Promise<IPsychologist | null> => {
+    return await this.repository.findOnePsychologist({ userId });
   };
 }
