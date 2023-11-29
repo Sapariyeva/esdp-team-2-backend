@@ -27,7 +27,7 @@ export class PsychologistController {
       if (!isPsychologistAllowed) throw ApiError.BadRequest('Данные психолога у текущего пользователя уже существуют');
 
       const psychologistRawData = { ...req.body, userId };
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, psychologistRawData);
+      const { dto, errors } = await DtoManager.createDto(PsychologistDto, psychologistRawData, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const certificateList: string[] = req.files.certificates.map((file) => file.filename);
@@ -70,7 +70,7 @@ export class PsychologistController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
 
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, req.body);
+      const { dto, errors } = await DtoManager.createDto(PsychologistDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const psychologist: IPsychologist | null = await this.service.getOnePsychologist(id);
