@@ -9,10 +9,7 @@ const authenticateUser: RequestHandler = (req, res, next) => {
     const accessToken = req.header('Authorization');
     if (!accessToken) throw new Error('Отсутствует токен');
 
-    const userJwtPayload = jwt.verify(accessToken, config.secretKey) as IUserJwtPayload;
-
-    req.customLocals.userJwtPayload = userJwtPayload;
-
+    req.customLocals.userJwtPayload = jwt.verify(accessToken, config.secretKey) as IUserJwtPayload;
     next();
   } catch (e) {
     next(ApiError.UnauthorizedError());
