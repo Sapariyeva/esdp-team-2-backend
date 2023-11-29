@@ -15,7 +15,7 @@ export interface IPsychologist {
   description: string;
   video: string | null;
   experienceYears: number;
-  languages: 'kazakh' | 'russia' | 'english';
+  languages: 'kazakh' | 'russian' | 'english';
   education: string;
   format: 'online' | 'offline';
   cost: number;

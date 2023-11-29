@@ -13,7 +13,7 @@ export class Photo implements IPhoto {
   @Column({ name: 'psychologist_id' })
   psychologistId!: number;
 
-  @ManyToOne(() => Psychologist, { cascade: true })
+  @ManyToOne(() => Psychologist, (psychologist) => psychologist.photos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'psychologist_id' })
   psychologist?: Psychologist;
 }
