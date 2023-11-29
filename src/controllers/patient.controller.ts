@@ -94,6 +94,7 @@ export class PatientController {
 
       const patientRawData = { ...req.body, userId };
       const { dto, errors } = await DtoManager.createDto(PatientDto, patientRawData, { isValidate: true });
+
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const updatedPatient = await this.service.editPatient(patient, dto);
