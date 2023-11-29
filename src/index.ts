@@ -13,7 +13,7 @@ import { PsychologistRouter } from './routes/psychologist.route';
 const app = new App({
   port: 8000,
   middlewares: [initCustomLocals(), logger(), cookieParser(), cors()],
-  controllers: [new PsychologistRouter(), new AuthRouter(), new SymptomRouter(), new TherapyMethodRouter(), new CertificateRouter()],
+  controllers: [new PsychologistRouter(), new AuthRouter(), new SymptomRouter(), new TherapyMethodRouter(), new CertificateRouter()]
 });
 
 app.listen();
