@@ -7,6 +7,7 @@ import { UsersRepository } from '../repositories/users.repository';
 export class PatientService {
   private repository: PatientRepository;
   private usersRepository: UsersRepository;
+
   constructor() {
     this.repository = new PatientRepository();
     this.usersRepository = new UsersRepository();
