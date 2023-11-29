@@ -9,7 +9,6 @@ import { SymptomRouter } from './routes/symptom.route';
 import { TherapyMethodRouter } from './routes/therapyMethod.route';
 import { CertificateRouter } from './routes/certificate.route';
 import { PsychologistRouter } from './routes/psychologist.route';
-import { CertificateRouter } from './routes/certificate.route';
 
 const app = new App({
   port: 8000,
