@@ -54,12 +54,12 @@ export class User implements IUser {
   }
 
   generateRefreshToken() {
-    this.refreshToken = jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '30d' });
+    this.refreshToken = jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '30d' });
     return this.refreshToken;
   }
 
   generateAccessToken() {
-    return jwt.sign({ id: this.id }, config.secretKey, { expiresIn: '15min' });
+    return jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '15min' });
   }
 
   validateRefreshToken(token: string): IUserTokenData | null {
