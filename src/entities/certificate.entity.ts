@@ -8,7 +8,7 @@ export class Certificate implements ICertificate {
   id!: number;
 
   @Column()
-  sertificate!: string;
+  certificate!: string;
 
   @Column({ name: 'psychologist_id' })
   psychologistId!: number;
