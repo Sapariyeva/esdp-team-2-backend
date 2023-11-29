@@ -1,5 +1,5 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate } from 'class-validator';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean, IsOptional } from 'class-validator';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 
 @Exclude()
@@ -76,8 +76,9 @@ export class PsychologistDto implements IPsychologist {
   selfTherapy!: number;
 
   @Expose()
-  @IsNotEmpty({ message: 'Значение поля lgbt не может быть пустым' })
-  @Transform(({ value }) => (typeof value === 'string' ? Boolean(value) : value))
+  @IsOptional()
+  @IsBoolean({ message: 'Значение поля lgbt должно быть логическим значением' })
+  @Type(() => Boolean)
   lgbt!: boolean;
 
   @Expose()
