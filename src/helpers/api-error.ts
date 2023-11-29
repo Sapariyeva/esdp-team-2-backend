@@ -22,7 +22,6 @@ export class ApiError extends Error {
 
   static NotFound(message: string): ApiError {
     return new ApiError(404, message);
-  }
 
   static Forbidden(): ApiError {
     return new ApiError(403, 'Доступ запрещён!');
