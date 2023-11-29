@@ -10,8 +10,8 @@ export class TechniqueRepository extends Repository<Technique> {
   }
 
   public createTechnique = async (TechniqueDto: TechniqueDto): Promise<ITechnique> => {
-    const symptom = this.create(TechniqueDto);
-    return await this.save(symptom);
+    const technique = this.create(TechniqueDto);
+    return await this.save(technique);
   };
 
   public getAllTechnique = async (): Promise<ITechnique[]> => {
