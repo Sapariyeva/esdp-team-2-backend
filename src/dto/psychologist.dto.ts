@@ -1,42 +1,29 @@
-import { Expose, Transform } from 'class-transformer';
-import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsOptional } from 'class-validator';
+import { Exclude, Expose, Transform } from 'class-transformer';
+import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean } from 'class-validator';
+import { IPsychologist } from '../interfaces/IPsychologist.interface';
 
-export class PsychologistDto {
+@Exclude()
+export class PsychologistDto implements IPsychologist {
   @Expose()
   @IsString()
   @IsNotEmpty()
   fullName!: string;
 
   @Expose()
-  @IsEnum(['online', 'offline'], { message: 'Выберете онлайн или офлайн!' })
-  format!: 'online' | 'offline';
-
-  @Expose()
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Cost must be greater than or equal to 0' })
-  cost!: number;
-
-  @Expose()
-  @IsEnum(['male', 'female'], { message: 'Выберете male или female!' })
+  @IsNotEmpty()
+  @IsEnum(['male', 'female'], { message: 'Выберите пол!' })
   gender!: 'male' | 'female';
 
   @Expose()
-  @Transform(({ value }) => (value === '' ? null : value))
-  @IsOptional()
-  @IsString()
-  video!: string;
+  @IsNotEmpty({ message: 'Введите дату рождения.' })
+  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
+  @IsDate()
+  birthday!: Date;
 
   @Expose()
-  @IsString()
   @IsNotEmpty()
-  photo!: string;
-
-  @Expose()
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Experience Years must be greater than or equal to 0' })
-  experienceYears!: number;
+  @IsString()
+  address!: string;
 
   @Expose()
   @IsString()
@@ -44,19 +31,68 @@ export class PsychologistDto {
   description!: string;
 
   @Expose()
-  @IsString()
+  @Transform(({ value }) => (value === '' ? null : value))
   @IsNotEmpty()
+  @IsString()
+  video!: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  @IsNumber()
+  @Min(0, { message: 'Количество лет опыта должно быть больше или равно 0' })
+  experienceYears!: number;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsEnum(['kazakh', 'russian', 'english'], { message: 'Выберите подходящий язык с списка!', each: true })
+  languages!: 'kazakh' | 'russian' | 'english';
+
+  @Expose()
+  @IsNotEmpty({ message: 'Значение поля "образование" не может быть пустым' })
+  @IsString({ message: 'Значение поля "образование" должно быть строкой' })
   education!: string;
 
   @Expose()
+  @IsNotEmpty()
+  @IsEnum(['online', 'offline'], { message: 'Выберите формат онлайн или офлайн!' })
+  format!: 'online' | 'offline';
+
+  @Expose()
+  @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
   @IsNumber()
-  @Min(0, { message: 'Выбран не валидный город!' })
+  @Min(0, { message: 'Стоимость должна быть больше или равна 0' })
+  cost!: number;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsEnum(['solo', 'duo'], { message: 'Выберите формат дуо или соло!' })
+  consultationType!: 'solo' | 'duo';
+
+  @Expose()
+  @IsNotEmpty({ message: 'Поле личная терапия не может быть пустым' })
+  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  selfTherapy!: number;
+
+  @Expose()
+  @Transform(({ value }) => (typeof value === 'string' ? Boolean(parseInt(value)) : value))
+  @IsBoolean({ message: 'Значение поля lgbt должно быть логическим значением' })
+  lgbt!: boolean;
+
+  @Expose()
+  @IsNotEmpty({ message: 'Город не может быть пустым' })
+  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  @Min(1, { message: 'Неверный формат идентификатора города' })
   cityId!: number;
 
   @Expose()
+  @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
   @IsNumber()
-  @Min(0, { message: 'Не валидный пользователь' })
+  @Min(0, { message: 'Неверный user id' })
   userId!: number;
+
+  @Exclude()
+  id!: number;
 }
