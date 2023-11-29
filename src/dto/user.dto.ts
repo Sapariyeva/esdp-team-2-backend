@@ -27,4 +27,7 @@ export class UserDto {
 
   @Expose()
   accessToken!: string;
+
+  @Expose()
+  isActivated!: boolean;
 }
