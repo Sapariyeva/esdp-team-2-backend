@@ -6,6 +6,8 @@ import SymptomsSeeder from '../db/seeds/symptoms.seeds';
 import { SymptomsFactory } from '../db/factories/symptoms.factory';
 import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
 import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
+import TechniqueSeeder from '../db/seeds/technique.seeds';
+import { TechniqueFactory } from '../db/factories/technique.factory';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
@@ -17,8 +19,8 @@ const options: DataSourceOptions & SeederOptions = {
   synchronize: true,
   logging: true,
   entities: ['src/entities/*.ts'],
-  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder],
-  factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory],
+  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder],
+  factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory],
 };
 
 export const appDataSource = new DataSource(options);
