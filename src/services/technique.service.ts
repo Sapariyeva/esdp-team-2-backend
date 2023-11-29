@@ -22,11 +22,11 @@ export class TechniqueService {
     return await this.repository.getOneTechnique(id);
   };
 
-  public updateOneTechnique = async (technique: ITechnique) => {
-    return await this.repository.updateOneTechnique(technique);
+  public updateOneTechnique = async (technique: ITechnique, TechniqueDto: TechniqueDto): Promise<ITechnique | null> => {
+    return await this.repository.updateOneTechnique(technique, TechniqueDto);
   };
 
-  public deleteOneTechnique = async (id: number): Promise<void> => {
+  public deleteOneTechnique = async (id: number) => {
     return await this.repository.deleteOneTherapyMethod(id);
   };
 }

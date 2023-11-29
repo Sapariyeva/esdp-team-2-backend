@@ -18,6 +18,7 @@ export class TechniqueController {
       const { dto, errors } = await DtoManager.createDto(TechniqueDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
       const technique = await this.service.createTeqchnique(dto);
+      if (!technique) throw ApiError.BadRequest('Не удалось создать!');
       res.send(technique);
     } catch (e) {
       next(e);
@@ -49,13 +50,15 @@ export class TechniqueController {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
+
       const { dto, errors } = await DtoManager.createDto(TechniqueDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
       const technique = await this.service.getOneTechnique(id);
       if (!technique) throw ApiError.NotFound('Не удалось найти технику');
 
-      const updateTherapyMethod = await this.service.updateOneTechnique({ ...technique, ...dto });
-      res.send(updateTherapyMethod);
+      const updatedTechnique = await this.service.updateOneTechnique(technique, dto);
+      res.send(updatedTechnique);
     } catch (e) {
       next(e);
     }
@@ -65,7 +68,12 @@ export class TechniqueController {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
-      await this.service.deleteOneTechnique(id);
+
+      const symptom: ITechnique | null = await this.service.getOneTechnique(id);
+      if (!symptom) throw ApiError.NotFound('Не удалось найти симптом!');
+
+      const result = await this.service.deleteOneTechnique(id);
+      if (!result) throw ApiError.BadRequest('Не удалось удалить!');
       res.json({ id });
     } catch (e) {
       next(e);

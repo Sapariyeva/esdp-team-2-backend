@@ -9,9 +9,9 @@ export class TechniqueRepository extends Repository<Technique> {
     super(Technique, appDataSource.createEntityManager());
   }
 
-  public createTechnique = async (TechniqueDto: TechniqueDto) => {
-    const technique = this.create({ ...TechniqueDto });
-    return await this.save(technique);
+  public createTechnique = async (TechniqueDto: TechniqueDto): Promise<ITechnique> => {
+    const symptom = this.create(TechniqueDto);
+    return await this.save(symptom);
   };
 
   public getAllTechnique = async (): Promise<ITechnique[]> => {
@@ -25,11 +25,14 @@ export class TechniqueRepository extends Repository<Technique> {
     return technique;
   };
 
-  public updateOneTechnique = async (technique: ITechnique) => {
-    return await this.save(technique);
+  public updateOneTechnique = async (technique: ITechnique, TechniqueDto: TechniqueDto): Promise<ITechnique | null> => {
+    const updatedTechnique = this.merge(technique, TechniqueDto);
+    return await this.save(updatedTechnique);
   };
 
-  public deleteOneTherapyMethod = async (id: number): Promise<void> => {
-    await this.delete(id);
+  public deleteOneTherapyMethod = async (id: number) => {
+    const deletedTechnique = await this.delete(id);
+    if (deletedTechnique.affected) return id;
+    return null;
   };
 }
