@@ -18,10 +18,14 @@ export class PsychologistRouter implements IRoute {
     this.router.post(
       '/create',
       authenticateUser,
-      upload.fields([{ name: 'photo', maxCount: 1 }, { name: 'certificates' }]),
+      upload.fields([{ name: 'photos' }, { name: 'certificates' }]),
       this.controller.createPsychologistHandler,
     );
     this.router.get('/:id', this.controller.getOnePsychologistHandler);
     this.router.get('/', this.controller.getPsychologistsHandler);
+    this.router.post('/', this.controller.getPsychologistsHandler);
+    this.router.post('/:id/publish', this.controller.publishPsychologistHandler);
+    this.router.delete('/:id', this.controller.deletePsychologistHandler);
+    this.router.put('/edit/:id', this.controller.editPsychologistHandler);
   }
 }

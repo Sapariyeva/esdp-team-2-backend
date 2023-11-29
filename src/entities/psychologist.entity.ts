@@ -41,7 +41,7 @@ export class Psychologist implements IPsychologist {
   experienceYears!: number;
 
   @Column()
-  languages!: 'Kazakh' | 'Russia' | 'English';
+  languages!: 'kazakh' | 'russia' | 'english';
 
   @Column({ type: 'longtext' })
   education!: string;
@@ -76,17 +76,17 @@ export class Psychologist implements IPsychologist {
   @JoinTable()
   symptoms?: Symptom[];
 
-  @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true })
-  photo?: Photo[];
+  @OneToMany(() => Photo, (photo) => photo.psychologist, { eager: true })
+  photos?: Photo[];
 
   @OneToOne(() => User, (user) => user.psychologist)
   @JoinColumn({ name: 'user_id' })
   user?: User;
 
-  @ManyToOne(() => City, (city) => city.psychologists)
+  @ManyToOne(() => City, (city) => city.psychologists, { eager: true })
   @JoinColumn({ name: 'city_id' })
   city?: City;
 
-  @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { cascade: true, eager: true })
+  @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { eager: true })
   certificates?: Certificate[];
 }
