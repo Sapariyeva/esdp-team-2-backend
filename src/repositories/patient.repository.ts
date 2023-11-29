@@ -33,7 +33,7 @@ export class PatientRepository extends Repository<IPatient> {
     if (!isAlreadyAdded) {
       patient.favorites = [...(patient.favorites || []), psychologist];
     } else {
-      patient.favorites?.filter((fav) => fav !== psychologist);
+      patient.favorites = (patient.favorites || []).filter((fav) => fav.id !== psychologist.id);
     }
     this.save(patient);
     if (patient.favorites) {
