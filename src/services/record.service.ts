@@ -53,8 +53,6 @@ export class RecordService {
   public cancelRecord = async (record: IRecord) => {
     record.isCanceled = true;
     return await this.repository.cancelRecord(record);
-
-    return;
   };
 
   public checkPsychologists = async (id: number) => {
