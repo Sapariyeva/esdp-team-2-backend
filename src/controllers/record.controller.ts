@@ -19,9 +19,12 @@ export class RecordController {
       const { id: userId } = req.customLocals.userJwtPayload;
       const { dto } = await DtoManager.createDto(RecordDto, req.body);
       dto.patientId = userId;
-      const check = await this.service.checkPsychologists(dto.psychologistId);
-      if (check === null) throw ApiError.NotFound('Не правильный id психолога');
-      const record = await this.service.createRecord(check, dto);
+      const checkPsycho = await this.service.checkPsychologists(dto.psychologistId);
+      if (checkPsycho === null) throw ApiError.NotFound('Не правильный id психолога');
+      const checkPatient = await this.service.checkPatient(dto.psychologistId);
+      if (checkPatient === null) throw ApiError.NotFound('Не правильный id психолога');
+      dto.patientName = checkPatient.name;
+      const record = await this.service.createRecord(checkPsycho, dto);
       res.send(record);
     } catch (e) {
       next(e);

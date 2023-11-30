@@ -12,6 +12,7 @@ export class RecordService {
   constructor() {
     this.repository = new RecordRepository();
     this.repositoryPsycho = new PsychologistRepository();
+    this.repositoryPatient = new PatientRepository();
   }
 
   public createRecord = async (psychologist: IPsychologist, dto: RecordDto) => {
@@ -59,5 +60,9 @@ export class RecordService {
 
   public checkPsychologists = async (id: number) => {
     return await this.repositoryPsycho.findOnePsychologist({ id: id });
+  };
+
+  public checkPatient = async (id: number) => {
+    return await this.repositoryPatient.findOnePatient({ id: id });
   };
 }
