@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
 import { TechniqueController } from '../controllers/technique.controller';
 
-export class TherapyMethodRouter implements IRoute {
+export class TechniqueRouter implements IRoute {
   public path = '/techniques';
   public router = Router();
   private controller: TechniqueController;

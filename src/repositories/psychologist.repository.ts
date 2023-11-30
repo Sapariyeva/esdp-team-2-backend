@@ -14,7 +14,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
   public savePsychologist = async (psychologistDto: PsychologistDto, certificateList: string[], photosList: string[]): Promise<IPsychologist> => {
     const certificates = certificateList.map((certificate) => {
       const certificateSchema = new Certificate();
-      certificateSchema.sertificate = certificate;
+      certificateSchema.certificate = certificate;
       return certificateSchema;
     });
 
