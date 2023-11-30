@@ -89,5 +89,25 @@ function routes(app: Express) {
    */
 
   app.put('/methods/edit/:id', validateResource(therapyMethodSchema));
+
+  /**
+   * @openapi
+   * /methods/{id}:
+   *   delete:
+   *     tags:
+   *       - Therapy Method
+   *     summary: Removal of one therapy method of one therapy method
+   *     parameters:
+   *     - name: id
+   *       in: path
+   *       required: true
+   *     responses:
+   *       200:
+   *         description: Success
+   *       400:
+   *         description: Bad request
+   */
+
+  app.delete('/methods/:id');
 }
 export default routes;
