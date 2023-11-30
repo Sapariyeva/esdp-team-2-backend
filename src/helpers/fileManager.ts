@@ -2,11 +2,6 @@ import fs from 'fs/promises';
 import { Request } from 'express';
 
 class FileManager {
-  static unlink = async (filename: string, directoryPath: string) => {
-    const filePath: string = directoryPath + '/' + filename;
-    await fs.unlink(filePath);
-  };
-
   static deleteFiles = (directoryPath: string, files: Request['files']): boolean => {
     try {
       if (!files) return false;
@@ -20,7 +15,8 @@ class FileManager {
             .forEach((file) => filenameList.push(file.filename));
 
       filenameList.forEach(async (filename) => {
-        this.unlink(filename, directoryPath);
+        const filePath: string = directoryPath + '/' + filename;
+        await fs.unlink(filePath);
       });
 
       console.log('The files has been successfully deleted');
@@ -33,7 +29,8 @@ class FileManager {
 
   static deleteFile = async (directoryPath: string, fileName: string): Promise<boolean> => {
     try {
-      this.unlink(fileName, directoryPath);
+      const filePath: string = directoryPath + '/' + fileName;
+      await fs.unlink(filePath);
       console.log('The file has been successfully deleted');
       return true;
     } catch (err) {
