@@ -61,7 +61,7 @@ export class RecordController {
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
       const check = await this.service.checkRecord(id);
-      if (!check) throw ApiError.BadRequest('Нельзя отменить запись');
+      if (!check) throw ApiError.BadRequest('Не существует такой записи');
 
       const cancelRecord = await this.service.cancelRecord(check);
       res.send(cancelRecord);
