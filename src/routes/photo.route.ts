@@ -16,6 +16,6 @@ export class PhotoRouter implements IRoute {
 
   private init() {
     this.router.post('/create', authenticateUser, upload.single('photo'), this.controller.createPhoto);
-    this.router.delete('/:id', this.controller.deletePhoto);
+    this.router.delete('/:id', authenticateUser, this.controller.deletePhoto);
   }
 }

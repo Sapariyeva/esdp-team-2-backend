@@ -1,7 +1,6 @@
 import { Repository } from 'typeorm';
 import { Photo } from '../entities/photo.entity';
 import { appDataSource } from '../config/dataSource';
-import { PhotoDto } from '../dto/photo.dto';
 import { IPhoto } from '../interfaces/IPhoto.interface';
 
 export class PhotoRepository extends Repository<Photo> {
@@ -9,16 +8,19 @@ export class PhotoRepository extends Repository<Photo> {
     super(Photo, appDataSource.createEntityManager());
   }
 
-  public createPhoto = async (photoDto: PhotoDto): Promise<IPhoto> => {
-    const { photo, psychologistId } = photoDto;
+  public createPhoto = async (psychologistId: number, photoName: string): Promise<IPhoto> => {
     const newPhoto = new Photo();
-    newPhoto.photo = photo;
+    newPhoto.photo = photoName;
     newPhoto.psychologistId = psychologistId;
-    await this.save(newPhoto);
-    return newPhoto;
+    return await this.save(newPhoto);
   };
 
-  public deletePhoto = async (id: number): Promise<void> => {
-    await this.delete(id);
+  public getOnePhoto = async (id: number) => {
+    return await this.findOne({ where: { id } });
+  };
+
+  public deletePhoto = async (id: number) => {
+    const result = await this.delete(id);
+    return result.affected ? id : null;
   };
 }

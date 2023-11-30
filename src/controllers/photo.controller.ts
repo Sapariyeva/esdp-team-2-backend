@@ -1,7 +1,5 @@
 import { RequestHandler } from 'express';
 import { PhotoService } from '../services/photo.service';
-import { PhotoDto } from '../dto/photo.dto';
-import DtoManager from '../helpers/dtoManager';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
 
@@ -15,21 +13,15 @@ export class PhotoController {
   public createPhoto: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
       const userId = req.customLocals.userJwtPayload.id;
-      if (!userId) throw ApiError.BadRequest('Не верно указан id пользователя');
-
-      const { dto } = await DtoManager.createDto(PhotoDto, req.body, { isValidate: true });
 
       const psychologist = await this.service.findOnePsychologist(userId);
-      if (!psychologist) throw ApiError.BadRequest('Не верно указан id психолога');
+      if (!psychologist) throw ApiError.NotFound('Такого психолога не существует');
 
-      dto.psychologistId = psychologist.id;
+      const photoName = req.file?.filename;
+      if (!photoName) throw ApiError.BadRequest('Не удалось получить имя файла фотографии');
 
-      if (req.file) dto.photo = req.file.filename;
-
-      const photo = await this.service.createPhoto(dto);
-
+      const photo = await this.service.createPhoto(psychologist.id, photoName);
       res.send(photo);
     } catch (e) {
       next(e);
@@ -38,9 +30,20 @@ export class PhotoController {
 
   public deletePhoto: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id фотографии');
-      await this.service.deletePhoto(id);
+
+      const userId = req.customLocals.userJwtPayload.id;
+      const psychologist = await this.service.findOnePsychologist(userId);
+      if (!psychologist) throw ApiError.NotFound('Такого психолога не существует');
+
+      const selectedPhoto = await this.service.getOnePhoto(id);
+      if (psychologist.id !== selectedPhoto?.psychologistId) throw ApiError.Forbidden();
+
+      const deletePhoto = await this.service.deletePhoto(id);
+      if (!deletePhoto) throw ApiError.BadRequest('Не получилось удалить фотографию');
       res.json({ id });
     } catch (e) {
       next(e);
