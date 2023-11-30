@@ -10,6 +10,9 @@ import { number, object, string, TypeOf } from 'zod';
  *         name:
  *           type: string
  *           example: 'Генштальт'
+ *         id:
+ *           type: number
+ *           example: 1
  *
  *     PostTherapyMethod:
  *       type: object
@@ -20,6 +23,14 @@ import { number, object, string, TypeOf } from 'zod';
  *           $ref: '#/components/schemas/TherapyMethod/properties/name'
  *
  *     GetAllTherapyMethod:
+ *       type: object
+ *       required:
+ *         - id
+ *       properties:
+ *         id:
+ *           $ref: '#/components/schemas/TherapyMethod/properties/id'
+ *
+ *     GetOneTherapyMethod:
  *       type: object
  *       required:
  *         - id
