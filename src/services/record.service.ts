@@ -2,7 +2,6 @@ import { RecordDto } from '../dto/record.dto';
 import { IRecord } from '../interfaces/IRecord.interface';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
 import { RecordRepository } from '../repositories/record.repository';
-import { ApiError } from '../helpers/api-error';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PatientRepository } from '../repositories/patient.repository';
 
@@ -51,13 +50,11 @@ export class RecordService {
     return await this.repository.getOneRecord(id);
   };
 
-  public cancelRecord = async (id: number) => {
-    const newRecord = await this.getOneRecord(id);
-    if (newRecord != null) {
-      newRecord.isCanceled = true;
-      return await this.repository.cancelRecord(newRecord);
-    }
-    return ApiError.BadRequest('Нельзя отменить запись');
+  public cancelRecord = async (record: IRecord) => {
+    record.isCanceled = true;
+    return await this.repository.cancelRecord(record);
+
+    return;
   };
 
   public checkPsychologists = async (id: number) => {
@@ -66,5 +63,9 @@ export class RecordService {
 
   public checkPatient = async (id: number) => {
     return await this.repositoryPatient.findOnePatient({ userId: id });
+  };
+
+  public checkRecord = async (id: number) => {
+    return await this.getOneRecord(id);
   };
 }

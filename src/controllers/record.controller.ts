@@ -60,7 +60,10 @@ export class RecordController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const cancelRecord = await this.service.cancelRecord(id);
+      const check = await this.service.checkRecord(id);
+      if (!check) throw ApiError.BadRequest('Нельзя отменить запись');
+
+      const cancelRecord = await this.service.cancelRecord(check);
       res.send(cancelRecord);
     } catch (e) {
       next(e);
