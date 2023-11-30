@@ -42,7 +42,7 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.get('/methods', validateResource(therapyMethodSchema));
+  app.get('/methods');
 
   /**
    * @openapi
@@ -50,7 +50,7 @@ function routes(app: Express) {
    *   get:
    *     tags:
    *       - Therapy Method
-   *     summary: Receiving all therapy methods
+   *     summary: Receiving one therapy methods
    *     parameters:
    *     - name: id
    *       in: path
@@ -62,6 +62,32 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.get('/methods/:id', validateResource(therapyMethodSchema));
+  app.get('/methods/:id');
+
+  /**
+   * @openapi
+   * /methods/edit/{id}:
+   *   put:
+   *     tags:
+   *       - Therapy Method
+   *     summary: Update of one therapy method
+   *     parameters:
+   *     - name: id
+   *       in: path
+   *       required: true
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/PostTherapyMethod'
+   *     responses:
+   *       200:
+   *         description: Success
+   *       400:
+   *         description: Bad request
+   */
+
+  app.put('/methods/edit/:id', validateResource(therapyMethodSchema));
 }
 export default routes;
