@@ -21,6 +21,6 @@ export class CertificateRepository extends Repository<ICertificate> {
     return await this.find();
   }
   async getCertificate(id: number): Promise<ICertificate | null> {
-    return await this.findOne({ where: { id } });
+    return await this.findOne({ where: { id }, relations: { psychologist: true } });
   }
 }
