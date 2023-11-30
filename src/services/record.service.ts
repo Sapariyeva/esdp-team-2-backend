@@ -30,14 +30,15 @@ export class RecordService {
       patientName: '',
     };
 
-    record.cityId = psychologist?.cityId as number;
+    record.cityId = psychologist.cityId;
     record.datetime = dto.datetime;
-    record.cost = psychologist?.cost as number;
+    record.cost = psychologist.cost;
     record.broadcast = 'some link';
     record.patientId = dto.patientId;
     record.psychologistId = psychologist.id;
     record.duration = 60;
-    record.address = psychologist?.address as string;
+    record.format = psychologist.format;
+    record.address = psychologist.address;
     return await this.repository.createRecord(record);
   };
 
