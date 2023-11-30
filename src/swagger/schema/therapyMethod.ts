@@ -37,17 +37,6 @@ import { number, object, string, TypeOf } from 'zod';
  *       properties:
  *         id:
  *           $ref: '#/components/schemas/TherapyMethod/properties/id'
- *
- *     PutOneTherapyMethod:
- *       type: object
- *       required:
- *         - id
- *         - name
- *       properties:
- *         id:
- *           $ref: '#/components/schemas/TherapyMethod/properties/id'
- *         name:
- *           $ref: '#/components/schemas/TherapyMethod/properties/name'
  */
 
 export const therapyMethodSchema = object({
