@@ -26,6 +26,6 @@ export class TechniqueService {
   };
 
   public deleteOneTechnique = async (id: number) => {
-    return await this.repository.deleteOneTeqcnique(id);
+    return await this.repository.deleteOneTechnique(id);
   };
 }

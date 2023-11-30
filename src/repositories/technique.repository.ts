@@ -30,7 +30,7 @@ export class TechniqueRepository extends Repository<Technique> {
     return await this.save(updatedTechnique);
   };
 
-  public deleteOneTeqcnique = async (id: number) => {
+  public deleteOneTechnique = async (id: number) => {
     const deletedTechnique = await this.delete(id);
     if (deletedTechnique.affected) return id;
     return null;

@@ -8,8 +8,8 @@ export class RecordRepository extends Repository<Record> {
     super(Record, appDataSource.createEntityManager());
   }
 
-  public createRecord = async (Record: IRecord) => {
-    return await this.save(Record);
+  public createRecord = async (record: IRecord) => {
+    return await this.save(record);
   };
 
   public getAllRecords = async (): Promise<IRecord[]> => {
