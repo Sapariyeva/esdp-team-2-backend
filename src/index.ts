@@ -10,7 +10,9 @@ import { CertificateRouter } from './routes/certificate.route';
 import { PhotoRouter } from './routes/photo.route';
 import { PatientRouter } from './routes/patient.route';
 import { PsychologistRouter } from './routes/psychologist.route';
+import { RecordRouter } from './routes/record.route';
 import { TherapyMethodRouter } from './routes/therapyMethod.route';
+import { TechniqueRouter } from './routes/technique.route';
 
 const app = new App({
   port: 8000,
@@ -23,6 +25,8 @@ const app = new App({
     new PhotoRouter(),
     new PatientRouter(),
     new CertificateRouter(),
+    new RecordRouter(),
+    new TechniqueRouter(),
   ],
 });
 
