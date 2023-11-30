@@ -26,6 +26,18 @@ class FileManager {
       return false;
     }
   };
+
+  static deleteFile = async (directoryPath: string, fileName: string): Promise<boolean> => {
+    try {
+      const filePath: string = directoryPath + '/' + fileName;
+      await fs.unlink(filePath);
+      console.log('The file has been successfully deleted');
+      return true;
+    } catch (err) {
+      console.log('The file could not be deleted');
+      return false;
+    }
+  };
 }
 
 export default FileManager;
