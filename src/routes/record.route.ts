@@ -17,6 +17,6 @@ export class RecordRouter implements IRoute {
     this.router.get('/', authenticateUser, this.controller.getAllRecords);
     this.router.get('/:id', authenticateUser, this.controller.getOneRecord);
     this.router.post('/create', authenticateUser, this.controller.createRecord);
-    this.router.put('/:id/cancel', authenticateUser, this.controller.cancelRecord);
+    this.router.post('/:id/cancel', authenticateUser, this.controller.cancelRecord);
   }
 }

@@ -4,10 +4,12 @@ import { PsychologistRepository } from '../repositories/psychologist.repository'
 import { RecordRepository } from '../repositories/record.repository';
 import { ApiError } from '../helpers/api-error';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { PatientRepository } from '../repositories/patient.repository';
 
 export class RecordService {
   private repository: RecordRepository;
   private repositoryPsycho: PsychologistRepository;
+  private repositoryPatient: PatientRepository;
 
   constructor() {
     this.repository = new RecordRepository();
@@ -22,7 +24,6 @@ export class RecordService {
       cityId: 0,
       datetime: '',
       cost: 0,
-      duration: 0,
       format: 'online',
       broadcast: '',
       address: '',
@@ -36,8 +37,8 @@ export class RecordService {
     record.broadcast = 'some link';
     record.patientId = dto.patientId;
     record.psychologistId = psychologist.id;
-    record.duration = 60;
     record.format = psychologist.format;
+    record.patientName = dto.patientName;
     record.address = psychologist.address;
     return await this.repository.createRecord(record);
   };
@@ -64,6 +65,6 @@ export class RecordService {
   };
 
   public checkPatient = async (id: number) => {
-    return await this.repositoryPatient.findOnePatient({ id: id });
+    return await this.repositoryPatient.findOnePatient({ userId: id });
   };
 }

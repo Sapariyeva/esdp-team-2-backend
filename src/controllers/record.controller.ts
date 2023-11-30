@@ -18,11 +18,14 @@ export class RecordController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const { id: userId } = req.customLocals.userJwtPayload;
       const { dto } = await DtoManager.createDto(RecordDto, req.body);
-      dto.patientId = userId;
+
       const checkPsycho = await this.service.checkPsychologists(dto.psychologistId);
       if (checkPsycho === null) throw ApiError.NotFound('Не правильный id психолога');
-      const checkPatient = await this.service.checkPatient(dto.psychologistId);
-      if (checkPatient === null) throw ApiError.NotFound('Не правильный id психолога');
+      const checkPatient = await this.service.checkPatient(userId);
+      dto.patientId = checkPatient?.id as number;
+      dto.patientName = checkPatient?.name as string;
+
+      if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
       dto.patientName = checkPatient.name;
       const record = await this.service.createRecord(checkPsycho, dto);
       res.send(record);

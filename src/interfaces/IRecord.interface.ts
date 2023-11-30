@@ -6,7 +6,7 @@ export interface IRecord {
   cityId: number;
   format: 'online' | 'offline';
   cost: number;
-  duration: number;
+  duration?: number;
   broadcast: string;
   isCanceled: boolean;
   datetime: string;
