@@ -3,8 +3,7 @@ import { IRecord } from '../interfaces/IRecord.interface';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
 import { RecordRepository } from '../repositories/record.repository';
 import { ApiError } from '../helpers/api-error';
-import { FindOptionsWhere } from 'typeorm';
-import { Psychologist } from '../entities/psychologist.entity';
+import { IPsychologist } from '../interfaces/IPsychologist.interface';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -15,12 +14,30 @@ export class RecordService {
     this.repositoryPsycho = new PsychologistRepository();
   }
 
-  public createRecord = async (RecordDto: RecordDto) => {
-    const psychologist = await this.repositoryPsycho.findOnePsychologist(RecordDto.psychologistId as FindOptionsWhere<Psychologist>);
-    RecordDto.cityId = psychologist?.cityId as number;
-    RecordDto.cost = psychologist?.cost as number;
-    RecordDto.broadcast = 'some link';
-    return await this.repository.createRecord(RecordDto);
+  public createRecord = async (psychologist: IPsychologist, dto: RecordDto) => {
+    const record: IRecord = {
+      patientId: 0,
+      psychologistId: 0,
+      cityId: 0,
+      datetime: '',
+      cost: 0,
+      duration: 0,
+      format: 'online',
+      broadcast: '',
+      address: '',
+      isCanceled: false,
+      patientName: '',
+    };
+
+    record.cityId = psychologist?.cityId as number;
+    record.datetime = dto.datetime;
+    record.cost = psychologist?.cost as number;
+    record.broadcast = 'some link';
+    record.patientId = dto.patientId;
+    record.psychologistId = psychologist.id;
+    record.duration = 60;
+    record.address = psychologist?.address as string;
+    return await this.repository.createRecord(record);
   };
 
   public getAllRecords = async (): Promise<IRecord[]> => {
@@ -31,12 +48,16 @@ export class RecordService {
     return await this.repository.getOneRecord(id);
   };
 
-  public cancelRecord = async (Record: IRecord) => {
-    const newRecord = await this.getOneRecord(Record.id as number);
+  public cancelRecord = async (id: number) => {
+    const newRecord = await this.getOneRecord(id);
     if (newRecord != null) {
       newRecord.isCanceled = true;
-      return await this.repository.cancelRecord(Record);
+      return await this.repository.cancelRecord(newRecord);
     }
     return ApiError.BadRequest('Нельзя отменить запись');
+  };
+
+  public checkPsychologists = async (id: number) => {
+    return await this.repositoryPsycho.findOnePsychologist({ id: id });
   };
 }

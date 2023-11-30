@@ -1,7 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { City } from './city.entity';
-import { Psychologist } from './psychologist.entity';
-import { Patient } from './patient.entity';
+// import { Psychologist } from './psychologist.entity';
+// import { Patient } from './patient.entity';
 import { IRecord } from '../interfaces/IRecord.interface';
 
 @Entity('records')
@@ -37,17 +37,20 @@ export class Record implements IRecord {
   isCanceled!: boolean;
 
   @Column()
-  datetime!: Date;
+  datetime!: string;
+
+  @Column()
+  patientName!: string;
 
   @ManyToOne(() => City)
   @JoinColumn({ name: 'city_id' })
   city?: City;
 
-  @OneToOne(() => Psychologist)
-  @JoinColumn({ name: 'psychologist_id' })
-  psychologist?: Psychologist;
+  // @OneToOne(() => Psychologist)
+  // @JoinColumn({ name: 'psychologist_id' })
+  // psychologist?: Psychologist;
 
-  @OneToOne(() => Patient)
-  @JoinColumn({ name: 'patient_id' })
-  patient?: Patient;
+  // @OneToOne(() => Patient)
+  // @JoinColumn({ name: 'patient_id' })
+  // patient?: Patient;
 }

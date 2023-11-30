@@ -1,8 +1,6 @@
 import { Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
-
 import { Record } from '../entities/record.entity';
-import { RecordDto } from '../dto/record.dto';
 import { IRecord } from '../interfaces/IRecord.interface';
 
 export class RecordRepository extends Repository<Record> {
@@ -10,8 +8,8 @@ export class RecordRepository extends Repository<Record> {
     super(Record, appDataSource.createEntityManager());
   }
 
-  public createRecord = async (RecordDto: RecordDto) => {
-    return await this.save(RecordDto);
+  public createRecord = async (Record: IRecord) => {
+    return await this.save(Record);
   };
 
   public getAllRecords = async (): Promise<IRecord[]> => {
@@ -25,6 +23,6 @@ export class RecordRepository extends Repository<Record> {
   };
 
   public cancelRecord = async (record: IRecord) => {
-    return await this.save(record as RecordDto);
+    return this.save(record);
   };
 }

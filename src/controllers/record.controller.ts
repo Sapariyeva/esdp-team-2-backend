@@ -15,9 +15,13 @@ export class RecordController {
 
   public createRecord: RequestHandler = async (req, res, next) => {
     try {
-      const { dto, errors } = await DtoManager.createDto(RecordDto, req.body, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
-      const record = await this.service.createRecord(dto);
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+      const { dto } = await DtoManager.createDto(RecordDto, req.body);
+      dto.patientId = userId;
+      const check = await this.service.checkPsychologists(dto.psychologistId);
+      if (check === null) throw ApiError.NotFound('Не правильный id психолога');
+      const record = await this.service.createRecord(check, dto);
       res.send(record);
     } catch (e) {
       next(e);
@@ -48,13 +52,9 @@ export class RecordController {
   public cancelRecord: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
-      if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
-      const { dto, errors } = await DtoManager.createDto(RecordDto, req.body, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
-      const record = await this.service.getOneRecord(id);
-      if (!record) throw ApiError.NotFound('Не удалось найти сеанс');
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const cancelRecord = await this.service.cancelRecord(dto);
+      const cancelRecord = await this.service.cancelRecord(id);
       res.send(cancelRecord);
     } catch (e) {
       next(e);
