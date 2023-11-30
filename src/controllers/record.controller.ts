@@ -21,11 +21,11 @@ export class RecordController {
 
       const checkPsycho = await this.service.checkPsychologists(dto.psychologistId);
       if (checkPsycho === null) throw ApiError.NotFound('Не правильный id психолога');
-      const checkPatient = await this.service.checkPatient(userId);
-      dto.patientId = checkPatient?.id as number;
-      dto.patientName = checkPatient?.name as string;
 
+      const checkPatient = await this.service.checkPatient(userId);
       if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
+      dto.patientId = checkPatient?.id;
+      dto.patientName = checkPatient?.name;
       dto.patientName = checkPatient.name;
       const record = await this.service.createRecord(checkPsycho, dto);
       res.send(record);

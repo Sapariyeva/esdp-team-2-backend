@@ -69,8 +69,8 @@ export class TechniqueController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
 
-      const symptom: ITechnique | null = await this.service.getOneTechnique(id);
-      if (!symptom) throw ApiError.NotFound('Не удалось найти технику!');
+      const technique: ITechnique | null = await this.service.getOneTechnique(id);
+      if (!technique) throw ApiError.NotFound('Не удалось найти технику!');
 
       const result = await this.service.deleteOneTechnique(id);
       if (!result) throw ApiError.BadRequest('Не удалось удалить!');

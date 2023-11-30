@@ -1,6 +1,5 @@
 import { TechniqueDto } from '../dto/technique.dto';
 import { ITechnique } from '../interfaces/ITechnique.interface';
-import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
 import { TechniqueRepository } from '../repositories/technique.repository';
 
 export class TechniqueService {
@@ -14,11 +13,11 @@ export class TechniqueService {
     return await this.repository.createTechnique(techniqueDto);
   };
 
-  public getAllTechnique = async (): Promise<ITherapyMethod[]> => {
+  public getAllTechnique = async (): Promise<ITechnique[]> => {
     return await this.repository.getAllTechnique();
   };
 
-  public getOneTechnique = async (id: number): Promise<ITherapyMethod | null> => {
+  public getOneTechnique = async (id: number): Promise<ITechnique | null> => {
     return await this.repository.getOneTechnique(id);
   };
 
