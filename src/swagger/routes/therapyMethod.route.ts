@@ -1,6 +1,6 @@
 import { Express } from 'express';
-import validateResource from '../../../middlewares/validateResource';
-import { therapyMethodSchema } from '../../schema/therapyMethod';
+import validateResource from '../../middlewares/validateResource';
+import { therapyMethodSchema } from '../schema/therapyMethod.schema';
 function routes(app: Express) {
   /**
    * @openapi
