@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express';
-import validateResource from '../middlewares/validateResource';
-import { loginUserSchema } from './schema/authSessions.schema';
-import { registerUserSchema } from './schema/authRegister.schema';
+import validateResource from '../../../middlewares/validateResource';
+import { loginUserSchema } from '../../schema/authSessions.schema';
+import { registerUserSchema } from '../../schema/authRegister.schema';
 function routes(app: Express) {
   /**
    * @openapi
