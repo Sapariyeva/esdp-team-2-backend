@@ -6,7 +6,7 @@ import { ITechnique } from './ITechnique.interface';
 import { ITherapyMethod } from './ITherapyMethod.interface';
 import { ISymptom } from './ISymptom.interface';
 
-export interface IPsychologist {
+interface IPsychologistDataOnly {
   id: number;
   fullName: string;
   gender: 'male' | 'female';
@@ -22,14 +22,29 @@ export interface IPsychologist {
   consultationType: 'solo' | 'duo';
   selfTherapy: number;
   lgbt: boolean;
-  isPublish?: boolean;
+  isPublish: boolean;
   userId: number;
-  user?: IUser;
-  certificates?: ICertificate[];
-  city?: ICity;
   cityId: number;
-  photos?: IPhoto[];
-  techniques?: ITechnique[];
-  therapyMethod?: ITherapyMethod[];
-  symptoms?: ISymptom[];
+}
+
+interface IPsychologistNewDataOnly extends Omit<IPsychologistDataOnly, 'id' | 'isPublish'> {}
+
+interface IPsychologistRelations {
+  user: IUser;
+  city: ICity;
+  certificates: ICertificate[];
+  photos: IPhoto[];
+  therapyMethods: ITherapyMethod[];
+  techniques: ITechnique[];
+  symptoms: ISymptom[];
+}
+
+export interface IPsychologist extends IPsychologistDataOnly, Partial<IPsychologistRelations> {}
+
+export interface IPsychologistNewData extends IPsychologistNewDataOnly, Pick<IPsychologistRelations, 'symptoms' | 'techniques' | 'therapyMethods'> {}
+
+export interface IPsychologistClientData extends IPsychologistNewDataOnly {
+  therapyMethodIds: number[];
+  techniqueIds: number[];
+  symptomIds: number[];
 }
