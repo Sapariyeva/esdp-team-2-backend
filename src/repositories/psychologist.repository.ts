@@ -1,9 +1,8 @@
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Psychologist } from '../entities/psychologist.entity';
-import { PsychologistDto } from '../dto/psychologist.dto';
 import { Certificate } from '../entities/certificate.entity';
-import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { IPsychologistNewData, IPsychologist } from '../interfaces/IPsychologist.interface';
 import { Photo } from '../entities/photo.entity';
 
 export class PsychologistRepository extends Repository<Psychologist> {
@@ -11,7 +10,11 @@ export class PsychologistRepository extends Repository<Psychologist> {
     super(Psychologist, appDataSource.createEntityManager());
   }
 
-  public savePsychologist = async (psychologistDto: PsychologistDto, certificateList: string[], photosList: string[]): Promise<IPsychologist> => {
+  public savePsychologist = async (
+    psychologistNewData: IPsychologistNewData,
+    certificateList: string[],
+    photosList: string[],
+  ): Promise<IPsychologist> => {
     const certificates = certificateList.map((certificate) => {
       const certificateSchema = new Certificate();
       certificateSchema.certificate = certificate;
@@ -24,12 +27,8 @@ export class PsychologistRepository extends Repository<Psychologist> {
       return photoSchema;
     });
 
-    const newPsychologist = this.create({
-      ...psychologistDto,
-      certificates,
-      photos,
-    });
-    return await this.save(newPsychologist);
+    const psychologistEntity = this.create({ ...psychologistNewData, certificates, photos });
+    return await this.save(psychologistEntity);
   };
 
   public findOnePsychologist = async (where: FindOptionsWhere<Psychologist>): Promise<IPsychologist | null> => {
@@ -39,17 +38,17 @@ export class PsychologistRepository extends Repository<Psychologist> {
   public findPsychologists = async (): Promise<IPsychologist[]> => {
     return await this.find();
   };
-  async editPsychologist(psychologist: IPsychologist, dto: PsychologistDto) {
-    const result = await this.update(psychologist.id, dto);
-    return result.affected ? psychologist.id : null;
-  }
+
+  public editPsychologist = async (id: number, psychologistNewData: IPsychologistNewData): Promise<IPsychologist> => {
+    return await this.save({ ...psychologistNewData, id });
+  };
 
   public publishPsychologist = async (id: number): Promise<number | null> => {
     const result = await this.update(id, { isPublish: () => 'NOT isPublish' });
     return result.affected ? id : null;
   };
 
-  public deletePsychologist = async (id: number) => {
+  public deletePsychologist = async (id: number): Promise<number | null> => {
     const result = await this.delete(id);
     return result.affected ? id : null;
   };
