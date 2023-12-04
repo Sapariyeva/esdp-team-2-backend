@@ -1,9 +1,9 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean } from 'class-validator';
-import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { Expose, Transform } from 'class-transformer';
+import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean, IsPositive, IsOptional } from 'class-validator';
+import { IPsychologistClientData } from '../interfaces/IPsychologist.interface';
+import validateNumber from '../helpers/validateNumber';
 
-@Exclude()
-export class PsychologistDto implements IPsychologist {
+export class PsychologistDto implements IPsychologistClientData {
   @Expose()
   @IsString()
   @IsNotEmpty()
@@ -32,9 +32,9 @@ export class PsychologistDto implements IPsychologist {
 
   @Expose()
   @Transform(({ value }) => (value === '' ? null : value))
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  video!: string;
+  video!: string | null;
 
   @Expose()
   @IsNotEmpty()
@@ -45,7 +45,7 @@ export class PsychologistDto implements IPsychologist {
 
   @Expose()
   @IsNotEmpty()
-  @IsEnum(['kazakh', 'russian', 'english'], { message: 'Выберите подходящий язык с списка!', each: true })
+  @IsEnum(['kazakh', 'russian', 'english'], { message: 'Выберите подходящий язык с списка!' })
   languages!: 'kazakh' | 'russian' | 'english';
 
   @Expose()
@@ -76,7 +76,7 @@ export class PsychologistDto implements IPsychologist {
   selfTherapy!: number;
 
   @Expose()
-  @Transform(({ value }) => (typeof value === 'string' ? Boolean(parseInt(value)) : value))
+  @Transform(({ value }) => !!(typeof value === 'string' ? parseInt(value) : value))
   @IsBoolean({ message: 'Значение поля lgbt должно быть логическим значением' })
   lgbt!: boolean;
 
@@ -93,6 +93,21 @@ export class PsychologistDto implements IPsychologist {
   @Min(0, { message: 'Неверный user id' })
   userId!: number;
 
-  @Exclude()
-  id!: number;
+  @Expose()
+  @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
+  @IsNumber({}, { each: true, message: 'Тип id симптома должен быть числом' })
+  @IsPositive({ each: true, message: 'Id симптома должен быть положительным' })
+  symptomIds!: number[];
+
+  @Expose()
+  @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
+  @IsNumber({}, { each: true, message: 'Тип id метода терапии должен быть числом' })
+  @IsPositive({ each: true, message: 'Id метода терапии должен быть положительным' })
+  therapyMethodIds!: number[];
+
+  @Expose()
+  @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
+  @IsNumber({}, { each: true, message: 'Тип id техники должен быть числом' })
+  @IsPositive({ each: true, message: 'Id техники должен быть положительным' })
+  techniqueIds!: number[];
 }

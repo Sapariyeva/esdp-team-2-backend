@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { TherapyMethod } from '../entities/therapyMethod.entity';
 import { appDataSource } from '../config/dataSource';
 import { TherapyMethodDto } from '../dto/therapyMethod.dto';
@@ -16,6 +16,10 @@ export class TherapyMethodRepository extends Repository<TherapyMethod> {
 
   public getAllTherapyMethod = async (): Promise<ITherapyMethod[]> => {
     return await this.find();
+  };
+
+  public getAllTherapyMethodById = async (ids: number[]): Promise<ITherapyMethod[]> => {
+    return await this.findBy({ id: In(ids) });
   };
 
   public getOneTherapyMethod = async (id: number) => {
