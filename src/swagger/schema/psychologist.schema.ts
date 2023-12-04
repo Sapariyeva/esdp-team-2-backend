@@ -139,11 +139,11 @@ import { object, string, number, date, boolean, TypeOf } from 'zod';
  *         photos:
  *           $ref: '#/components/schemas/Psychologist/properties/photos'
  *         techniques:
- *           $ref '#/components/schemas/Psychologist/properties/techniques'
+ *           $ref: '#/components/schemas/Psychologist/properties/techniques'
  *         therapyMethods:
- *           $ref '#/components/schemas/Psychologist/properties/therapyMethods'
+ *           $ref: '#/components/schemas/Psychologist/properties/therapyMethods'
  *         symptoms:
- *           $ref '#/components/schemas/Psychologist/properties/symptoms'
+ *           $ref: '#/components/schemas/Psychologist/properties/symptoms'
  */
 
 export const psychologistSchema = object({
