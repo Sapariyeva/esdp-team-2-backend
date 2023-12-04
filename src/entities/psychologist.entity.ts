@@ -9,7 +9,7 @@ import { Symptom } from './symptom.entity';
 import { Technique } from './technique.entity';
 
 @Entity('psychologists')
-export class Psychologist implements IPsychologist {
+export class Psychologist implements Required<IPsychologist> {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -34,8 +34,8 @@ export class Psychologist implements IPsychologist {
   @Column({ length: 600 })
   description!: string;
 
-  @Column({ nullable: true })
-  video!: string;
+  @Column({ type: 'varchar', nullable: true })
+  video!: string | null;
 
   @Column({ name: 'experience_years' })
   experienceYears!: number;
@@ -52,7 +52,7 @@ export class Psychologist implements IPsychologist {
   @Column({ name: 'consultation_type' })
   consultationType!: 'solo' | 'duo';
 
-  @Column({ name: 'self_therapy', nullable: true })
+  @Column({ name: 'self_therapy' })
   selfTherapy!: number;
 
   @Column({ default: false })
@@ -64,29 +64,59 @@ export class Psychologist implements IPsychologist {
   @Column({ name: 'city_id' })
   cityId!: number;
 
-  @ManyToMany(() => Technique, (techniques) => techniques.psychologists, { cascade: true })
-  @JoinTable()
-  techniques?: Technique[];
+  @ManyToMany(() => Technique, (techniques) => techniques.psychologists, { cascade: true, eager: true })
+  @JoinTable({
+    name: 'psychologists_techniques',
+    joinColumn: {
+      name: 'psychologist_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'technique_id',
+      referencedColumnName: 'id',
+    },
+  })
+  techniques!: Technique[];
 
-  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologists, { cascade: true })
-  @JoinTable()
-  therapyMethod?: TherapyMethod[];
+  @ManyToMany(() => TherapyMethod, (therapyMethod) => therapyMethod.psychologists, { cascade: true, eager: true })
+  @JoinTable({
+    name: 'psychologists_therapy_methods',
+    joinColumn: {
+      name: 'psychologist_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'therapy_method_id',
+      referencedColumnName: 'id',
+    },
+  })
+  therapyMethods!: TherapyMethod[];
 
-  @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true })
-  @JoinTable()
-  symptoms?: Symptom[];
+  @ManyToMany(() => Symptom, (symptom) => symptom.psychologists, { cascade: true, eager: true })
+  @JoinTable({
+    name: 'psychologists_symptoms',
+    joinColumn: {
+      name: 'psychologist_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'symptom_id',
+      referencedColumnName: 'id',
+    },
+  })
+  symptoms!: Symptom[];
 
   @OneToOne(() => User, (user) => user.psychologist)
   @JoinColumn({ name: 'user_id' })
-  user?: User;
+  user!: User;
 
   @ManyToOne(() => City, (city) => city.psychologists, { eager: true })
   @JoinColumn({ name: 'city_id' })
-  city?: City;
+  city!: City;
 
   @OneToMany(() => Photo, (photo) => photo.psychologist, { cascade: true, eager: true })
-  photos?: Photo[];
+  photos!: Photo[];
 
   @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { cascade: true, eager: true })
-  certificates?: Certificate[];
+  certificates!: Certificate[];
 }

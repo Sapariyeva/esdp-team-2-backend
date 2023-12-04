@@ -10,6 +10,6 @@ export class TherapyMethod implements ITherapyMethod {
   @Column({ unique: true })
   name!: string;
 
-  @ManyToMany(() => Psychologist, (psychologist) => psychologist.therapyMethod)
+  @ManyToMany(() => Psychologist, (psychologist) => psychologist.therapyMethods)
   psychologists?: Psychologist[];
 }
