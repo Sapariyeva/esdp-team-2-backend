@@ -19,11 +19,11 @@ export class PsychologistController {
   public createPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      const { id: userId } = req.customLocals.userJwtPayload;
 
       if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
         throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
 
+      const { id: userId } = req.customLocals.userJwtPayload;
       const isUserExists: IPsychologist | null = await this.service.getOnePsychologistByUserId(userId);
       if (isUserExists) throw ApiError.BadRequest('Данные психолога у текущего пользователя уже существуют');
 
@@ -32,7 +32,6 @@ export class PsychologistController {
 
       const certificateList: string[] = req.files.certificates.map((file) => file.filename);
       const photosList: string[] = req.files.photos.map((file) => file.filename);
-
       const newPsychologist = await this.service.createPsychologist(dto, certificateList, photosList);
       if (!newPsychologist) throw ApiError.BadRequest('Не удалось создать психолога');
 
@@ -42,6 +41,7 @@ export class PsychologistController {
       next(e);
     }
   };
+
   public getOnePsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
@@ -76,14 +76,15 @@ export class PsychologistController {
       const { dto, errors } = await DtoManager.createDto(PsychologistDto, { ...req.body, userId }, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
-      const updatedPsychologist = await this.service.editPsychologist(psychologist, dto);
-      if (!updatedPsychologist) throw ApiError.BadRequest('При обновлении статуса психолога возникла ошибка.');
+      const updatedPsychologist = await this.service.editPsychologist(psychologist.id, dto);
+      if (!updatedPsychologist) throw ApiError.BadRequest('Не удалось получить обновленные данные психолога');
 
       res.send(updatedPsychologist);
     } catch (e) {
       next(e);
     }
   };
+
   public publishPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
@@ -100,7 +101,8 @@ export class PsychologistController {
       next(e);
     }
   };
-  deletePsychologistHandler: RequestHandler = async (req, res, next) => {
+
+  public deletePsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       const id = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
