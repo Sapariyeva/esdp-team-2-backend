@@ -7,7 +7,7 @@ export class Photo implements IPhoto {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ unique: true })
+  @Column()
   photo!: string;
 
   @Column({ name: 'psychologist_id' })
