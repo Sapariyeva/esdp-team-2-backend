@@ -1,42 +1,40 @@
 import { Express } from 'express';
 import validateResource from '../../middlewares/validateResource';
-import { certificateSchema } from '../schema/certificate.schema';
+import { photoSchema } from '../schema/photo.schema';
 function routes(app: Express) {
   /**
    * @openapi
-   * /certificates/create:
+   * /photo/create:
    *   post:
    *     tags:
-   *       - Certificates
-   *     summary: Create certificate
-   *     security:
-   *       - bearerAuth: []
+   *       - Photos
+   *     summary: Create photo
    *     requestBody:
    *       required: true
    *       content:
    *         multipart/form-data:
    *           schema:
-   *             $ref: '#/components/schemas/PostCertificate'
+   *             $ref: '#/components/schemas/PostPhoto'
    *     responses:
    *       200:
    *         description: Success
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/Certificate'
+   *               $ref: '#/components/schemas/Photo'
    *       400:
    *         description: Bad request
    */
 
-  app.post('/certificates/create', validateResource(certificateSchema));
+  app.post('/photos/create', validateResource(photoSchema));
 
   /**
    * @openapi
-   * /certificates/{id}:
+   * /photos/{id}:
    *   delete:
    *     tags:
-   *       - Certificates
-   *     summary: Delete certificate by id
+   *       - Photos
+   *     summary: Delete photo by id
    *     parameters:
    *     - name: id
    *       in: path
@@ -48,6 +46,6 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.delete('/certificates/:id');
+  app.delete('/photos/:id');
 }
 export default routes;
