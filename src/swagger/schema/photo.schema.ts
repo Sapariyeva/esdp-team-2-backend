@@ -16,12 +16,21 @@ import { object, string, TypeOf } from 'zod';
  *         psychologistId:
  *           type: number
  *           example: 1
+ *
+ *     PostPhoto:
+ *       type: object
+ *       required:
+ *         - photo
+ *       properties:
+ *         certificate:
+ *           $ref: '#/components/schemas/Certificate/properties/photo'
+ *
  */
 
-export const certificateSchema = object({
+export const photoSchema = object({
   photo: string({
     required_error: 'Photo is required',
   }),
 });
 
-export type certificate = Omit<TypeOf<typeof certificateSchema>, 'body.passwordConfirmation'>;
+export type photo = Omit<TypeOf<typeof photoSchema>, 'body.passwordConfirmation'>;

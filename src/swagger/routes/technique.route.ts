@@ -1,56 +1,58 @@
 import { Express } from 'express';
 import validateResource from '../../middlewares/validateResource';
-import { therapyMethodSchema } from '../schema/therapyMethod.schema';
+import { techniqueSchema } from '../schema/technique.schema';
 function routes(app: Express) {
   /**
    * @openapi
-   * /methods/create:
+   * /technique/create:
    *   post:
    *     tags:
-   *       - Therapy Method
-   *     summary: Adding therapies
+   *       - Techniques
+   *     summary: Adding technique
    *     requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: '#/components/schemas/PostTherapyMethod'
+   *             $ref: '#/components/schemas/PostTechnique'
    *     responses:
    *       200:
    *         description: Success
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/PostTherapyMethod'
+   *               $ref: '#/components/schemas/Technique'
    *       400:
    *         description: Bad request
    */
-
-  app.post('/methods/create', validateResource(therapyMethodSchema));
+  app.post('/techniques/create', validateResource(techniqueSchema));
 
   /**
    * @openapi
-   * /methods:
+   * /techniques:
    *   get:
    *     tags:
-   *       - Therapy Method
-   *     summary: Receiving all therapy methods
+   *       - Techniques
+   *     summary: Receiving all techniques
    *     responses:
    *       200:
    *         description: Success
-   *       400:
-   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Technique'
    */
-
-  app.get('/methods');
+  app.get('/techniques');
 
   /**
    * @openapi
-   * /methods/{id}:
+   * /techniques/{id}:
    *   get:
    *     tags:
-   *       - Therapy Method
-   *     summary: Receiving one therapy methods
+   *       - Techniques
+   *     summary: Receiving one technique
    *     parameters:
    *     - name: id
    *       in: path
@@ -58,19 +60,22 @@ function routes(app: Express) {
    *     responses:
    *       200:
    *         description: Success
-   *       400:
-   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Technique'
+   *       404:
+   *         description: Not found
    */
-
-  app.get('/methods/:id');
+  app.get('/techniques/:id');
 
   /**
    * @openapi
-   * /methods/edit/{id}:
+   * /techniques/edit/{id}:
    *   put:
    *     tags:
-   *       - Therapy Method
-   *     summary: Update of one therapy method
+   *       - Techniques
+   *     summary: Update of one technique
    *     parameters:
    *     - name: id
    *       in: path
@@ -80,23 +85,26 @@ function routes(app: Express) {
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: '#/components/schemas/PostTherapyMethod'
+   *             $ref: '#/components/schemas/PostTechnique'
    *     responses:
    *       200:
    *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Technique'
    *       400:
    *         description: Bad request
    */
-
-  app.put('/methods/edit/:id', validateResource(therapyMethodSchema));
+  app.put('/techniques/edit/:id', validateResource(techniqueSchema));
 
   /**
    * @openapi
-   * /methods/{id}:
+   * /techniques/{id}:
    *   delete:
    *     tags:
-   *       - Therapy Method
-   *     summary: Removal of one therapy method
+   *       - Techniques
+   *     summary: Delete technique
    *     parameters:
    *     - name: id
    *       in: path
@@ -108,6 +116,6 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.delete('/methods/:id');
+  app.delete('/techniques/:id');
 }
 export default routes;

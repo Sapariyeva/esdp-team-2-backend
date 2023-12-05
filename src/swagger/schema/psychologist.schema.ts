@@ -74,18 +74,21 @@ import { object, string, number, date, boolean, TypeOf } from 'zod';
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Photo'
- *         techniques:
+ *         techniqueIds:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/Technique'
- *         therapyMethods:
+ *             type: number
+ *             example: 1
+ *         therapyMethodIds:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/TherapyMethod'
- *         symptoms:
+ *             type: number
+ *             example: 1
+ *         symptomIds:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/Symptom'
+ *             type: number
+ *             example: 1
  *
  *     PostPsychologist:
  *       type: object
@@ -95,7 +98,6 @@ import { object, string, number, date, boolean, TypeOf } from 'zod';
  *         - birthday
  *         - address
  *         - description
- *         - video
  *         - experienceYears
  *         - languages
  *         - education
@@ -105,6 +107,9 @@ import { object, string, number, date, boolean, TypeOf } from 'zod';
  *         - selfTherapy
  *         - lgbt
  *         - cityId
+ *         - techniqueIds
+ *         - therapyMethodIds
+ *         - symptomIds
  *       properties:
  *         fullName:
  *           $ref: '#/components/schemas/Psychologist/properties/fullName'
@@ -138,12 +143,12 @@ import { object, string, number, date, boolean, TypeOf } from 'zod';
  *           $ref: '#/components/schemas/Psychologist/properties/cityId'
  *         photos:
  *           $ref: '#/components/schemas/Psychologist/properties/photos'
- *         techniques:
- *           $ref: '#/components/schemas/Psychologist/properties/techniques'
- *         therapyMethods:
- *           $ref: '#/components/schemas/Psychologist/properties/therapyMethods'
- *         symptoms:
- *           $ref: '#/components/schemas/Psychologist/properties/symptoms'
+ *         techniqueIds:
+ *           $ref: '#/components/schemas/Psychologist/properties/techniqueIds'
+ *         therapyMethodIds:
+ *           $ref: '#/components/schemas/Psychologist/properties/therapyMethodIds'
+ *         symptomIds:
+ *           $ref: '#/components/schemas/Psychologist/properties/symptomIds'
  */
 
 export const psychologistSchema = object({

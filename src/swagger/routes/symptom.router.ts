@@ -1,56 +1,58 @@
 import { Express } from 'express';
 import validateResource from '../../middlewares/validateResource';
-import { therapyMethodSchema } from '../schema/therapyMethod.schema';
+import { symptomSchema } from '../schema/symptom.schema';
 function routes(app: Express) {
   /**
    * @openapi
-   * /methods/create:
+   * /symptoms/create:
    *   post:
    *     tags:
-   *       - Therapy Method
-   *     summary: Adding therapies
+   *       - Symptoms
+   *     summary: Adding symptom
    *     requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: '#/components/schemas/PostTherapyMethod'
+   *             $ref: '#/components/schemas/PostSymptom'
    *     responses:
    *       200:
    *         description: Success
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/PostTherapyMethod'
+   *               $ref: '#/components/schemas/Symptom'
    *       400:
    *         description: Bad request
    */
-
-  app.post('/methods/create', validateResource(therapyMethodSchema));
+  app.post('/symptoms/create', validateResource(symptomSchema));
 
   /**
    * @openapi
-   * /methods:
+   * /symptoms:
    *   get:
    *     tags:
-   *       - Therapy Method
-   *     summary: Receiving all therapy methods
+   *       - Symptoms
+   *     summary: Receiving all symptoms
    *     responses:
    *       200:
    *         description: Success
-   *       400:
-   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Symptom'
    */
-
-  app.get('/methods');
+  app.get('/symptoms');
 
   /**
    * @openapi
-   * /methods/{id}:
+   * /symptoms/{id}:
    *   get:
    *     tags:
-   *       - Therapy Method
-   *     summary: Receiving one therapy methods
+   *       - Symptoms
+   *     summary: Receiving one symptom
    *     parameters:
    *     - name: id
    *       in: path
@@ -58,19 +60,22 @@ function routes(app: Express) {
    *     responses:
    *       200:
    *         description: Success
-   *       400:
-   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Symptom'
+   *       404:
+   *         description: Not found
    */
-
-  app.get('/methods/:id');
+  app.get('/symptoms/:id');
 
   /**
    * @openapi
-   * /methods/edit/{id}:
+   * /symptoms/edit/{id}:
    *   put:
    *     tags:
-   *       - Therapy Method
-   *     summary: Update of one therapy method
+   *       - Symptoms
+   *     summary: Update of one symptom
    *     parameters:
    *     - name: id
    *       in: path
@@ -80,23 +85,26 @@ function routes(app: Express) {
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: '#/components/schemas/PostTherapyMethod'
+   *             $ref: '#/components/schemas/PostSymptom'
    *     responses:
    *       200:
    *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Symptom'
    *       400:
    *         description: Bad request
    */
-
-  app.put('/methods/edit/:id', validateResource(therapyMethodSchema));
+  app.put('/symptoms/edit/:id', validateResource(symptomSchema));
 
   /**
    * @openapi
-   * /methods/{id}:
+   * /symptoms/{id}:
    *   delete:
    *     tags:
-   *       - Therapy Method
-   *     summary: Removal of one therapy method
+   *       - Symptoms
+   *     summary: Delete sympptom
    *     parameters:
    *     - name: id
    *       in: path
@@ -108,6 +116,6 @@ function routes(app: Express) {
    *         description: Bad request
    */
 
-  app.delete('/methods/:id');
+  app.delete('/symptoms/:id');
 }
 export default routes;
