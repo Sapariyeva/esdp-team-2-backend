@@ -1,12 +1,11 @@
-// import { Faker } from '@faker-js/faker';
-// import { setSeederFactory } from 'typeorm-extension';
-// import { Patient } from '../../entities/patient.entity';
-//
-// export const UserFactory = setSeederFactory(Patient, (faker: Faker) => {
-//   const user = new Patient();
-//   user.email = faker.internet.email();
-//   user.phone = faker.phone.number();
-//   user.password = '123456';
-//   user.hashPassword();
-//   return user;
-// });
+import { Faker } from '@faker-js/faker';
+import { setSeederFactory } from 'typeorm-extension';
+import { User } from '../../entities/user.entity';
+
+export const UserFactory = setSeederFactory(User, (faker: Faker) => {
+  const user = new User();
+  user.email = faker.internet.email();
+  user.password = '123456';
+  user.refreshToken = user.generateRefreshToken();
+  return user;
+});
