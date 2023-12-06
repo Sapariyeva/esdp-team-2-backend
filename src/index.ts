@@ -13,6 +13,7 @@ import { PsychologistRouter } from './routes/psychologist.route';
 import { RecordRouter } from './routes/record.route';
 import { TherapyMethodRouter } from './routes/therapyMethod.route';
 import { TechniqueRouter } from './routes/technique.route';
+import { CityRouter } from './routes/city.route';
 
 const app = new App({
   port: 8000,
@@ -27,6 +28,7 @@ const app = new App({
     new CertificateRouter(),
     new RecordRouter(),
     new TechniqueRouter(),
+    new CityRouter(),
   ],
 });
 
