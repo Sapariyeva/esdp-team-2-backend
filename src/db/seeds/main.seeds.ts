@@ -8,20 +8,11 @@ import getKazakhstanCities from '../../api/cityApi';
 export default class MainSeeder implements Seeder {
   public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {
     const roleFactory = factoryManager.get(Role);
-    const kazakhstanCities = await getKazakhstanCities();
-    const cityRepository = dataSource.getRepository(City);
-
     await roleFactory.save({ name: UserRole.Patient });
     await roleFactory.save({ name: UserRole.Psychologist });
 
-    await Promise.all(
-      kazakhstanCities.map(async (cityData: { name: string }) => {
-        const existingCity = await cityRepository.findOne({ where: { name: cityData.name } });
-
-        if (!existingCity) {
-          await cityRepository.save({ name: cityData.name });
-        }
-      }),
-    );
+    const kazakhstanCities = (await getKazakhstanCities()) as { name: string }[];
+    const cityRepository = dataSource.getRepository(City);
+    await Promise.all(kazakhstanCities.map(async (cityData) => await cityRepository.save({ name: cityData.name })));
   }
 }
