@@ -8,7 +8,7 @@ export class CityService {
     this.repository = new CityRepository();
   }
 
-  public getAllPhoto = async (): Promise<ICity[]> => {
+  public getAllCity = async (): Promise<ICity[]> => {
     return await this.repository.getAllCity();
   };
 }

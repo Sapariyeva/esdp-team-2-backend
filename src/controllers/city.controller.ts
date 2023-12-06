@@ -10,7 +10,7 @@ export class CityController {
 
   getAllCity: RequestHandler = async (req, res, next) => {
     try {
-      res.send(await this.service.getAllPhoto());
+      res.send(await this.service.getAllCity());
     } catch (e) {
       next(e);
     }
