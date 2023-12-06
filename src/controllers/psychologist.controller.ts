@@ -58,6 +58,11 @@ export class PsychologistController {
 
   public getPsychologistsHandler: RequestHandler = async (req, res, next) => {
     try {
+      if (req.query) {
+        const psychologists = await this.service.filterPsychologists(req.query);
+        res.send(psychologists);
+        return;
+      }
       const psychologists: IPsychologist[] = await this.service.getPsychologists();
       res.send(psychologists);
     } catch (e) {

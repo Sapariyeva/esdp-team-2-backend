@@ -1,4 +1,4 @@
-import { IPsychologist, IPsychologistClientData, IPsychologistNewData } from '../interfaces/IPsychologist.interface';
+import { IPsychologist, IPsychologistClientData, IPsychologistFilters, IPsychologistNewData } from '../interfaces/IPsychologist.interface';
 import { ISymptom } from '../interfaces/ISymptom.interface';
 import { ITechnique } from '../interfaces/ITechnique.interface';
 import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
@@ -75,5 +75,21 @@ export class PsychologistService {
     const symptoms: ISymptom[] = await this.symptomRepository.getAllSymptomById(symptomIds);
 
     return { therapyMethods, techniques, symptoms };
+  };
+
+  public filterPsychologists = async (parameters: unknown): Promise<IPsychologist[] | null> => {
+    if (typeof parameters === 'object' && parameters !== null) {
+      const filters: IPsychologistFilters = {
+        // gender: (parameters as any).gender as 'male' | 'female',
+        // languages: (parameters as any).languages as 'kazakh' | 'russian' | 'english',
+        // format: (parameters as any).format as 'online' | 'offline',
+        // cost: (parameters as any).cost ? parseInt((parameters as any).cost, 10) : undefined,
+        // therapyMethodIds: (parameters as any).therapyMethodIds ? (parameters as any).therapyMethodIds : [],
+        // techniqueIds: (parameters as any).techniqueIds ? (parameters as any).techniqueIds : [],
+        // symptomIds: (parameters as any).symptomIds ? (parameters as any).symptomIds : [],
+      };
+      return await this.repository.filterPsychologists(filters);
+    }
+    return null;
   };
 }
