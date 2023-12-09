@@ -48,14 +48,3 @@ export interface IPsychologistClientData extends IPsychologistNewDataOnly {
   techniqueIds: number[];
   symptomIds: number[];
 }
-
-export interface IPsychologistFilters {
-  gender?: 'male' | 'female';
-  cityId?: number;
-  languages?: 'kazakh' | 'russian' | 'english';
-  format?: 'online' | 'offline';
-  cost?: number;
-  therapyMethodIds?: number[];
-  techniqueIds?: number[];
-  symptomIds?: number[];
-}

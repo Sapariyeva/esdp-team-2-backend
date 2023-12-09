@@ -2,8 +2,9 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Psychologist } from '../entities/psychologist.entity';
 import { Certificate } from '../entities/certificate.entity';
-import { IPsychologistNewData, IPsychologist, IPsychologistFilters } from '../interfaces/IPsychologist.interface';
+import { IPsychologistNewData, IPsychologist } from '../interfaces/IPsychologist.interface';
 import { Photo } from '../entities/photo.entity';
+import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
 
 export class PsychologistRepository extends Repository<Psychologist> {
   constructor() {
@@ -53,7 +54,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
     return result.affected ? id : null;
   };
 
-  public filterPsychologists = async (filters: IPsychologistFilters): Promise<IPsychologist[] | null> => {
+  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[] | null> => {
     const queryBuilder = this.createQueryBuilder('psychologist');
 
     if (filters.cityId) {
@@ -77,30 +78,40 @@ export class PsychologistRepository extends Repository<Psychologist> {
     }
 
     if (filters.therapyMethodIds && filters.therapyMethodIds.length > 0) {
+      const therapyMethodIds = filters.therapyMethodIds;
       queryBuilder
-        .andWhere('psychologistTherapyMethod.therapyMethodId IN (:...therapyMethodIds)', {
-          therapyMethodIds: filters.therapyMethodIds,
-        })
-        .leftJoin('psychologist.therapyMethods', 'psychologistTherapyMethod');
+        .innerJoin('psychologist.therapyMethods', 'therapy_method', 'therapy_method.id IN (:...therapyMethodIds)', { therapyMethodIds })
+        .getMany();
     }
 
     if (filters.techniqueIds && filters.techniqueIds.length > 0) {
-      queryBuilder
-        .andWhere('psychologistTechnique.techniqueId IN (:...techniqueIds)', {
-          techniqueIds: filters.techniqueIds,
-        })
-        .leftJoin('psychologist.techniques', 'psychologistTechnique');
+      const techniqueIds = filters.techniqueIds;
+      queryBuilder.innerJoin('psychologist.techniques', 'technique', 'technique.id IN (:...techniqueIds)', { techniqueIds }).getMany();
     }
 
     if (filters.symptomIds && filters.symptomIds.length > 0) {
-      queryBuilder
-        .andWhere('psychologistSymptom.symptomId IN (:...symptomIds)', {
-          symptomIds: filters.symptomIds,
-        })
-        .leftJoin('psychologist.symptoms', 'psychologistSymptom');
+      const symptomIds = filters.symptomIds;
+      queryBuilder.innerJoin('psychologist.symptoms', 'symptoms', 'symptoms.id IN (:...symptomIds)', { symptomIds }).getMany();
     }
 
-    const psychologists = await queryBuilder.getMany();
-    return psychologists;
+    if (filters.age !== undefined) {
+      if (typeof filters.age === 'number') {
+        const birthDateLimit = new Date();
+        birthDateLimit.setFullYear(birthDateLimit.getFullYear() - filters.age);
+        queryBuilder.andWhere('psychologist.birthday <= :birthDateLimit', { birthDateLimit });
+      } else if (Array.isArray(filters.age) && filters.age.length === 2) {
+        const [minAge, maxAge] = filters.age;
+        const birthDateMinLimit = new Date();
+        birthDateMinLimit.setFullYear(birthDateMinLimit.getFullYear() - minAge);
+
+        const birthDateMaxLimit = new Date();
+        birthDateMaxLimit.setFullYear(birthDateMaxLimit.getFullYear() - maxAge);
+
+        queryBuilder.andWhere('psychologist.birthday <= :birthDateMinLimit', { birthDateMinLimit });
+        queryBuilder.andWhere('psychologist.birthday >= :birthDateMaxLimit', { birthDateMaxLimit });
+      }
+    }
+
+    return await queryBuilder.getMany();
   };
 }
