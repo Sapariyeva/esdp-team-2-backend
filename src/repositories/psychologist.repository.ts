@@ -57,6 +57,8 @@ export class PsychologistRepository extends Repository<Psychologist> {
   public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[] | null> => {
     const queryBuilder = this.createQueryBuilder('psychologist');
 
+    queryBuilder.andWhere('psychologist.isPublish = :isPublish', { isPublish: true });
+
     if (filters.cityId) {
       queryBuilder.andWhere('psychologist.cityId = :cityId', { cityId: filters.cityId });
     }
