@@ -40,13 +40,13 @@ export class Psychologist implements Required<IPsychologist> {
   @Column({ name: 'experience_years' })
   experienceYears!: number;
 
-  @Column()
-  languages!: 'kazakh' | 'russian' | 'english';
+  @Column('simple-array')
+  languages!: string[];
 
   @Column({ type: 'longtext' })
   education!: string;
 
-  @Column()
+  @Column('simple-array')
   format!: 'online' | 'offline';
 
   @Column({ name: 'consultation_type' })
