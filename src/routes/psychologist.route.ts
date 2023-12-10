@@ -29,5 +29,7 @@ export class PsychologistRouter implements IRoute {
     this.router.post('/publish/:id', authenticateUser, checkUserRole('psychologist'), this.controller.publishPsychologistHandler);
 
     this.router.delete('/:id', authenticateUser, checkUserRole('psychologist'), this.controller.deletePsychologistHandler);
+
+    this.router.post('/filter', this.controller.filterPsychologists);
   }
 }

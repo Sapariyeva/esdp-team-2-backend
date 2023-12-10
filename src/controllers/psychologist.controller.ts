@@ -8,6 +8,7 @@ import DtoManager from '../helpers/dtoManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import FileManager from '../helpers/fileManager';
 import config from '../config';
+import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
 
 export class PsychologistController {
   private service: PsychologistService;
@@ -114,6 +115,22 @@ export class PsychologistController {
       if (!result) throw ApiError.BadRequest('Не удалось удалить психолога!');
 
       res.send({ message: `Психолог с идентификатором ${id} успешно удалён.` });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public filterPsychologists: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.body || Object.keys(req.body).length === 0) throw ApiError.BadRequest('Не указаны параметры фильтрации!');
+
+      const { dto, errors } = await DtoManager.createDto(FiltersOfPsychologistDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации параметров фильтрации', errors);
+
+      const filteredPsychologists = await this.service.filterPsychologists(dto);
+      if (!filteredPsychologists) throw ApiError.BadRequest('Не удалось произвести фильтрацию!');
+
+      res.send(filteredPsychologists);
     } catch (error) {
       next(error);
     }

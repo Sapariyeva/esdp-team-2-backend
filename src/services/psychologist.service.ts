@@ -1,3 +1,4 @@
+import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
 import { IPsychologist, IPsychologistClientData, IPsychologistNewData } from '../interfaces/IPsychologist.interface';
 import { ISymptom } from '../interfaces/ISymptom.interface';
 import { ITechnique } from '../interfaces/ITechnique.interface';
@@ -75,5 +76,9 @@ export class PsychologistService {
     const symptoms: ISymptom[] = await this.symptomRepository.getAllSymptomById(symptomIds);
 
     return { therapyMethods, techniques, symptoms };
+  };
+
+  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[] | null> => {
+    return await this.repository.filterPsychologists(filters);
   };
 }
