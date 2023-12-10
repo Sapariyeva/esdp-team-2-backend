@@ -19,7 +19,7 @@ interface IPsychologistDataOnly {
   education: string;
   format: 'online' | 'offline';
   cost: number;
-  consultationType: 'solo' | 'duo';
+  consultationType: string[];
   selfTherapy: number;
   lgbt: boolean;
   isPublish: boolean;

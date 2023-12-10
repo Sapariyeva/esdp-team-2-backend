@@ -49,8 +49,8 @@ export class Psychologist implements Required<IPsychologist> {
   @Column('simple-array')
   format!: 'online' | 'offline';
 
-  @Column({ name: 'consultation_type' })
-  consultationType!: 'solo' | 'duo';
+  @Column({ name: 'consultation_type', type: 'simple-array' })
+  consultationType!: string[];
 
   @Column({ name: 'self_therapy' })
   selfTherapy!: number;

@@ -64,8 +64,7 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  @IsEnum(['solo', 'duo'], { message: 'Выберите формат дуо или соло!' })
-  consultationType!: 'solo' | 'duo';
+  consultationType!: string[];
 
   @Expose()
   @IsNotEmpty({ message: 'Поле личная терапия не может быть пустым' })

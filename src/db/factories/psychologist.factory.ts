@@ -14,7 +14,7 @@ export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker)
   psychologist.experienceYears = faker.number.int({ min: 0, max: 20 });
   psychologist.languages = faker.helpers.arrayElement([]);
   psychologist.cost = faker.number.int({ min: 5000, max: 20000 });
-  psychologist.consultationType = faker.helpers.arrayElement(['solo', 'duo']);
+  psychologist.consultationType = faker.helpers.arrayElement([]);
   psychologist.selfTherapy = faker.number.int({ min: 0, max: 10 });
   psychologist.lgbt = faker.datatype.boolean();
 
