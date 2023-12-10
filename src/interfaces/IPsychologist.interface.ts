@@ -15,11 +15,11 @@ interface IPsychologistDataOnly {
   description: string;
   video: string | null;
   experienceYears: number;
-  languages: 'kazakh' | 'russian' | 'english';
+  languages: string[];
   education: string;
   format: 'online' | 'offline';
   cost: number;
-  consultationType: 'solo' | 'duo';
+  consultationType: string[];
   selfTherapy: number;
   lgbt: boolean;
   isPublish: boolean;

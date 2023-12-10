@@ -21,8 +21,7 @@ export class PsychologistDto implements IPsychologistClientData {
   birthday!: Date;
 
   @Expose()
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   address!: string;
 
   @Expose()
@@ -45,8 +44,7 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  @IsEnum(['kazakh', 'russian', 'english'], { message: 'Выберите подходящий язык с списка!' })
-  languages!: 'kazakh' | 'russian' | 'english';
+  languages!: string[];
 
   @Expose()
   @IsNotEmpty({ message: 'Значение поля "образование" не может быть пустым' })
@@ -55,7 +53,6 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  @IsEnum(['online', 'offline'], { message: 'Выберите формат онлайн или офлайн!' })
   format!: 'online' | 'offline';
 
   @Expose()
@@ -67,8 +64,7 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  @IsEnum(['solo', 'duo'], { message: 'Выберите формат дуо или соло!' })
-  consultationType!: 'solo' | 'duo';
+  consultationType!: string[];
 
   @Expose()
   @IsNotEmpty({ message: 'Поле личная терапия не может быть пустым' })
