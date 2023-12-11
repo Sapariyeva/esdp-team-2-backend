@@ -9,7 +9,7 @@ export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker)
   psychologist.fullName = faker.person.fullName();
   psychologist.gender = faker.helpers.arrayElement(['male', 'female']);
   psychologist.birthday = faker.date.birthdate();
-  psychologist.format = faker.helpers.arrayElement(['online', 'offline']);
+  psychologist.format = faker.helpers.arrayElement([]);
   psychologist.description = faker.commerce.productDescription();
   psychologist.experienceYears = faker.number.int({ min: 0, max: 20 });
   psychologist.languages = faker.helpers.arrayElement([]);
@@ -48,14 +48,14 @@ export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker)
     ]);
   }
 
-  if (psychologist.format === 'offline') {
-    psychologist.address = faker.helpers.arrayElement([
-      'Улица Абая, дом 15, квартира 3',
-      'Проспект Достык, дом 42, квартира 7',
-      'Переулок Жамбыла, дом 9',
-      'Улица Кабанбай батыра, дом 27, квартира 12',
-      'Проспект Республики, дом 101',
-    ]);
-  }
+  // if (psychologist.format === 'offline') {
+  //   psychologist.address = faker.helpers.arrayElement([
+  //     'Улица Абая, дом 15, квартира 3',
+  //     'Проспект Достык, дом 42, квартира 7',
+  //     'Переулок Жамбыла, дом 9',
+  //     'Улица Кабанбай батыра, дом 27, квартира 12',
+  //     'Проспект Республики, дом 101',
+  //   ]);
+  // }
   return psychologist;
 });
