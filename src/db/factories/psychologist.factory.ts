@@ -3,18 +3,21 @@ import { setSeederFactory } from 'typeorm-extension';
 import { Psychologist } from '../../entities/psychologist.entity';
 import { Certificate } from '../../entities/certificate.entity';
 import { Photo } from '../../entities/photo.entity';
+import { EFormat } from '../../enum/EFormat';
+import { ELanguages } from '../../enum/ELanguages';
+import { EConsultationType } from '../../enum/EConsultationType';
 
 export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker) => {
   const psychologist = new Psychologist();
   psychologist.fullName = faker.person.fullName();
   psychologist.gender = faker.helpers.arrayElement(['male', 'female']);
   psychologist.birthday = faker.date.birthdate();
-  psychologist.format = faker.helpers.arrayElement(['online', 'offline']);
+  psychologist.format = faker.helpers.arrayElement(['offline', 'online']) as unknown as EFormat[];
   psychologist.description = faker.commerce.productDescription();
   psychologist.experienceYears = faker.number.int({ min: 0, max: 20 });
-  psychologist.languages = faker.helpers.arrayElement([]);
+  psychologist.languages = faker.helpers.arrayElement(['kazakh', 'russian', 'english']) as unknown as ELanguages[];
   psychologist.cost = faker.number.int({ min: 5000, max: 20000 });
-  psychologist.consultationType = faker.helpers.arrayElement([]);
+  psychologist.consultationType = faker.helpers.arrayElement(['duo', 'solo']) as unknown as EConsultationType[];
   psychologist.selfTherapy = faker.number.int({ min: 0, max: 10 });
   psychologist.lgbt = faker.datatype.boolean();
 
@@ -48,14 +51,14 @@ export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker)
     ]);
   }
 
-  if (psychologist.format === 'offline') {
-    psychologist.address = faker.helpers.arrayElement([
-      'Улица Абая, дом 15, квартира 3',
-      'Проспект Достык, дом 42, квартира 7',
-      'Переулок Жамбыла, дом 9',
-      'Улица Кабанбай батыра, дом 27, квартира 12',
-      'Проспект Республики, дом 101',
-    ]);
-  }
+  // if (psychologist.format === 'offline') {
+  //   psychologist.address = faker.helpers.arrayElement([
+  //     'Улица Абая, дом 15, квартира 3',
+  //     'Проспект Достык, дом 42, квартира 7',
+  //     'Переулок Жамбыла, дом 9',
+  //     'Улица Кабанбай батыра, дом 27, квартира 12',
+  //     'Проспект Республики, дом 101',
+  //   ]);
+  // }
   return psychologist;
 });

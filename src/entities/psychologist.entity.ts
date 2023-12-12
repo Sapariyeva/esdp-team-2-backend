@@ -7,6 +7,9 @@ import { TherapyMethod } from './therapyMethod.entity';
 import { Photo } from './photo.entity';
 import { Symptom } from './symptom.entity';
 import { Technique } from './technique.entity';
+import { ELanguages } from '../enum/ELanguages';
+import { EConsultationType } from '../enum/EConsultationType';
+import { EFormat } from '../enum/EFormat';
 
 @Entity('psychologists')
 export class Psychologist implements Required<IPsychologist> {
@@ -41,16 +44,16 @@ export class Psychologist implements Required<IPsychologist> {
   experienceYears!: number;
 
   @Column('simple-array')
-  languages!: string[];
+  languages!: ELanguages[];
 
   @Column({ type: 'longtext' })
   education!: string;
 
   @Column('simple-array')
-  format!: 'online' | 'offline';
+  format!: EFormat[];
 
   @Column({ name: 'consultation_type', type: 'simple-array' })
-  consultationType!: string[];
+  consultationType!: EConsultationType[];
 
   @Column({ name: 'self_therapy' })
   selfTherapy!: number;

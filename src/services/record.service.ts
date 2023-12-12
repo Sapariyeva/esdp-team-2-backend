@@ -36,7 +36,7 @@ export class RecordService {
     record.broadcast = 'some link';
     record.patientId = dto.patientId;
     record.psychologistId = psychologist.id;
-    record.format = psychologist.format;
+    record.format = 'online';
     record.patientName = dto.patientName;
     record.address = psychologist.address;
     return await this.repository.createRecord(record);

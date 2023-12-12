@@ -1,7 +1,10 @@
 import { Expose, Transform } from 'class-transformer';
-import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean, IsPositive, IsOptional } from 'class-validator';
+import { IsEnum, IsString, IsNotEmpty, IsNumber, Min, IsDate, IsBoolean, IsPositive, IsOptional, IsArray } from 'class-validator';
 import { IPsychologistClientData } from '../interfaces/IPsychologist.interface';
 import validateNumber from '../helpers/validateNumber';
+import { ELanguages } from '../enum/ELanguages';
+import { EFormat } from '../enum/EFormat';
+import { EConsultationType } from '../enum/EConsultationType';
 
 export class PsychologistDto implements IPsychologistClientData {
   @Expose()
@@ -44,7 +47,10 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  languages!: string[];
+  @IsEnum(ELanguages, { each: true })
+  @IsArray()
+  @Transform(({ value }) => value.split(','))
+  languages!: ELanguages[];
 
   @Expose()
   @IsNotEmpty({ message: 'Значение поля "образование" не может быть пустым' })
@@ -53,7 +59,10 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  format!: 'online' | 'offline';
+  @IsEnum(EFormat, { each: true })
+  @IsArray()
+  @Transform(({ value }) => value.split(','))
+  format!: EFormat[];
 
   @Expose()
   @IsNotEmpty()
@@ -64,7 +73,10 @@ export class PsychologistDto implements IPsychologistClientData {
 
   @Expose()
   @IsNotEmpty()
-  consultationType!: string[];
+  @IsEnum(EConsultationType, { each: true })
+  @IsArray()
+  @Transform(({ value }) => value.split(','))
+  consultationType!: EConsultationType[];
 
   @Expose()
   @IsNotEmpty({ message: 'Поле личная терапия не может быть пустым' })

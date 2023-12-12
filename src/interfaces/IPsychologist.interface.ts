@@ -5,6 +5,9 @@ import { IPhoto } from './IPhoto.interface';
 import { ITechnique } from './ITechnique.interface';
 import { ITherapyMethod } from './ITherapyMethod.interface';
 import { ISymptom } from './ISymptom.interface';
+import { ELanguages } from '../enum/ELanguages';
+import { EConsultationType } from '../enum/EConsultationType';
+import { EFormat } from '../enum/EFormat';
 
 interface IPsychologistDataOnly {
   id: number;
@@ -15,11 +18,11 @@ interface IPsychologistDataOnly {
   description: string;
   video: string | null;
   experienceYears: number;
-  languages: string[];
+  languages: ELanguages[];
   education: string;
-  format: 'online' | 'offline';
+  format: EFormat[];
   cost: number;
-  consultationType: string[];
+  consultationType: EConsultationType[];
   selfTherapy: number;
   lgbt: boolean;
   isPublish: boolean;
