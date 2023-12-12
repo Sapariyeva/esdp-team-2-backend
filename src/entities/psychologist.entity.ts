@@ -67,6 +67,9 @@ export class Psychologist implements Required<IPsychologist> {
   @Column({ name: 'city_id' })
   cityId!: number;
 
+  @Column({ name: 'is_favorite', default: false })
+  isFavorite!: boolean;
+
   @ManyToMany(() => Technique, (techniques) => techniques.psychologists, { cascade: true, eager: true })
   @JoinTable({
     name: 'psychologists_techniques',

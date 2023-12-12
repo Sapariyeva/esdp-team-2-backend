@@ -41,4 +41,7 @@ export class PatientService {
     const patient = await this.repository.findOnePatient({ userId });
     return !patient;
   };
+  getOnePatientById = async (userId: number): Promise<IPatient | null> => {
+    return await this.repository.getOnePatientById(userId);
+  };
 }
