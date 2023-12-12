@@ -66,6 +66,7 @@ export class PsychologistController {
     try {
       const accessToken = req.header('Authorization');
       if (!accessToken) throw new Error('Отсутствует токен');
+
       const { id: userId } = jwt.verify(accessToken, config.secretKey) as IUserJwtPayload;
       if (!userId) throw ApiError.BadRequest('Не верно указан id');
 
@@ -73,13 +74,12 @@ export class PsychologistController {
       const patientId = patient?.id;
       if (!patientId) throw ApiError.BadRequest('Не верно указан id');
 
-      const psychologist: IPsychologist | null = await this.service.getOnePsychologistByUserId(userId);
-      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога');
-      console.log(psychologist?.id);
-
       const psychologists: IPsychologist[] = await this.service.getPsychologists();
-
-      res.send(psychologists);
+      const psychologistsWithFavorites = psychologists.map((psychologist) => ({
+        ...psychologist,
+        isFavorite: patient?.favorites?.some((favorite) => favorite.id === psychologist.id) || false,
+      }));
+      res.send(psychologistsWithFavorites);
     } catch (e) {
       next(e);
     }
