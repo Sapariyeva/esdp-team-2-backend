@@ -17,4 +17,8 @@ export class PostRepository extends Repository<Post> {
   async getOnePost(id: number): Promise<IPost | null> {
     return await this.findOne({ where: { id } });
   }
+
+  async getAllPost(): Promise<IPost[]> {
+    return await this.find();
+  }
 }

@@ -12,4 +12,8 @@ export class PostService {
   getOnePost = async (id: number): Promise<IPost | null> => {
     return await this.repository.getOnePost(id);
   };
+
+  getAllPost = async (): Promise<IPost[]> => {
+    return await this.repository.getAllPost();
+  };
 }

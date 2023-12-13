@@ -47,4 +47,12 @@ export class PostController {
       next(e);
     }
   };
+
+  getAllPost: RequestHandler = async (req, res, next) => {
+    try {
+      res.send(await this.service.getAllPost());
+    } catch (e) {
+      next(e);
+    }
+  };
 }

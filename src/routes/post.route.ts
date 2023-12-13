@@ -19,5 +19,6 @@ export class PostRouter implements IRoute {
   private init() {
     this.router.post('/create', authenticateUser, checkUserRole('psychologist'), upload.single('image'), this.controller.createPost);
     this.router.get('/:id', this.controller.getOnePost);
+    this.router.get('/', this.controller.getAllPost);
   }
 }
