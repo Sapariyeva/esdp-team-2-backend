@@ -42,7 +42,9 @@ interface IPsychologistRelations {
   symptoms: ISymptom[];
 }
 
-export interface IPsychologist extends IPsychologistDataOnly, Partial<IPsychologistRelations> {}
+export interface IPsychologist extends IPsychologistDataOnly, Partial<IPsychologistRelations> {
+  isFavorite: boolean;
+}
 
 export interface IPsychologistNewData extends IPsychologistNewDataOnly, Pick<IPsychologistRelations, 'symptoms' | 'techniques' | 'therapyMethods'> {}
 
