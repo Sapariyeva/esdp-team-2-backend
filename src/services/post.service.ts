@@ -8,4 +8,8 @@ export class PostService {
   createPost = async (dto: PostDto): Promise<IPost> => {
     return await this.repository.createPost(dto);
   };
+
+  getOnePost = async (id: number): Promise<IPost | null> => {
+    return await this.repository.getOnePost(id);
+  };
 }

@@ -13,4 +13,8 @@ export class PostRepository extends Repository<Post> {
     const post = this.create(dto);
     return await this.save(post);
   }
+
+  async getOnePost(id: number): Promise<IPost | null> {
+    return await this.findOne({ where: { id } });
+  }
 }

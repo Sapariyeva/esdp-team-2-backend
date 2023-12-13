@@ -4,6 +4,7 @@ import FileManager from '../helpers/fileManager';
 import config from '../config';
 import { PsychologistService } from '../services/psychologist.service';
 import { ApiError } from '../helpers/api-error';
+import validateNumber from '../helpers/validateNumber';
 
 export class PostController {
   private service: PostService = new PostService();
@@ -29,6 +30,20 @@ export class PostController {
       res.send(newPost);
     } catch (e) {
       req.file ? FileManager.deleteFile(config.uploadPath, req.file.filename) : null;
+      next(e);
+    }
+  };
+
+  getOnePost: RequestHandler = async (req, res, next) => {
+    try {
+      const id = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const post = await this.service.getOnePost(id);
+      if (!post) throw ApiError.NotFound('Такого поста нет!');
+
+      res.send(post);
+    } catch (e) {
       next(e);
     }
   };
