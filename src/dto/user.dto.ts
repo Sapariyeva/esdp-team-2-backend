@@ -19,6 +19,7 @@ export class UserDto {
   role!: Role[];
 
   @Expose()
+  @Transform((value) => instanceToPlain(value.obj.psychologist))
   psychologist!: IPsychologist;
 
   @Expose()
