@@ -6,20 +6,22 @@ import { Photo } from '../../entities/photo.entity';
 import { EFormat } from '../../enum/EFormat';
 import { ELanguages } from '../../enum/ELanguages';
 import { EConsultationType } from '../../enum/EConsultationType';
+import { EGender } from '../../enum/EGender';
 
 export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker) => {
   const psychologist = new Psychologist();
   psychologist.fullName = faker.person.fullName();
-  psychologist.gender = faker.helpers.arrayElement(['male', 'female']);
+  psychologist.gender = faker.helpers.arrayElement(Object.values(EGender));
   psychologist.birthday = faker.date.birthdate();
-  psychologist.format = faker.helpers.arrayElement(['offline', 'online']) as unknown as EFormat[];
+  psychologist.format = faker.helpers.arrayElements(Object.values(EFormat), faker.number.int({ min: 1, max: 2 }));
   psychologist.description = faker.commerce.productDescription();
   psychologist.experienceYears = faker.number.int({ min: 0, max: 20 });
-  psychologist.languages = faker.helpers.arrayElement(['kazakh', 'russian', 'english']) as unknown as ELanguages[];
+  psychologist.languages = faker.helpers.arrayElements(Object.values(ELanguages), faker.number.int({ min: 1, max: 3 }));
   psychologist.cost = faker.number.int({ min: 5000, max: 20000 });
-  psychologist.consultationType = faker.helpers.arrayElement(['duo', 'solo']) as unknown as EConsultationType[];
+  psychologist.consultationType = faker.helpers.arrayElements(Object.values(EConsultationType), faker.number.int({ min: 1, max: 2 }));
   psychologist.selfTherapy = faker.number.int({ min: 0, max: 10 });
   psychologist.lgbt = faker.datatype.boolean();
+  psychologist.isPublish = faker.datatype.boolean({ probability: 0.85 });
 
   psychologist.certificates = Array.from({ length: faker.number.int({ min: 1, max: 4 }) }, () => {
     const certificateSchema = new Certificate();
@@ -51,14 +53,14 @@ export const PsychologistFactory = setSeederFactory(Psychologist, (faker: Faker)
     ]);
   }
 
-  // if (psychologist.format === 'offline') {
-  //   psychologist.address = faker.helpers.arrayElement([
-  //     'Улица Абая, дом 15, квартира 3',
-  //     'Проспект Достык, дом 42, квартира 7',
-  //     'Переулок Жамбыла, дом 9',
-  //     'Улица Кабанбай батыра, дом 27, квартира 12',
-  //     'Проспект Республики, дом 101',
-  //   ]);
-  // }
+  if (psychologist.format.some((format) => format === EFormat.Offline)) {
+    psychologist.address = faker.helpers.arrayElement([
+      'Улица Абая, дом 15, квартира 3',
+      'Проспект Достык, дом 42, квартира 7',
+      'Переулок Жамбыла, дом 9',
+      'Улица Кабанбай батыра, дом 27, квартира 12',
+      'Проспект Республики, дом 101',
+    ]);
+  }
   return psychologist;
 });
