@@ -1,5 +1,5 @@
 export interface IPost {
-  id?: number | undefined;
+  id?: number;
   psychologistId?: number;
   title?: string;
   description?: string;

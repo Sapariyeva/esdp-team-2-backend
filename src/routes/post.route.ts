@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
-// import { upload } from '../middlewares/ValidateUpload.middlewar';
 import authenticateUser from '../middlewares/authenticateUser';
 import { checkUserRole } from '../middlewares/checkUserRole.middleware';
 import { PostController } from '../controllers/post.controller';
@@ -22,5 +21,6 @@ export class PostRouter implements IRoute {
     this.router.get('/', this.controller.getAllPost);
     this.router.put('/:id/edit', authenticateUser, checkUserRole('psychologist'), this.controller.editPostText);
     this.router.put('/:id/change-image', authenticateUser, checkUserRole('psychologist'), upload.single('image'), this.controller.editPostImage);
+    this.router.delete('/:id', authenticateUser, checkUserRole('psychologist'), this.controller.deletePost);
   }
 }

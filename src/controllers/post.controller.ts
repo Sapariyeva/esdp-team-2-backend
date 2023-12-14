@@ -121,4 +121,33 @@ export class PostController {
       next(e);
     }
   };
+
+  deletePost: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const id = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(id, psychologist.id);
+      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
+
+      const deleteImage = await this.service.getOnePost(id);
+      if (!deleteImage) throw ApiError.NotFound('Не удалось найти пост!');
+
+      const fileName = deleteImage.image;
+      if (fileName) FileManager.deleteFile(config.uploadPath, fileName);
+
+      const result = await this.service.deletePost(id);
+      if (!result) throw ApiError.BadRequest('Не удалось удалить пост!');
+
+      res.send({ message: `Пост с идентификатором ${id} успешно удалён.` });
+    } catch (e) {
+      next(e);
+    }
+  };
 }

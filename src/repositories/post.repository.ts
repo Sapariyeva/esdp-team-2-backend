@@ -34,6 +34,11 @@ export class PostRepository extends Repository<Post> {
     return result.affected ? dto : null;
   }
 
+  async deletePost(id: number): Promise<number | null> {
+    const result = await this.delete(id);
+    return result.affected ? id : null;
+  }
+
   getPostById = async (id: number): Promise<IPost | null> => {
     return await this.findOne({ where: { id } });
   };
