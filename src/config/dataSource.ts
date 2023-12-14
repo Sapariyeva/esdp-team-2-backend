@@ -14,6 +14,8 @@ import { PatientFactory } from '../db/factories/patient.factory';
 import PatientSeeder from '../db/seeds/patient.seeds';
 import PsychologistSeeder from '../db/seeds/psychologist.seeds';
 import { PsychologistFactory } from '../db/factories/psychologist.factory';
+import PostSeeder from '../db/seeds/post.seeds';
+import { PostFactory } from '../db/factories/post.factory';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
@@ -25,8 +27,8 @@ const options: DataSourceOptions & SeederOptions = {
   synchronize: true,
   logging: true,
   entities: ['src/entities/*.ts'],
-  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder, PsychologistSeeder, PatientSeeder],
-  factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory, UserFactory, PsychologistFactory, PatientFactory],
+  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder, PsychologistSeeder, PatientSeeder, PostSeeder],
+  factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory, UserFactory, PsychologistFactory, PatientFactory, PostFactory],
 };
 
 export const appDataSource = new DataSource(options);
