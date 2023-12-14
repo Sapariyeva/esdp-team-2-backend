@@ -17,8 +17,12 @@ export class PostService {
     return await this.repository.getAllPost();
   };
 
-  editPost = async (dto: PostDto, id: number): Promise<IPost | null> => {
-    return await this.repository.editPost(dto, id);
+  editPostText = async (dto: PostDto, id: number): Promise<IPost | null> => {
+    return await this.repository.editPostText(dto, id);
+  };
+
+  editPostImage = async (dto: PostDto, id: number): Promise<IPost | null> => {
+    return await this.repository.editPostImage(dto, id);
   };
 
   checkPostBelongsToPsychologist = async (postId: number, psychologistId: number): Promise<boolean> => {

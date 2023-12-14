@@ -22,9 +22,15 @@ export class PostRepository extends Repository<Post> {
     return await this.find();
   }
 
-  async editPost(dto: PostDto, id: number): Promise<IPost | null> {
+  async editPostText(dto: PostDto, id: number): Promise<IPost | null> {
     const { title, description } = dto;
     const result = await this.update(id, { title, description });
+    return result.affected ? dto : null;
+  }
+
+  async editPostImage(dto: PostDto, id: number): Promise<IPost | null> {
+    const { image } = dto;
+    const result = await this.update(id, { image });
     return result.affected ? dto : null;
   }
 

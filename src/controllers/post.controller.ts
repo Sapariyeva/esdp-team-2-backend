@@ -56,7 +56,7 @@ export class PostController {
     }
   };
 
-  editPost: RequestHandler = async (req, res, next) => {
+  editPostText: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const { id: userId } = req.customLocals.userJwtPayload;
@@ -68,19 +68,56 @@ export class PostController {
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
-
       if (!postBelongsToPsychologist) throw ApiError.Forbidden();
 
       const psychologistId = psychologist.id;
-      const { title, description } = req.body;
 
+      const { title, description } = req.body;
       const postRawData = { title, description, psychologistId };
 
-      const updatedPost = await this.service.editPost(postRawData, postId);
+      const updatedPost = await this.service.editPostText(postRawData, postId);
       if (!updatedPost) throw ApiError.BadRequest('Не удалось изменить пост!');
 
       res.send(updatedPost);
     } catch (e) {
+      next(e);
+    }
+  };
+
+  editPostImage: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
+
+      const postId = validateNumber(req.params.id);
+      if (!postId) throw ApiError.BadRequest('Не верно указан id');
+
+      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
+      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
+
+      const psychologistId = psychologist.id;
+      const image = req.file.filename;
+
+      const dto = { psychologistId, image };
+
+      const oldPost = await this.service.getOnePost(postId);
+      if (!oldPost) throw ApiError.NotFound('Не удалось найти старый пост!');
+
+      const oldImage = oldPost.image;
+
+      const updatedPostImage = await this.service.editPostImage(dto, postId);
+      if (!updatedPostImage) throw ApiError.BadRequest('Не удалось изменить фото!');
+
+      if (oldImage) FileManager.deleteFile(config.uploadPath, oldImage);
+
+      res.send(updatedPostImage);
+    } catch (e) {
+      req.file ? FileManager.deleteFile(config.uploadPath, req.file.filename) : null;
       next(e);
     }
   };

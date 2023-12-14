@@ -6,12 +6,12 @@ export class PostDto implements IPost {
   @Expose()
   @IsString()
   @IsNotEmpty()
-  title!: string;
+  title?: string;
 
   @Expose()
   @IsString()
   @IsNotEmpty()
-  description!: string;
+  description?: string;
 
   @Expose()
   @IsString()
