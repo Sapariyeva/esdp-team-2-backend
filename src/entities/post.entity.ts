@@ -7,7 +7,7 @@ export class Post implements IPost {
   id!: number;
 
   @Column({ name: 'psychologist_id' })
-  psychologistId!: number;
+  psychologistId?: number;
 
   @Column()
   title!: string;
@@ -16,5 +16,5 @@ export class Post implements IPost {
   description!: string;
 
   @Column()
-  image!: string;
+  image?: string;
 }

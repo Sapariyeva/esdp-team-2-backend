@@ -21,4 +21,14 @@ export class PostRepository extends Repository<Post> {
   async getAllPost(): Promise<IPost[]> {
     return await this.find();
   }
+
+  async editPost(dto: PostDto, id: number): Promise<IPost | null> {
+    const { title, description } = dto;
+    const result = await this.update(id, { title, description });
+    return result.affected ? dto : null;
+  }
+
+  getPostById = async (id: number): Promise<IPost | null> => {
+    return await this.findOne({ where: { id } });
+  };
 }

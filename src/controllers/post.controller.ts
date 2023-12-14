@@ -55,4 +55,33 @@ export class PostController {
       next(e);
     }
   };
+
+  editPost: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const postId = validateNumber(req.params.id);
+      if (!postId) throw ApiError.BadRequest('Не верно указан id');
+
+      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
+
+      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
+
+      const psychologistId = psychologist.id;
+      const { title, description } = req.body;
+
+      const postRawData = { title, description, psychologistId };
+
+      const updatedPost = await this.service.editPost(postRawData, postId);
+      if (!updatedPost) throw ApiError.BadRequest('Не удалось изменить пост!');
+
+      res.send(updatedPost);
+    } catch (e) {
+      next(e);
+    }
+  };
 }

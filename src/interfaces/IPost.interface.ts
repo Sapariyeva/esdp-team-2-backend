@@ -1,7 +1,13 @@
 export interface IPost {
-  id?: number;
+  id?: number | undefined;
   psychologistId?: number;
   title: string;
   description: string;
-  image: string;
+  image?: string;
+}
+
+export interface IPostText {
+  psychologistId?: number;
+  title: string;
+  description: string;
 }

@@ -16,11 +16,11 @@ export class PostDto implements IPost {
   @Expose()
   @IsString()
   @IsNotEmpty()
-  image!: string;
+  image?: string;
 
   @Expose()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
   @IsNumber()
   @Min(0, { message: 'Не валидный id психолога' })
-  psychologistId!: number;
+  psychologistId?: number;
 }
