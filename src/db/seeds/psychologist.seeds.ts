@@ -44,6 +44,7 @@ export default class PsychologistSeeder implements Seeder {
             therapyMethods: selectedTherapyMethods,
             techniques: selectedTechniques,
             symptoms: selectedSymptoms,
+            isPublish: true,
           });
         }),
       );

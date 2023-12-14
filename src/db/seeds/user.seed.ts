@@ -9,6 +9,6 @@ export default class UserSeeder implements Seeder {
     if (!roles.length) throw new Error('Не удалось получить роли для пользователей');
 
     const userFactory = factoryManager.get(User);
-    await Promise.all(roles.map(async (role) => await userFactory.saveMany(10, { roles: [role] })));
+    await Promise.all(roles.map(async (role) => await userFactory.saveMany(30, { roles: [role] })));
   }
 }
