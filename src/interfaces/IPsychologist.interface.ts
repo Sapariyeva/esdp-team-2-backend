@@ -8,11 +8,12 @@ import { ISymptom } from './ISymptom.interface';
 import { ELanguages } from '../enum/ELanguages';
 import { EConsultationType } from '../enum/EConsultationType';
 import { EFormat } from '../enum/EFormat';
+import { EGender } from '../enum/EGender';
 
 interface IPsychologistDataOnly {
   id: number;
   fullName: string;
-  gender: 'male' | 'female';
+  gender: EGender;
   birthday: Date;
   address: string;
   description: string;

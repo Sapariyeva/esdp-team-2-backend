@@ -5,117 +5,146 @@ import validateNumber from '../helpers/validateNumber';
 import { ELanguages } from '../enum/ELanguages';
 import { EFormat } from '../enum/EFormat';
 import { EConsultationType } from '../enum/EConsultationType';
+import getEnumValues from '../helpers/getEnumValues';
+import { EGender } from '../enum/EGender';
+
+const messages = {
+  isNotEmpty: 'Поле не может быть пустым',
+  isString: 'Поле должно быть строкой',
+  isNumber: 'Поле должно быть числом',
+  isPositive: 'Поле должно быть положительным числом',
+  isNumberArray: 'Значения в массиве должны быть числом',
+  isPositiveArray: 'Значения в массиве должны быть положительным числом',
+  min: (minNumber: number): string => `Поле должно содержать значение минимум ${minNumber}`,
+  isArray: 'Поле должно быть массивом',
+  isBoolean: 'Поле должно быть логическим значением',
+  isEnum: (enumObj: Record<string, string>, each: boolean = false): string => {
+    let message = 'Поле должно содержать только значения:';
+    if (each) message = 'Значения в массиве должны содержать только значения:';
+
+    return `${message} ${getEnumValues(enumObj)}`;
+  },
+  isDate: 'Поле должно быть датой',
+};
 
 export class PsychologistDto implements IPsychologistClientData {
   @Expose()
-  @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsString({ message: messages.isString })
   fullName!: string;
 
   @Expose()
-  @IsNotEmpty()
-  @IsEnum(['male', 'female'], { message: 'Выберите пол!' })
-  gender!: 'male' | 'female';
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsString({ message: messages.isString })
+  @IsEnum(EGender, { message: messages.isEnum(EGender) })
+  gender!: EGender;
 
   @Expose()
-  @IsNotEmpty({ message: 'Введите дату рождения.' })
   @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
-  @IsDate()
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsDate({ message: messages.isDate })
   birthday!: Date;
 
   @Expose()
+  @Transform(({ value }) => (value === '' ? null : value))
   @IsOptional()
+  @IsString({ message: messages.isString })
   address!: string;
 
   @Expose()
-  @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsString({ message: messages.isString })
   description!: string;
 
   @Expose()
   @Transform(({ value }) => (value === '' ? null : value))
   @IsOptional()
-  @IsString()
+  @IsString({ message: messages.isString })
   video!: string | null;
 
   @Expose()
-  @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Количество лет опыта должно быть больше или равно 0' })
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsNumber({}, { message: messages.isNumber })
+  @Min(0, { message: messages.min(0) })
   experienceYears!: number;
 
   @Expose()
-  @IsNotEmpty()
-  @IsEnum(ELanguages, { each: true })
-  @IsArray()
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsArray({ message: messages.isArray })
+  @IsEnum(ELanguages, { each: true, message: messages.isEnum(ELanguages, true) })
   languages!: ELanguages[];
 
   @Expose()
-  @IsNotEmpty({ message: 'Значение поля "образование" не может быть пустым' })
-  @IsString({ message: 'Значение поля "образование" должно быть строкой' })
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsString({ message: messages.isString })
   education!: string;
 
   @Expose()
-  @IsNotEmpty()
-  @IsEnum(EFormat, { each: true })
-  @IsArray()
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsArray({ message: messages.isArray })
+  @IsEnum(EFormat, { each: true, message: messages.isEnum(EFormat, true) })
   format!: EFormat[];
 
   @Expose()
-  @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Стоимость должна быть больше или равна 0' })
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsNumber({}, { message: messages.isNumber })
+  @Min(0, { message: messages.min(0) })
   cost!: number;
 
   @Expose()
-  @IsNotEmpty()
-  @IsEnum(EConsultationType, { each: true })
-  @IsArray()
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsArray({ message: messages.isArray })
+  @IsEnum(EConsultationType, { each: true, message: messages.isEnum(EConsultationType, true) })
   consultationType!: EConsultationType[];
 
   @Expose()
-  @IsNotEmpty({ message: 'Поле личная терапия не может быть пустым' })
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsNumber({}, { message: messages.isNumber })
+  @Min(0, { message: messages.min(0) })
   selfTherapy!: number;
 
   @Expose()
   @Transform(({ value }) => !!(typeof value === 'string' ? parseInt(value) : value))
-  @IsBoolean({ message: 'Значение поля lgbt должно быть логическим значением' })
+  @IsBoolean({ message: messages.isBoolean })
   lgbt!: boolean;
 
   @Expose()
-  @IsNotEmpty({ message: 'Город не может быть пустым' })
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @Min(1, { message: 'Неверный формат идентификатора города' })
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @Min(1, { message: messages.isPositive })
   cityId!: number;
 
   @Expose()
-  @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Неверный user id' })
+  @IsNotEmpty({ message: messages.isNotEmpty })
+  @IsNumber({}, { message: messages.isNumber })
+  @Min(1, { message: messages.isPositive })
   userId!: number;
 
   @Expose()
   @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
-  @IsNumber({}, { each: true, message: 'Тип id симптома должен быть числом' })
-  @IsPositive({ each: true, message: 'Id симптома должен быть положительным' })
+  @IsArray({ message: messages.isArray })
+  @IsNumber({}, { each: true, message: messages.isNumberArray })
+  @IsPositive({ each: true, message: messages.isPositiveArray })
   symptomIds!: number[];
 
   @Expose()
   @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
-  @IsNumber({}, { each: true, message: 'Тип id метода терапии должен быть числом' })
-  @IsPositive({ each: true, message: 'Id метода терапии должен быть положительным' })
+  @IsArray({ message: messages.isArray })
+  @IsNumber({}, { each: true, message: messages.isNumberArray })
+  @IsPositive({ each: true, message: messages.isPositiveArray })
   therapyMethodIds!: number[];
 
   @Expose()
   @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
-  @IsNumber({}, { each: true, message: 'Тип id техники должен быть числом' })
-  @IsPositive({ each: true, message: 'Id техники должен быть положительным' })
+  @IsArray({ message: messages.isArray })
+  @IsNumber({}, { each: true, message: messages.isNumberArray })
+  @IsPositive({ each: true, message: messages.isPositiveArray })
   techniqueIds!: number[];
 }

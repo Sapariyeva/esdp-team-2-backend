@@ -10,6 +10,7 @@ import { Technique } from './technique.entity';
 import { ELanguages } from '../enum/ELanguages';
 import { EConsultationType } from '../enum/EConsultationType';
 import { EFormat } from '../enum/EFormat';
+import { EGender } from '../enum/EGender';
 
 @Entity('psychologists')
 export class Psychologist implements Required<IPsychologist> {
@@ -23,7 +24,7 @@ export class Psychologist implements Required<IPsychologist> {
   fullName!: string;
 
   @Column()
-  gender!: 'male' | 'female';
+  gender!: EGender;
 
   @Column({ type: Date })
   birthday!: Date;
