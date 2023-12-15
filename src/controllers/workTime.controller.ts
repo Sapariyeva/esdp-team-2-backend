@@ -64,7 +64,11 @@ export class WorkTimeController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id даты');
 
-      res.send(await this.service.deleteTime(psychologist.id, id));
+      const deleteTime = await this.service.deleteTime(psychologist.id, id);
+
+      if (!deleteTime) throw ApiError.NotFound('Не удалось удалить!');
+
+      res.json({ message: 'Успешно!' });
     } catch (e) {
       next(e);
     }
