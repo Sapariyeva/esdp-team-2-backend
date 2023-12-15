@@ -43,4 +43,7 @@ export class PatientRepository extends Repository<IPatient> {
   public findOnePatient = async (where: FindOptionsWhere<Patient>): Promise<IPatient | null> => {
     return await this.findOne({ where });
   };
+  public getOnePatientById = async (userId: number): Promise<IPatient | null> => {
+    return await this.findOne({ where: { userId }, relations: { favorites: true } });
+  };
 }

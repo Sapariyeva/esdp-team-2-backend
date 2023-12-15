@@ -2,6 +2,8 @@ import fs from 'fs/promises';
 import { Request } from 'express';
 
 class FileManager {
+  private static forbiddenForDeleteFilenames: string[] = ['test-certificate.jpg', 'test-psychologist.png'];
+
   static deleteFiles = (directoryPath: string, files: Request['files']): boolean => {
     try {
       if (!files) return false;
@@ -29,6 +31,8 @@ class FileManager {
 
   static deleteFile = async (directoryPath: string, fileName: string): Promise<boolean> => {
     try {
+      if (FileManager.isDeletionForbidden(fileName)) throw new Error('Удаление текущего файла запрещено');
+
       const filePath: string = directoryPath + '/' + fileName;
       await fs.unlink(filePath);
       console.log('The file has been successfully deleted');
@@ -37,6 +41,10 @@ class FileManager {
       console.log('The file could not be deleted');
       return false;
     }
+  };
+
+  private static isDeletionForbidden = (filename: string): boolean => {
+    return FileManager.forbiddenForDeleteFilenames.some((forbiddenFilename) => forbiddenFilename === filename);
   };
 }
 

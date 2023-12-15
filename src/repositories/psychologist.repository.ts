@@ -114,6 +114,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
       }
     }
 
+    queryBuilder.leftJoinAndSelect('psychologist.photos', 'photos');
     return await queryBuilder.getMany();
   };
 }

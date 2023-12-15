@@ -1,4 +1,4 @@
 export enum EFormat {
-  offline = 'offline',
-  online = 'online',
+  Offline = 'offline',
+  Online = 'online',
 }

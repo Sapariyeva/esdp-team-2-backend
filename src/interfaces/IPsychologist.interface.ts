@@ -8,11 +8,12 @@ import { ISymptom } from './ISymptom.interface';
 import { ELanguages } from '../enum/ELanguages';
 import { EConsultationType } from '../enum/EConsultationType';
 import { EFormat } from '../enum/EFormat';
+import { EGender } from '../enum/EGender';
 
 interface IPsychologistDataOnly {
   id: number;
   fullName: string;
-  gender: 'male' | 'female';
+  gender: EGender;
   birthday: Date;
   address: string;
   description: string;
@@ -42,7 +43,9 @@ interface IPsychologistRelations {
   symptoms: ISymptom[];
 }
 
-export interface IPsychologist extends IPsychologistDataOnly, Partial<IPsychologistRelations> {}
+export interface IPsychologist extends IPsychologistDataOnly, Partial<IPsychologistRelations> {
+  isFavorite: boolean;
+}
 
 export interface IPsychologistNewData extends IPsychologistNewDataOnly, Pick<IPsychologistRelations, 'symptoms' | 'techniques' | 'therapyMethods'> {}
 

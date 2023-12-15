@@ -11,6 +11,8 @@ import { ELanguages } from '../enum/ELanguages';
 import { EConsultationType } from '../enum/EConsultationType';
 import { EFormat } from '../enum/EFormat';
 import { WorkTime } from './workTime.entity';
+import { EGender } from '../enum/EGender';
+
 
 @Entity('psychologists')
 export class Psychologist implements Required<IPsychologist> {
@@ -24,7 +26,7 @@ export class Psychologist implements Required<IPsychologist> {
   fullName!: string;
 
   @Column()
-  gender!: 'male' | 'female';
+  gender!: EGender;
 
   @Column({ type: Date })
   birthday!: Date;
@@ -67,6 +69,9 @@ export class Psychologist implements Required<IPsychologist> {
 
   @Column({ name: 'city_id' })
   cityId!: number;
+
+  @Column({ name: 'is_favorite', default: false })
+  isFavorite!: boolean;
 
   @ManyToMany(() => Technique, (techniques) => techniques.psychologists, { cascade: true, eager: true })
   @JoinTable({

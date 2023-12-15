@@ -3,18 +3,23 @@ import { ApiError } from '../helpers/api-error';
 import { PsychologistService } from '../services/psychologist.service';
 import validateNumber from '../helpers/validateNumber';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
+// import { IUserJwtPayload } from '../interfaces/IUser.interface';
 
 import DtoManager from '../helpers/dtoManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import FileManager from '../helpers/fileManager';
 import config from '../config';
 import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
+// import jwt from 'jsonwebtoken';
+// import { PatientService } from '../services/patient.service';
 
 export class PsychologistController {
   private service: PsychologistService;
+  //   private servicePatient: PatientService;
 
   constructor() {
     this.service = new PsychologistService();
+    // this.servicePatient = new PatientService();
   }
 
   public createPsychologistHandler: RequestHandler = async (req, res, next) => {
@@ -59,7 +64,21 @@ export class PsychologistController {
 
   public getPsychologistsHandler: RequestHandler = async (req, res, next) => {
     try {
+      //   const accessToken = req.header('Authorization');
+      //   if (!accessToken) throw new Error('Отсутствует токен');
+
+      //   const { id: userId } = jwt.verify(accessToken, config.secretKey) as IUserJwtPayload;
+      //   if (!userId) throw ApiError.BadRequest('Не верно указан id');
+
+      //   const patient = await this.servicePatient.getOnePatientById(userId);
+      //   const patientId = patient?.id;
+      //   if (!patientId) throw ApiError.BadRequest('Не верно указан id');
+
       const psychologists: IPsychologist[] = await this.service.getPsychologists();
+      //   const psychologistsWithFavorites = psychologists.map((psychologist) => ({
+      //     ...psychologist,
+      //     isFavorite: patient?.favorites?.some((favorite) => favorite.id === psychologist.id) || false,
+      //   }));
       res.send(psychologists);
     } catch (e) {
       next(e);

@@ -23,30 +23,30 @@ export default class PsychologistSeeder implements Seeder {
       const { therapyMethods, techniques, symptoms }: IPsychologistSkills = await this.getSkills(dataSource);
 
       const psychologistFactory = factoryManager.get(Psychologist);
-      await Promise.all(
-        users.map(async (user) => {
-          const selectedTherapyMethods: TherapyMethod[] = faker.helpers.arrayElements(
-            therapyMethods,
-            faker.number.int({ min: 1, max: therapyMethods.length > 5 ? 5 : therapyMethods.length }),
-          );
-          const selectedTechniques: Technique[] = faker.helpers.arrayElements(
-            techniques,
-            faker.number.int({ min: 1, max: techniques.length > 3 ? 3 : techniques.length }),
-          );
-          const selectedSymptoms: Symptom[] = faker.helpers.arrayElements(
-            symptoms,
-            faker.number.int({ min: 1, max: symptoms.length > 8 ? 8 : symptoms.length }),
-          );
+      const psychologistsPromises: Promise<Psychologist>[] = users.map(async (user) => {
+        const selectedTherapyMethods: TherapyMethod[] = faker.helpers.arrayElements(
+          therapyMethods,
+          faker.number.int({ min: 1, max: therapyMethods.length > 5 ? 5 : therapyMethods.length }),
+        );
+        const selectedTechniques: Technique[] = faker.helpers.arrayElements(
+          techniques,
+          faker.number.int({ min: 1, max: techniques.length > 3 ? 3 : techniques.length }),
+        );
+        const selectedSymptoms: Symptom[] = faker.helpers.arrayElements(
+          symptoms,
+          faker.number.int({ min: 1, max: symptoms.length > 8 ? 8 : symptoms.length }),
+        );
 
-          return await psychologistFactory.save({
-            user,
-            city: faker.helpers.arrayElement(cities),
-            therapyMethods: selectedTherapyMethods,
-            techniques: selectedTechniques,
-            symptoms: selectedSymptoms,
-          });
-        }),
-      );
+        return await psychologistFactory.save({
+          user,
+          city: faker.helpers.arrayElement(cities),
+          therapyMethods: selectedTherapyMethods,
+          techniques: selectedTechniques,
+          symptoms: selectedSymptoms,
+        });
+      });
+
+      await Promise.all(psychologistsPromises);
     } catch (e) {
       if (e instanceof Error) console.error(e.message);
       else console.error('Неизвестная ошибка');
