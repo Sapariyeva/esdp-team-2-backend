@@ -10,6 +10,9 @@ import { Technique } from './technique.entity';
 import { ELanguages } from '../enum/ELanguages';
 import { EConsultationType } from '../enum/EConsultationType';
 import { EFormat } from '../enum/EFormat';
+import { WorkTime } from './workTime.entity';
+import { EGender } from '../enum/EGender';
+
 
 @Entity('psychologists')
 export class Psychologist implements Required<IPsychologist> {
@@ -23,7 +26,7 @@ export class Psychologist implements Required<IPsychologist> {
   fullName!: string;
 
   @Column()
-  gender!: 'male' | 'female';
+  gender!: EGender;
 
   @Column({ type: Date })
   birthday!: Date;
@@ -125,4 +128,7 @@ export class Psychologist implements Required<IPsychologist> {
 
   @OneToMany(() => Certificate, (certificate) => certificate.psychologist, { cascade: true, eager: true })
   certificates!: Certificate[];
+
+  @OneToMany(() => WorkTime, (workTime) => workTime.psychologist, { cascade: true, eager: true })
+  workTime!: WorkTime[];
 }

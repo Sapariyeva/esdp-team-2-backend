@@ -16,6 +16,7 @@ import { TechniqueRouter } from './routes/technique.route';
 import { CityRouter } from './routes/city.route';
 import { PostRouter } from './routes/post.route';
 
+
 const app = new App({
   port: 8000,
   middlewares: [initCustomLocals(), logger(), cookieParser(), cors()],
@@ -31,6 +32,7 @@ const app = new App({
     new TechniqueRouter(),
     new CityRouter(),
     new PostRouter(),
+
   ],
 });
 
