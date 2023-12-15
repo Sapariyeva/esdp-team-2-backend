@@ -75,8 +75,16 @@ export class PsychologistRepository extends Repository<Psychologist> {
       queryBuilder.andWhere('psychologist.format = :format', { format: filters.format });
     }
 
-    if (filters.cost !== undefined) {
+    if (filters.cost) {
       queryBuilder.andWhere('psychologist.cost <= :cost', { cost: filters.cost });
+    }
+
+    if (filters.lgbt) {
+      queryBuilder.andWhere('psychologist.lgbt = :lgbt', { lgbt: filters.lgbt });
+    }
+
+    if (filters.consultationType) {
+      queryBuilder.andWhere('psychologist.consultationType = :consultationType', { consultationType: filters.consultationType });
     }
 
     if (filters.therapyMethodIds && filters.therapyMethodIds.length > 0) {
@@ -96,7 +104,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
       queryBuilder.innerJoin('psychologist.symptoms', 'symptoms', 'symptoms.id IN (:...symptomIds)', { symptomIds }).getMany();
     }
 
-    if (filters.age !== undefined) {
+    if (filters.age) {
       if (typeof filters.age === 'number') {
         const birthDateLimit = new Date();
         birthDateLimit.setFullYear(birthDateLimit.getFullYear() - filters.age);
