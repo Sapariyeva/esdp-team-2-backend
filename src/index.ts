@@ -14,7 +14,8 @@ import { RecordRouter } from './routes/record.route';
 import { TherapyMethodRouter } from './routes/therapyMethod.route';
 import { TechniqueRouter } from './routes/technique.route';
 import { CityRouter } from './routes/city.route';
-import { WorkTimeRoute } from './routes/workTime.route';
+import { PostRouter } from './routes/post.route';
+
 
 const app = new App({
   port: 8000,
@@ -30,7 +31,8 @@ const app = new App({
     new RecordRouter(),
     new TechniqueRouter(),
     new CityRouter(),
-    new WorkTimeRoute(),
+    new PostRouter(),
+
   ],
 });
 
