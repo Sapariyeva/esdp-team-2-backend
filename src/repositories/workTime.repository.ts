@@ -33,7 +33,7 @@ export class WorkTimeRepository extends Repository<WorkTime> {
       .andWhere('DATE(work_time.date) = :date', { date })
       .getMany();
   }
-  async deleteTime(psychologistId: number, id: number): Promise<void | null> {
+  async deleteTime(psychologistId: number, id: number) {
     const result = await this.createQueryBuilder()
       .delete()
       .from(WorkTime)
@@ -41,6 +41,6 @@ export class WorkTimeRepository extends Repository<WorkTime> {
       .andWhere('id = :id', { id })
       .execute();
 
-    if (result.affected === 0) return null;
+    return result.affected ? id : null;
   }
 }

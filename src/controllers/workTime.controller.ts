@@ -20,7 +20,7 @@ export class WorkTimeController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const { id: userId } = req.customLocals.userJwtPayload;
 
-      const psychologist = await this.psychologistService.getOnePsychologist(userId);
+      const psychologist = await this.psychologistService.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       const { dto, errors } = await DtoManager.createDto(ScheduleItemDto, req.body, { isValidate: true });
@@ -40,7 +40,7 @@ export class WorkTimeController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const { id: userId } = req.customLocals.userJwtPayload;
 
-      const psychologist = await this.psychologistService.getOnePsychologist(userId);
+      const psychologist = await this.psychologistService.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       const date = req.query.date as string;
@@ -58,7 +58,7 @@ export class WorkTimeController {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const { id: userId } = req.customLocals.userJwtPayload;
 
-      const psychologist = await this.psychologistService.getOnePsychologist(userId);
+      const psychologist = await this.psychologistService.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       const id: number | null = validateNumber(req.params.id);
