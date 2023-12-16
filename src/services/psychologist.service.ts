@@ -3,6 +3,7 @@ import { IPsychologist, IPsychologistClientData, IPsychologistNewData } from '..
 import { ISymptom } from '../interfaces/ISymptom.interface';
 import { ITechnique } from '../interfaces/ITechnique.interface';
 import { ITherapyMethod } from '../interfaces/ITherapyMethod.interface';
+import { PatientRepository } from '../repositories/patient.repository';
 import { PsychologistRepository } from '../repositories/psychologist.repository';
 import { SymptomRepository } from '../repositories/symptom.repository';
 import { TechniqueRepository } from '../repositories/technique.repository';
@@ -15,12 +16,14 @@ export class PsychologistService {
   private therapyMethodRepository: TherapyMethodRepository;
   private techniqueRepository: TechniqueRepository;
   private symptomRepository: SymptomRepository;
+  private patientRepository: PatientRepository;
 
   constructor() {
     this.repository = new PsychologistRepository();
     this.therapyMethodRepository = new TherapyMethodRepository();
     this.techniqueRepository = new TechniqueRepository();
     this.symptomRepository = new SymptomRepository();
+    this.patientRepository = new PatientRepository();
   }
 
   public createPsychologist = async (
@@ -41,6 +44,17 @@ export class PsychologistService {
 
   public getPsychologists = async (): Promise<IPsychologist[]> => {
     return await this.repository.findPsychologists();
+  };
+
+  public markFavoritePsychologists = async (psychologists: IPsychologist[], userId: number | undefined): Promise<IPsychologist[]> => {
+    if (!userId) return psychologists;
+
+    const patient = await this.patientRepository.findOnePatient({ userId });
+    if (!patient || !Array.isArray(patient.favorites)) return psychologists;
+
+    const favoriteIds = new Set(patient.favorites.map((favorite) => favorite.id));
+    psychologists.forEach((psychologist) => (psychologist.isFavorite = favoriteIds.has(psychologist.id)));
+    return psychologists;
   };
 
   public editPsychologist = async (
