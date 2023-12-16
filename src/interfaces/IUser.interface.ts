@@ -22,3 +22,7 @@ export interface IUserTokenData extends IUser {
 }
 
 export interface IUserJwtPayload extends Partial<Pick<IUser, 'id'>>, JwtPayload {}
+
+export interface IUserEditAccount extends Partial<Pick<IUser, 'email' | 'phone' | 'password'>> {
+  сurrentPassword: string;
+}
