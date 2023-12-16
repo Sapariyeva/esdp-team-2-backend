@@ -68,15 +68,26 @@ export class PsychologistRepository extends Repository<Psychologist> {
     }
 
     if (filters.languages) {
-      queryBuilder.andWhere('psychologist.languages = :languages', { languages: filters.languages });
+      const languages = [filters.languages];
+      queryBuilder.andWhere(`FIND_IN_SET(:language, psychologist.languages)`, { language: languages[0] });
     }
 
     if (filters.format) {
-      queryBuilder.andWhere('psychologist.format = :format', { format: filters.format });
+      const format = [filters.format];
+      queryBuilder.andWhere(`FIND_IN_SET(:format, psychologist.format)`, { format: format[0] });
     }
 
-    if (filters.cost !== undefined) {
+    if (filters.cost) {
       queryBuilder.andWhere('psychologist.cost <= :cost', { cost: filters.cost });
+    }
+
+    if (filters.lgbt) {
+      queryBuilder.andWhere('psychologist.lgbt = :lgbt', { lgbt: filters.lgbt });
+    }
+
+    if (filters.consultationType) {
+      const consultationType = [filters.consultationType];
+      queryBuilder.andWhere(`FIND_IN_SET(:consultationType, psychologist.consultationType)`, { consultationType: consultationType[0] });
     }
 
     if (filters.therapyMethodIds && filters.therapyMethodIds.length > 0) {
@@ -96,7 +107,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
       queryBuilder.innerJoin('psychologist.symptoms', 'symptoms', 'symptoms.id IN (:...symptomIds)', { symptomIds }).getMany();
     }
 
-    if (filters.age !== undefined) {
+    if (filters.age) {
       if (typeof filters.age === 'number') {
         const birthDateLimit = new Date();
         birthDateLimit.setFullYear(birthDateLimit.getFullYear() - filters.age);
