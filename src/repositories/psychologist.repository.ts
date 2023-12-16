@@ -68,11 +68,13 @@ export class PsychologistRepository extends Repository<Psychologist> {
     }
 
     if (filters.languages) {
-      queryBuilder.andWhere('psychologist.languages = :languages', { languages: filters.languages });
+      const languages = [filters.languages];
+      queryBuilder.andWhere(`FIND_IN_SET(:language, psychologist.languages)`, { language: languages[0] });
     }
 
     if (filters.format) {
-      queryBuilder.andWhere('psychologist.format = :format', { format: filters.format });
+      const format = [filters.format];
+      queryBuilder.andWhere(`FIND_IN_SET(:format, psychologist.format)`, { format: format[0] });
     }
 
     if (filters.cost) {
@@ -84,7 +86,8 @@ export class PsychologistRepository extends Repository<Psychologist> {
     }
 
     if (filters.consultationType) {
-      queryBuilder.andWhere('psychologist.consultationType = :consultationType', { consultationType: filters.consultationType });
+      const consultationType = [filters.consultationType];
+      queryBuilder.andWhere(`FIND_IN_SET(:consultationType, psychologist.consultationType)`, { consultationType: consultationType[0] });
     }
 
     if (filters.therapyMethodIds && filters.therapyMethodIds.length > 0) {
