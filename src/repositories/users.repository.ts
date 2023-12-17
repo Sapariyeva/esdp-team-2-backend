@@ -5,7 +5,7 @@ import { ApiError } from '../helpers/api-error';
 import { RoleRepository } from './role.repository';
 import { UserRole } from '../interfaces/UserRole.enum';
 import { Role } from '../entities/role.entity';
-import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserEditAccount, IUserTokenData } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 
 export class UsersRepository extends Repository<User> {
@@ -147,5 +147,48 @@ export class UsersRepository extends Repository<User> {
   }
   findOneUser = async (where: FindOptionsWhere<User>): Promise<IUser | null> => {
     return await this.findOne({ where });
+  };
+
+  checkPassword = async (id: number, сurrentPassword: string): Promise<IUser | null> => {
+    const user = await this.findOneBy({ id });
+    if (!user) return null;
+
+    const isMatch = await user.comparePassword(сurrentPassword);
+    if (!isMatch) return null;
+
+    return user;
+  };
+
+  findUserByEmail = async (email: string): Promise<IUser | null> => {
+    const user = await this.findOne({ where: { email: email } });
+    return user || null;
+  };
+
+  findUserByPhone = async (phone: string): Promise<IUser | null> => {
+    const user = await this.findOne({ where: { phone: phone } });
+    return user || null;
+  };
+
+  editUser = async (
+    user: IUser,
+    userDto: Omit<IUserEditAccount, 'сurrentPassword'>,
+  ): Promise<{ updatedUser: IUser | null; passwordUpdated: boolean }> => {
+    const userEntity = await this.findOneBy({ id: user.id });
+    let passwordUpdated = false;
+    if (!userEntity) return { updatedUser: null, passwordUpdated };
+
+    userEntity.email = userDto.email ?? userEntity.email;
+    userEntity.phone = userDto.phone ?? userEntity.phone;
+
+    if (userDto.password) {
+      userEntity.password = userDto.password;
+      await userEntity.hashPassword();
+      passwordUpdated = true;
+      const updatedUser = await this.save(userEntity);
+      return { updatedUser, passwordUpdated };
+    }
+
+    const updatedUser = await this.save(userEntity, { listeners: false });
+    return { updatedUser, passwordUpdated };
   };
 }

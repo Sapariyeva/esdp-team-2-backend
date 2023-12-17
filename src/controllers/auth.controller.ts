@@ -7,6 +7,8 @@ import { validate } from 'class-validator';
 import { formatErrors } from '../helpers/formatErrors';
 import { IUser } from '../interfaces/IUser.interface';
 import { UserDto } from '../dto/user.dto';
+import DtoManager from '../helpers/dtoManager';
+import { UserEditAccountDto } from '../dto/userEditAccount.dto';
 
 export class AuthController {
   private service: AuthService;
@@ -90,6 +92,41 @@ export class AuthController {
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
       await this.service.emailSendMessage(user.email);
       res.send('Письмо для повторного подтверждение отправлено на почту');
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  editUserHandler: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const { dto, errors } = await DtoManager.createDto(UserEditAccountDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
+      const existingEmail = await this.service.findUserByEmail(dto.email || '');
+      if (existingEmail) {
+        throw ApiError.BadRequest('Данный адрес электронной почты уже используется');
+      }
+
+      const existingPhone = await this.service.findUserByPhone(dto.phone || '');
+      if (existingPhone) {
+        throw ApiError.BadRequest('Данный номер телефона уже используется');
+      }
+
+      const { сurrentPassword, ...restUserDto } = dto;
+      const user = await this.service.checkPassword(userId, сurrentPassword);
+      if (!user) throw ApiError.NotFound('Неверный пароль!');
+
+      const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
+      if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
+
+      if (passwordUpdated) {
+        res.send('Пароль успешно обновлен');
+      } else {
+        res.send({ email: restUserDto.email, phone: restUserDto.phone });
+      }
     } catch (e) {
       next(e);
     }

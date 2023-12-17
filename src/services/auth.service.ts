@@ -1,5 +1,5 @@
 import { UsersRepository } from '../repositories/users.repository';
-import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserEditAccount, IUserTokenData } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 import { EmailMessage } from '../interfaces/email/IEmailMessage';
 import mailer from '../email/nodemailer';
@@ -33,6 +33,27 @@ export class AuthService {
   findOneUser = async (id: number): Promise<IUser | null> => {
     return await this.repository.findOneUser({ id });
   };
+
+  checkPassword = async (id: number, сurrentPassword: string): Promise<IUser | null> => {
+    return await this.repository.checkPassword(id, сurrentPassword);
+  };
+
+  findUserByEmail = async (email: string): Promise<IUser | null> => {
+    return await this.repository.findUserByEmail(email);
+  };
+
+  findUserByPhone = async (phone: string): Promise<IUser | null> => {
+    return await this.repository.findUserByPhone(phone);
+  };
+
+  editUser = async (
+    user: IUser,
+    userDto: Omit<IUserEditAccount, 'сurrentPassword'>,
+  ): Promise<{ updatedUser: IUser | null; passwordUpdated: boolean }> => {
+    const updatedUser = await this.repository.editUser(user, userDto);
+    return updatedUser;
+  };
+
   emailSendMessage = async (email: string) => {
     if (email) {
       const message = {
