@@ -46,8 +46,12 @@ export class AuthService {
     return await this.repository.findUserByPhone(phone);
   };
 
-  editUser = async (user: IUser, userDto: Omit<IUserEditAccount, 'сurrentPassword'>): Promise<IUser | null> => {
-    return await this.repository.editUser(user, userDto);
+  editUser = async (
+    user: IUser,
+    userDto: Omit<IUserEditAccount, 'сurrentPassword'>,
+  ): Promise<{ updatedUser: IUser | null; passwordUpdated: boolean }> => {
+    const updatedUser = await this.repository.editUser(user, userDto);
+    return updatedUser;
   };
 
   emailSendMessage = async (email: string) => {

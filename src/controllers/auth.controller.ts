@@ -119,10 +119,14 @@ export class AuthController {
       const user = await this.service.checkPassword(userId, сurrentPassword);
       if (!user) throw ApiError.NotFound('Неверный пароль!');
 
-      const updatedUser = await this.service.editUser(user, restUserDto);
+      const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
       if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
 
-      res.send({ email: restUserDto.email, phone: restUserDto.phone });
+      if (passwordUpdated) {
+        res.send('Пароль успешно обновлен');
+      } else {
+        res.send({ email: restUserDto.email, phone: restUserDto.phone });
+      }
     } catch (e) {
       next(e);
     }

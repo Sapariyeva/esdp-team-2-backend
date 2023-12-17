@@ -169,9 +169,13 @@ export class UsersRepository extends Repository<User> {
     return user || null;
   };
 
-  editUser = async (user: IUser, userDto: Omit<IUserEditAccount, 'сurrentPassword'>): Promise<IUser | null> => {
+  editUser = async (
+    user: IUser,
+    userDto: Omit<IUserEditAccount, 'сurrentPassword'>,
+  ): Promise<{ updatedUser: IUser | null; passwordUpdated: boolean }> => {
     const userEntity = await this.findOneBy({ id: user.id });
-    if (!userEntity) return null;
+    let passwordUpdated = false;
+    if (!userEntity) return { updatedUser: null, passwordUpdated };
 
     userEntity.email = userDto.email ?? userEntity.email;
     userEntity.phone = userDto.phone ?? userEntity.phone;
@@ -179,9 +183,12 @@ export class UsersRepository extends Repository<User> {
     if (userDto.password) {
       userEntity.password = userDto.password;
       await userEntity.hashPassword();
-      return await this.save(userEntity);
+      passwordUpdated = true;
+      const updatedUser = await this.save(userEntity);
+      return { updatedUser, passwordUpdated };
     }
 
-    return await this.save(userEntity, { listeners: false });
+    const updatedUser = await this.save(userEntity, { listeners: false });
+    return { updatedUser, passwordUpdated };
   };
 }
