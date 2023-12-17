@@ -124,8 +124,6 @@ export class PsychologistController {
 
   public filterPsychologists: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.body || Object.keys(req.body).length === 0) throw ApiError.BadRequest('Не указаны параметры фильтрации!');
-
       const { dto, errors } = await DtoManager.createDto(FiltersOfPsychologistDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации параметров фильтрации', errors);
 
