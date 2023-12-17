@@ -22,7 +22,7 @@ export class CertificateController {
       if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
 
       const { id: userId } = req.customLocals.userJwtPayload;
-      const psychologist = await this.psychologistService.getOnePsychologist(userId);
+      const psychologist = await this.psychologistService.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       const certificate = req.file.filename;
