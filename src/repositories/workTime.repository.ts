@@ -27,11 +27,16 @@ export class WorkTimeRepository extends Repository<WorkTime> {
 
     return await this.save(newDate);
   };
-  async getWorkDaysForPsychologistInDate(psychologistId: number, date: string): Promise<WorkTime[]> {
-    return this.createQueryBuilder('work_time')
+  async getWorkDaysForPsychologistInDate(psychologistId: number, date: string, available?: boolean): Promise<WorkTime[]> {
+    const queryBuilder = this.createQueryBuilder('work_time')
       .where('work_time.psychologistId = :psychologistId', { psychologistId })
-      .andWhere('DATE(work_time.date) = :date', { date })
-      .getMany();
+      .andWhere('DATE(work_time.date) = :date', { date });
+
+    if (!available) {
+      queryBuilder.andWhere('work_time.available = :available', { available });
+    }
+
+    return queryBuilder.getMany();
   }
   async deleteTime(psychologistId: number, id: number) {
     const result = await this.createQueryBuilder()

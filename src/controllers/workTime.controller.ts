@@ -53,6 +53,24 @@ export class WorkTimeController {
     }
   };
 
+  getFreeWorkTime: RequestHandler = async (req, res, next) => {
+    try {
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
+
+      const psychologist = await this.psychologistService.getOnePsychologist(id);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const date = req.query.date as string;
+      const isValidDate = /\d{4}-\d{2}-\d{2}/.test(date);
+      if (!isValidDate) throw ApiError.NotFound('Некорректный формат даты!');
+
+      res.send(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date, false));
+    } catch (e) {
+      next(e);
+    }
+  };
+
   deleteTime: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
