@@ -70,7 +70,13 @@ export class PsychologistDto implements IPsychologistClientData {
   experienceYears!: number;
 
   @Expose()
-  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @Transform(({ value }) => {
+    if (!value) {
+      return [];
+    }
+
+    return Array.isArray(value) ? [...new Set(value)] : [value];
+  })
   @IsNotEmpty({ message: messages.isNotEmpty })
   @IsArray({ message: messages.isArray })
   @IsEnum(ELanguages, { each: true, message: messages.isEnum(ELanguages, true) })
@@ -82,7 +88,13 @@ export class PsychologistDto implements IPsychologistClientData {
   education!: string;
 
   @Expose()
-  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @Transform(({ value }) => {
+    if (!value) {
+      return [];
+    }
+
+    return Array.isArray(value) ? [...new Set(value)] : [value];
+  })
   @IsNotEmpty({ message: messages.isNotEmpty })
   @IsArray({ message: messages.isArray })
   @IsEnum(EFormat, { each: true, message: messages.isEnum(EFormat, true) })
@@ -96,7 +108,13 @@ export class PsychologistDto implements IPsychologistClientData {
   cost!: number;
 
   @Expose()
-  @Transform(({ value }) => Array.isArray(value) && [...new Set(value)])
+  @Transform(({ value }) => {
+    if (!value) {
+      return [];
+    }
+
+    return Array.isArray(value) ? [...new Set(value)] : [value];
+  })
   @IsNotEmpty({ message: messages.isNotEmpty })
   @IsArray({ message: messages.isArray })
   @IsEnum(EConsultationType, { each: true, message: messages.isEnum(EConsultationType, true) })
