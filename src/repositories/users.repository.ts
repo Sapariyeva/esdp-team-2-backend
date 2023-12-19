@@ -28,6 +28,7 @@ export class UsersRepository extends Repository<User> {
       user.roles = this.addUserRole(user.roles, existingRole);
       const tokens = await this.generateAndSaveTokens(user);
       const userData = await this.findUserByIdWithRelations(user.id, existingRole.name);
+      console.log(userData);
       if (!userData) return null;
       return { ...userData, role: existingRole.name, ...tokens };
     }
@@ -37,7 +38,6 @@ export class UsersRepository extends Repository<User> {
     const tokens = await this.generateAndSaveTokens(newUser);
     const userData = await this.findUserByIdWithRelations(newUser.id, existingRole.name);
     if (!userData) return null;
-
     const accessToken = userData.generateAccessToken();
     return {
       ...userData,
@@ -100,7 +100,12 @@ export class UsersRepository extends Repository<User> {
     return tokens;
   }
 
-  async findUserByIdWithRelations(userId: number, role?: string) {
+  async findUserByIdWithRelations(userId: number, role?: string): Promise<User | null> {
+    const relations = role ? { roles: true, [role]: true } : { roles: true };
+    return await this.findOne({ where: { id: userId }, relations });
+  }
+
+  async findUserByWithRelations(userId: number, role?: string): Promise<IUser | null> {
     const relations = role ? { roles: true, [role]: true } : { roles: true };
     return await this.findOne({ where: { id: userId }, relations });
   }

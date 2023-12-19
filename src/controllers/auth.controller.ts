@@ -29,6 +29,7 @@ export class AuthController {
       if (!userData) throw ApiError.BadRequest('s');
 
       this.setRefreshTokenCookie(res, userData.refreshToken);
+
       const user = this.mapUserDataToUserDto(userData);
       if (user.role.includes('patient')) {
         const isPatientAllowed: boolean = await this.patientService.isPatientCreatable(user.id);
@@ -40,8 +41,11 @@ export class AuthController {
         const newPatient = await this.patientService.createPatient(dto);
         if (!newPatient) throw ApiError.BadRequest('Не удалось создать пациента!');
       }
+      const getUser = await this.service.findUserByIdWithRelations(user.id, user.role);
+      if (!getUser) throw ApiError.BadRequest('Не удалось найти пациента!');
+      const getUserByRole = this.mapUserDataToUserDto(getUser);
 
-      res.send(user);
+      res.send(getUserByRole);
     } catch (e) {
       next(e);
     }
