@@ -27,6 +27,10 @@ export class AuthService {
   refresh = async (userData: IUserTokenData) => {
     return await this.repository.refresh(userData);
   };
+
+  findUserByIdWithRelations = async (userId: number, role?: string) => {
+    return await this.repository.findUserByWithRelations(userId, role);
+  };
   activateEmail = async (id: number) => {
     return await this.repository.activateEmail(id);
   };

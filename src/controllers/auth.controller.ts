@@ -9,12 +9,15 @@ import { IUser } from '../interfaces/IUser.interface';
 import { UserDto } from '../dto/user.dto';
 import DtoManager from '../helpers/dtoManager';
 import { UserEditAccountDto } from '../dto/userEditAccount.dto';
+import { PatientService } from '../services/patient.service';
+import { PatientDto } from '../dto/patient.dto';
 
 export class AuthController {
   private service: AuthService;
-
+  private patientService: PatientService;
   constructor() {
     this.service = new AuthService();
+    this.patientService = new PatientService();
   }
 
   signUp: RequestHandler = async (req, res, next) => {
@@ -26,8 +29,23 @@ export class AuthController {
       if (!userData) throw ApiError.BadRequest('s');
 
       this.setRefreshTokenCookie(res, userData.refreshToken);
+
       const user = this.mapUserDataToUserDto(userData);
-      res.send(user);
+      if (user.role.includes('patient')) {
+        const isPatientAllowed: boolean = await this.patientService.isPatientCreatable(user.id);
+        if (!isPatientAllowed) throw ApiError.BadRequest('Данные пациента у текущего пользователя уже существуют');
+
+        const { dto, errors } = await DtoManager.createDto(PatientDto, { name: userDto.name, userId: user.id }, { isValidate: true });
+        if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
+        const newPatient = await this.patientService.createPatient(dto);
+        if (!newPatient) throw ApiError.BadRequest('Не удалось создать пациента!');
+      }
+      const getUser = await this.service.findUserByIdWithRelations(user.id, user.role);
+      if (!getUser) throw ApiError.BadRequest('Не удалось найти пациента!');
+      const getUserByRole = this.mapUserDataToUserDto(getUser);
+
+      res.send(getUserByRole);
     } catch (e) {
       next(e);
     }
