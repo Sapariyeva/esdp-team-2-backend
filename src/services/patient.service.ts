@@ -24,6 +24,9 @@ export class PatientService {
   getPatient = async (id: number): Promise<IPatient | null> => {
     return await this.repository.getPatient(id);
   };
+  getPatientByUserId = async (userId: number): Promise<IPatient | null> => {
+    return await this.repository.findOnePatient({ userId });
+  };
   deletePatient = async (id: number) => {
     return await this.repository.deletePatient(id);
   };
