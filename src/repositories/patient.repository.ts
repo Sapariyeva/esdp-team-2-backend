@@ -26,12 +26,24 @@ export class PatientRepository extends Repository<IPatient> {
   async getPatient(id: number): Promise<IPatient | null> {
     return await this.findOne({ where: { id }, relations: { favorites: true } });
   }
-  async getPatientWithLastPsychologists(where: FindOptionsWhere<Patient>): Promise<IPatient | null> {
+  async getPatientWithViewedPsychologists(where: FindOptionsWhere<Patient>): Promise<IPatient | null> {
     return await this.findOne({
       where,
-      relations: { lastViewedPsychologists: true },
+      relations: ['lastViewedPsychologists', 'lastViewedPsychologists.psychologist'],
       order: { lastViewedPsychologists: { addedAt: 'DESC' } },
     });
+  }
+
+  async getViewedPsychologists(patient: IPatient): Promise<IPsychologist[] | null> {
+    if (!patient.lastViewedPsychologists) {
+      return null;
+    }
+
+    const viewedPsychologists = patient.lastViewedPsychologists
+      .map((vp) => vp.psychologist)
+      .filter((psychologist): psychologist is IPsychologist => psychologist !== undefined);
+
+    return viewedPsychologists;
   }
 
   async editPatient(patient: IPatient, dto: PatientDto): Promise<IPatient | null> {

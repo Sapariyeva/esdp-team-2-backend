@@ -44,10 +44,14 @@ export class PatientService {
   };
 
   getPatientWithLastPsychologists = async (userId: number): Promise<IPatient | null> => {
-    return await this.repository.getPatientWithLastPsychologists({ userId });
+    return await this.repository.getPatientWithViewedPsychologists({ userId });
   };
 
   updateViewedPsychologists = async (patient: IPatient, Psychologist: IPsychologist) => {
     return await this.repository.updateViewedPsychologists(patient, Psychologist);
+  };
+
+  getVeiewedPsychologists = async (patient: IPatient): Promise<IPsychologist[] | null> => {
+    return await this.repository.getViewedPsychologists(patient);
   };
 }
