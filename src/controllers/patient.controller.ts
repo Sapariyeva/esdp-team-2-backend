@@ -107,10 +107,10 @@ export class PatientController {
 
   changeToFavorites: RequestHandler = async (req, res, next) => {
     try {
-      const patientId = validateNumber(req.params.id);
-      if (!patientId) throw ApiError.BadRequest('Не верно указан id пациента');
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
 
-      const patient = await this.service.getPatient(patientId);
+      const patient = await this.service.getPatientByUserId(userId);
       if (!patient || !Array.isArray(patient?.favorites)) throw ApiError.NotFound('Не удалось найти пациента!');
 
       const psychologistId = validateNumber(req.body.psychologistId);
