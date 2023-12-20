@@ -130,7 +130,10 @@ export class PsychologistController {
       const filteredPsychologists = await this.service.filterPsychologists(dto);
       if (!filteredPsychologists) throw ApiError.BadRequest('Не удалось произвести фильтрацию!');
 
-      res.send(filteredPsychologists);
+      const userId = req.customLocals.userJwtPayload?.id;
+      const psychologistsWithFavorites: IPsychologist[] = await this.service.markFavoritePsychologists(filteredPsychologists, userId);
+
+      res.send(psychologistsWithFavorites);
     } catch (error) {
       next(error);
     }
