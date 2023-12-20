@@ -46,6 +46,10 @@ export class PsychologistService {
     return await this.repository.findPsychologists();
   };
 
+  public findPsychologistsByIds = async (ids: number[]): Promise<IPsychologist[] | null> => {
+    return await this.repository.findPsychologistsByIds(ids);
+  };
+
   public markFavoritePsychologists = async (psychologists: IPsychologist[], userId: number | undefined): Promise<IPsychologist[]> => {
     if (!userId) return psychologists;
 

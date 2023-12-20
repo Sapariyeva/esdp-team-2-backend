@@ -56,6 +56,24 @@ export class PsychologistController {
     }
   };
 
+  public getPsychologistsByIds: RequestHandler = async (req, res, next) => {
+    try {
+      const ids = req.params.ids
+        .split(',')
+        .map((id) => validateNumber(id))
+        .filter((id): id is number => id !== null);
+
+      if (!ids.length) throw ApiError.BadRequest('Не указаны ids психологов');
+
+      const psychologist = await this.service.findPsychologistsByIds(ids);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психологов');
+
+      res.send(psychologist);
+    } catch (e) {
+      next(e);
+    }
+  };
+
   public getPsychologistsHandler: RequestHandler = async (req, res, next) => {
     try {
       const psychologists: IPsychologist[] = await this.service.getPsychologists();
