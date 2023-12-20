@@ -160,7 +160,7 @@ export class PatientController {
       if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
 
       const viewedPsychologists = await this.service.getVeiewedPsychologists(patient);
-      if (!viewedPsychologists) throw ApiError.BadRequest('Не удалось добавить в просмотренных психологов!');
+      if (!viewedPsychologists) throw ApiError.BadRequest('Не удалось получить просмотренных психологов!');
 
       res.send(viewedPsychologists);
     } catch (error) {
