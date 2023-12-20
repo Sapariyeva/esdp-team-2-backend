@@ -24,6 +24,7 @@ export class PatientService {
   getPatient = async (id: number): Promise<IPatient | null> => {
     return await this.repository.getPatient(id);
   };
+
   deletePatient = async (id: number) => {
     return await this.repository.deletePatient(id);
   };
@@ -40,5 +41,13 @@ export class PatientService {
   isPatientCreatable = async (userId: number): Promise<boolean> => {
     const patient = await this.repository.findOnePatient({ userId });
     return !patient;
+  };
+
+  getPatientWithLastPsychologists = async (userId: number): Promise<IPatient | null> => {
+    return await this.repository.getPatientWithLastPsychologists({ userId });
+  };
+
+  updateViewedPsychologists = async (patient: IPatient, Psychologist: IPsychologist) => {
+    return await this.repository.updateViewedPsychologists(patient, Psychologist);
   };
 }

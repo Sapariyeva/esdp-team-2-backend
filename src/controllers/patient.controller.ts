@@ -127,4 +127,27 @@ export class PatientController {
       next(error);
     }
   };
+
+  updateLastPsychologists: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const patient = await this.service.getPatientWithLastPsychologists(userId);
+      if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
+
+      const psychologistId = validateNumber(req.params.id);
+      if (!psychologistId) throw ApiError.BadRequest('Не верно указан id психолога');
+
+      const psychologist = await this.psychologistService.getOnePsychologist(psychologistId);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const updatedLastPsychologists = await this.service.updateViewedPsychologists(patient, psychologist);
+      if (!updatedLastPsychologists) throw ApiError.BadRequest('Не удалось добавить в просмотренных психологов!');
+
+      res.send(updatedLastPsychologists);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
