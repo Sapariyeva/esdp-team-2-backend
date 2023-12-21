@@ -28,9 +28,14 @@ export class WorkTimeRepository extends Repository<WorkTime> {
     return await this.save(newDate);
   };
   async getWorkDaysForPsychologistInDate(psychologistId: number, date: string, available?: boolean): Promise<WorkTime[]> {
+    const currentDate = new Date();
+    const setTime = currentDate.getHours() * 60 + currentDate.getMinutes();
+    const time = this.minutesToTime(setTime);
+
     const queryBuilder = this.createQueryBuilder('work_time')
       .where('work_time.psychologistId = :psychologistId', { psychologistId })
-      .andWhere('DATE(work_time.date) = :date', { date });
+      .andWhere('DATE(work_time.date) = :date', { date })
+      .andWhere('work_time.time > :time', { time });
 
     if (available !== null && available !== undefined) {
       queryBuilder.andWhere('work_time.available = :available', { available });
@@ -58,5 +63,15 @@ export class WorkTimeRepository extends Repository<WorkTime> {
       .execute();
 
     return result.affected ? id : null;
+  }
+
+  public minutesToTime(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMins = String(mins).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMins}`;
   }
 }
