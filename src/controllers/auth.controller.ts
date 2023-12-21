@@ -92,11 +92,12 @@ export class AuthController {
   };
   activateEmail: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      const id = req.customLocals.userJwtPayload.id;
+      const id = parseInt(req.params.id, 10);
+      if (!id) throw ApiError.BadRequest('Неверный id');
+
       const user = await this.service.activateEmail(id);
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
-      res.send('User activated successfully');
+      res.send(user);
     } catch (error) {
       next(error);
     }
@@ -108,7 +109,7 @@ export class AuthController {
       const id = req.customLocals.userJwtPayload.id;
       const user = await this.service.findOneUser(id);
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
-      await this.service.emailSendMessage(user.email);
+      await this.service.emailSendMessage(user.email, user.id);
       res.send('Письмо для повторного подтверждение отправлено на почту');
     } catch (e) {
       next(e);
