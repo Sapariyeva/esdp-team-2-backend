@@ -1,5 +1,6 @@
 import { IUser } from './IUser.interface';
 import { IPsychologist } from './IPsychologist.interface';
+import { IViewedPsychologist } from './IViewedPsychologist';
 
 export interface IPatient {
   id: number;
@@ -7,4 +8,5 @@ export interface IPatient {
   userId: number;
   user?: IUser;
   favorites?: IPsychologist[];
+  lastViewedPsychologists?: IViewedPsychologist[];
 }

@@ -24,6 +24,7 @@ export class PsychologistRouter implements IRoute {
       this.controller.createPsychologistHandler,
     );
     this.router.get('/:id', this.controller.getOnePsychologistHandler);
+    this.router.get('/getByIds/:ids', this.controller.getPsychologistsByIds);
     this.router.get('/', this.controller.getPsychologistsHandler);
     this.router.put('/edit', authenticateUser, checkUserRole('psychologist'), this.controller.editPsychologistHandler);
     this.router.post('/publish/:id', authenticateUser, checkUserRole('psychologist'), this.controller.publishPsychologistHandler);

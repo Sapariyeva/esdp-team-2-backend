@@ -13,7 +13,6 @@ import { EFormat } from '../enum/EFormat';
 import { WorkTime } from './workTime.entity';
 import { EGender } from '../enum/EGender';
 
-
 @Entity('psychologists')
 export class Psychologist implements Required<IPsychologist> {
   @PrimaryGeneratedColumn()

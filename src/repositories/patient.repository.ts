@@ -4,6 +4,8 @@ import { IPatient } from '../interfaces/IPatient.interface';
 import { Patient } from '../entities/patient.entity';
 import { PatientDto } from '../dto/patient.dto';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
+import { IViewedPsychologist } from '../interfaces/IViewedPsychologist';
+import { ViewedPsychologists } from '../entities/viewedPsychologists.entity';
 
 export class PatientRepository extends Repository<IPatient> {
   constructor() {
@@ -24,6 +26,26 @@ export class PatientRepository extends Repository<IPatient> {
   async getPatient(id: number): Promise<IPatient | null> {
     return await this.findOne({ where: { id }, relations: { favorites: true } });
   }
+  async getPatientWithViewedPsychologists(where: FindOptionsWhere<Patient>): Promise<IPatient | null> {
+    return await this.findOne({
+      where,
+      relations: ['lastViewedPsychologists', 'lastViewedPsychologists.psychologist'],
+      order: { lastViewedPsychologists: { addedAt: 'DESC' } },
+    });
+  }
+
+  async getViewedPsychologists(patient: IPatient): Promise<IPsychologist[] | null> {
+    if (!patient.lastViewedPsychologists) {
+      return null;
+    }
+
+    const viewedPsychologists = patient.lastViewedPsychologists
+      .map((vp) => vp.psychologist)
+      .filter((psychologist): psychologist is IPsychologist => psychologist !== undefined);
+
+    return viewedPsychologists;
+  }
+
   async editPatient(patient: IPatient, dto: PatientDto): Promise<IPatient | null> {
     const updatedPatient = this.merge(patient, dto);
     return await this.save(updatedPatient);
@@ -43,4 +65,32 @@ export class PatientRepository extends Repository<IPatient> {
   public findOnePatient = async (where: FindOptionsWhere<Patient>): Promise<IPatient | null> => {
     return await this.findOne({ where, relations: { favorites: true } });
   };
+  async updateViewedPsychologists(patient: IPatient, newPsychologist: IPsychologist): Promise<IViewedPsychologist[]> {
+    if (!patient.lastViewedPsychologists) {
+      patient.lastViewedPsychologists = [];
+    }
+
+    const existingPsychologistIndex = patient.lastViewedPsychologists.findIndex((ps) => ps.psychologistId === newPsychologist.id);
+    if (existingPsychologistIndex !== -1) {
+      const existingPsychologist = patient.lastViewedPsychologists[existingPsychologistIndex];
+      patient.lastViewedPsychologists.splice(existingPsychologistIndex, 1);
+      await this.manager.getRepository(ViewedPsychologists).delete(existingPsychologist.id);
+    }
+
+    const newViewedPsychologist = new ViewedPsychologists();
+    newViewedPsychologist.patientId = patient.id;
+    newViewedPsychologist.psychologistId = newPsychologist.id;
+    patient.lastViewedPsychologists.push(newViewedPsychologist);
+
+    while (patient.lastViewedPsychologists.length > 5) {
+      const oldestPsychologist = patient.lastViewedPsychologists.pop();
+      if (oldestPsychologist) {
+        await this.manager.getRepository(ViewedPsychologists).delete(oldestPsychologist.id);
+      }
+    }
+
+    await this.save(patient);
+
+    return patient.lastViewedPsychologists;
+  }
 }

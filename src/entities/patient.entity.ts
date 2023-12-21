@@ -1,7 +1,8 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IPatient } from '../interfaces/IPatient.interface';
 import { User } from './user.entity';
 import { Psychologist } from './psychologist.entity';
+import { ViewedPsychologists } from './viewedPsychologists.entity';
 
 @Entity('patients')
 export class Patient implements IPatient {
@@ -21,4 +22,7 @@ export class Patient implements IPatient {
   @OneToOne(() => User, (user) => user.patient)
   @JoinColumn({ name: 'user_id' })
   user?: User;
+
+  @OneToMany(() => ViewedPsychologists, (viewedPsychologist) => viewedPsychologist.patient, { cascade: true, eager: true })
+  lastViewedPsychologists?: ViewedPsychologists[];
 }

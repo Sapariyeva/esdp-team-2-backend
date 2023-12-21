@@ -1,4 +1,4 @@
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Psychologist } from '../entities/psychologist.entity';
 import { Certificate } from '../entities/certificate.entity';
@@ -38,6 +38,14 @@ export class PsychologistRepository extends Repository<Psychologist> {
 
   public findPsychologists = async (): Promise<IPsychologist[]> => {
     return await this.find();
+  };
+
+  public findPsychologistsByIds = async (ids: number[]): Promise<Psychologist[] | null> => {
+    return await this.find({
+      where: {
+        id: In(ids),
+      },
+    });
   };
 
   public editPsychologist = async (id: number, psychologistNewData: IPsychologistNewData): Promise<IPsychologist> => {
