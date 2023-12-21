@@ -15,6 +15,7 @@ export class WorkTimeRoute implements IRoute {
   }
   private init() {
     this.router.get('/', authenticateUser, checkUserRole('psychologist'), this.controller.getAllWorkTime);
+    this.router.get('/:id', checkUserRole('patient'), this.controller.getFreeWorkTime);
     this.router.post('/', authenticateUser, checkUserRole('psychologist'), this.controller.createScheduleItem);
     this.router.delete('/:id', authenticateUser, checkUserRole('psychologist'), this.controller.deleteTime);
   }

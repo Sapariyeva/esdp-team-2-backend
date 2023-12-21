@@ -1,11 +1,17 @@
 import { Expose, Transform } from 'class-transformer';
-import { IsNumber, Min, IsOptional, IsBoolean, IsString } from 'class-validator';
+import { IsNumber, Min, IsOptional, IsBoolean, IsString, IsEnum } from 'class-validator';
 
 export class RecordDto {
   @Expose()
   @IsBoolean()
   @IsOptional()
   isCanceled!: boolean;
+
+  @Expose()
+  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  @IsNumber()
+  @Min(0, { message: 'Не валидный cлот' })
+  slotId!: number;
 
   @Expose()
   @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
@@ -26,4 +32,9 @@ export class RecordDto {
   @Expose()
   @IsString()
   patientName!: string;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(['online', 'offline'], { message: 'Выберите формат' })
+  format!: 'online' | 'offline';
 }

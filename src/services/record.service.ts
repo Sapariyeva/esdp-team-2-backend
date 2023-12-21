@@ -16,29 +16,20 @@ export class RecordService {
     this.repositoryPatient = new PatientRepository();
   }
 
-  public createRecord = async (psychologist: IPsychologist, dto: RecordDto) => {
+  public createRecord = async (psychologist: IPsychologist, dto: RecordDto, link?: string) => {
     const record: IRecord = {
-      patientId: 0,
-      psychologistId: 0,
-      cityId: 0,
-      datetime: '',
-      cost: 0,
-      format: 'online',
-      broadcast: '',
-      address: '',
+      patientId: dto.patientId,
+      psychologistId: psychologist.id,
+      cityId: psychologist.cityId,
+      datetime: dto.datetime,
+      cost: psychologist.cost,
+      format: dto.format,
+      broadcast: link ? link : null,
+      address: link ? '' : psychologist.address,
       isCanceled: false,
-      patientName: '',
+      patientName: dto.patientName,
     };
 
-    record.cityId = psychologist.cityId;
-    record.datetime = dto.datetime;
-    record.cost = psychologist.cost;
-    record.broadcast = 'some link';
-    record.patientId = dto.patientId;
-    record.psychologistId = psychologist.id;
-    record.format = 'online';
-    record.patientName = dto.patientName;
-    record.address = psychologist.address;
     return await this.repository.createRecord(record);
   };
 
