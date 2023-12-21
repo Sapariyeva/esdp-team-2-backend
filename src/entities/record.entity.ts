@@ -1,7 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { City } from './city.entity';
-// import { Psychologist } from './psychologist.entity';
-// import { Patient } from './patient.entity';
 import { IRecord } from '../interfaces/IRecord.interface';
 
 @Entity('records')
@@ -9,8 +7,8 @@ export class Record implements IRecord {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: true })
-  address!: string;
+  @Column({ nullable: true, type: 'text' })
+  address!: string | null;
 
   @Column({ name: 'patient_id' })
   patientId!: number;
@@ -30,8 +28,8 @@ export class Record implements IRecord {
   @Column({ default: 60 })
   duration!: number;
 
-  @Column({ nullable: true })
-  broadcast!: string;
+  @Column({ nullable: true, type: 'text' })
+  broadcast!: string | null;
 
   @Column({ default: false, name: 'is_canceled' })
   isCanceled!: boolean;
@@ -45,12 +43,4 @@ export class Record implements IRecord {
   @ManyToOne(() => City)
   @JoinColumn({ name: 'city_id' })
   city?: City;
-
-  // @OneToOne(() => Psychologist)
-  // @JoinColumn({ name: 'psychologist_id' })
-  // psychologist?: Psychologist;
-
-  // @OneToOne(() => Patient)
-  // @JoinColumn({ name: 'patient_id' })
-  // patient?: Patient;
 }

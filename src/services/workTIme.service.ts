@@ -18,4 +18,7 @@ export class WorkTImeService {
   public deleteTime = async (psychologistId: number, id: number) => {
     return await this.repository.deleteTime(psychologistId, id);
   };
+  public changeStatusTime = async (psychologistId: number, id: number, available: boolean) => {
+    return await this.repository.changeStatusTime(psychologistId, id, available);
+  };
 }

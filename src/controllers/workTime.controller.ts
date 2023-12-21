@@ -46,7 +46,7 @@ export class WorkTimeController {
       const date = req.query.date as string;
       const isValidDate = /\d{4}-\d{2}-\d{2}/.test(date);
       if (!isValidDate) throw ApiError.NotFound('Некорректный формат даты!');
-
+      console.log(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date));
       res.send(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date));
     } catch (e) {
       next(e);

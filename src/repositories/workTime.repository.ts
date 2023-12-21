@@ -32,16 +32,27 @@ export class WorkTimeRepository extends Repository<WorkTime> {
       .where('work_time.psychologistId = :psychologistId', { psychologistId })
       .andWhere('DATE(work_time.date) = :date', { date });
 
-    if (!available) {
+    if (available !== null && available !== undefined) {
       queryBuilder.andWhere('work_time.available = :available', { available });
     }
 
-    return queryBuilder.getMany();
+    return await queryBuilder.getMany();
   }
   async deleteTime(psychologistId: number, id: number) {
     const result = await this.createQueryBuilder()
       .delete()
       .from(WorkTime)
+      .where('psychologistId = :psychologistId', { psychologistId })
+      .andWhere('id = :id', { id })
+      .execute();
+
+    return result.affected ? id : null;
+  }
+
+  async changeStatusTime(psychologistId: number, id: number, available: boolean) {
+    const result = await this.createQueryBuilder()
+      .update(WorkTime)
+      .set({ available: available })
       .where('psychologistId = :psychologistId', { psychologistId })
       .andWhere('id = :id', { id })
       .execute();
