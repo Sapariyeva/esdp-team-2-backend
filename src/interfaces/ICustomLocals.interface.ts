@@ -1,7 +1,6 @@
-import { IUserTokenData, IUserJwtPayload } from './IUser.interface';
+import { IUserJwtPayload } from './IUser.interface';
 
 interface ICustomLocals {
-  patientTokenData?: IUserTokenData;
   userJwtPayload?: IUserJwtPayload;
 }
 

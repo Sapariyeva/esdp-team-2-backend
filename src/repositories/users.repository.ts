@@ -5,7 +5,7 @@ import { ApiError } from '../helpers/api-error';
 import { RoleRepository } from './role.repository';
 import { UserRole } from '../interfaces/UserRole.enum';
 import { Role } from '../entities/role.entity';
-import { IUser, IUserEditAccount, IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserEditAccount, IUserTokens } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 
 export class UsersRepository extends Repository<User> {
@@ -72,16 +72,18 @@ export class UsersRepository extends Repository<User> {
       await this.save(user);
     }
   }
-  async refresh(userData: IUserTokenData) {
-    const user = await this.findOne({ where: { id: userData.id } });
+  async updateRefreshToken(userId: number, refreshToken: string): Promise<IUserTokens | null> {
+    const user = await this.findOneBy({ id: userId });
     if (!user) return null;
 
-    const tokens = await this.generateAndSaveTokens(user);
+    if (user.refreshToken !== refreshToken) return null;
 
-    return {
-      ...tokens,
-      ...user,
+    const userTokens: IUserTokens = {
+      refreshToken: user.generateRefreshToken(),
+      accessToken: user.generateAccessToken(),
     };
+    await this.save(user);
+    return userTokens;
   }
 
   userHasRole(user: User, role: string) {
@@ -110,7 +112,7 @@ export class UsersRepository extends Repository<User> {
   }
 
   private async generateTokens(userData: User) {
-    const accessToken = userData.generateRefreshToken();
+    const accessToken = userData.generateAccessToken();
     const refreshToken = userData.generateRefreshToken();
     return {
       accessToken,
