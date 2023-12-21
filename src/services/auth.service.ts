@@ -1,5 +1,5 @@
 import { UsersRepository } from '../repositories/users.repository';
-import { IUser, IUserEditAccount, IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser, IUserEditAccount, IUserTokens } from '../interfaces/IUser.interface';
 import { AuthUserDto } from '../dto/authUser.dto';
 import { EmailMessage } from '../interfaces/email/IEmailMessage';
 import mailer from '../email/nodemailer';
@@ -24,8 +24,8 @@ export class AuthService {
   signOut = async (refreshToken: string) => {
     return await this.repository.signOut(refreshToken);
   };
-  refresh = async (userData: IUserTokenData) => {
-    return await this.repository.refresh(userData);
+  generateRefreshTokenByUserId = async (userId: number, refreshToken: string): Promise<IUserTokens | null> => {
+    return await this.repository.updateRefreshToken(userId, refreshToken);
   };
 
   findUserByIdWithRelations = async (userId: number, role?: string) => {
