@@ -12,10 +12,13 @@ export class WorkTImeService {
   public createScheduleItem = async (scheduleItemDto: ScheduleItemDto, psychologistId: number): Promise<IWorkTime | null> => {
     return await this.repository.createScheduleItem(scheduleItemDto, psychologistId);
   };
-  public getWorkDaysForPsychologistInDate = async (psychologistId: number, date: string): Promise<IWorkTime[]> => {
-    return await this.repository.getWorkDaysForPsychologistInDate(psychologistId, date);
+  public getWorkDaysForPsychologistInDate = async (psychologistId: number, date: string, available?: boolean): Promise<IWorkTime[]> => {
+    return await this.repository.getWorkDaysForPsychologistInDate(psychologistId, date, available);
   };
   public deleteTime = async (psychologistId: number, id: number) => {
     return await this.repository.deleteTime(psychologistId, id);
+  };
+  public changeStatusTime = async (psychologistId: number, id: number, available: boolean) => {
+    return await this.repository.changeStatusTime(psychologistId, id, available);
   };
 }

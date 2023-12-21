@@ -1,9 +1,14 @@
 import { Expose, Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, ValidateIf } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, ValidateIf } from 'class-validator';
 import { IsExistEmailOrPhone } from '../validators/IsExistEmailOrPhone';
 import { UserRole } from '../interfaces/UserRole.enum';
 
 export class AuthUserDto {
+  @Expose()
+  @IsString()
+  @IsOptional()
+  name!: string;
+
   @Expose()
   @IsEmail({}, { message: 'Введите действительный адрес электронной почты' })
   @ValidateIf((o) => o.phone === null || o.phone === undefined)

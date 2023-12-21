@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { Role } from './role.entity';
 import { Patient } from './patient.entity';
 import { Psychologist } from './psychologist.entity';
-import { IUser, IUserTokenData } from '../interfaces/IUser.interface';
+import { IUser } from '../interfaces/IUser.interface';
 
 @Entity('users')
 export class User implements IUser {
@@ -54,18 +54,11 @@ export class User implements IUser {
   }
 
   generateRefreshToken() {
-    this.refreshToken = jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '30d' });
+    this.refreshToken = jwt.sign({ id: this.id, role: this.roles }, config.secretKeyRefresh, { expiresIn: '30d' });
     return this.refreshToken;
   }
 
   generateAccessToken() {
-    return jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '15min' });
-  }
-
-  validateRefreshToken(token: string): IUserTokenData | null {
-    return jwt.verify(token, config.secretKey) as IUserTokenData;
-  }
-  validateAccessToken(token: string): IUserTokenData | null {
-    return jwt.verify(token, config.secretKey) as IUserTokenData;
+    return jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '15m' });
   }
 }

@@ -46,8 +46,26 @@ export class WorkTimeController {
       const date = req.query.date as string;
       const isValidDate = /\d{4}-\d{2}-\d{2}/.test(date);
       if (!isValidDate) throw ApiError.NotFound('Некорректный формат даты!');
-
+      console.log(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date));
       res.send(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date));
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  getFreeWorkTime: RequestHandler = async (req, res, next) => {
+    try {
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
+
+      const psychologist = await this.psychologistService.getOnePsychologist(id);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      const date = req.query.date as string;
+      const isValidDate = /\d{4}-\d{2}-\d{2}/.test(date);
+      if (!isValidDate) throw ApiError.NotFound('Некорректный формат даты!');
+
+      res.send(await this.service.getWorkDaysForPsychologistInDate(psychologist.id, date, false));
     } catch (e) {
       next(e);
     }

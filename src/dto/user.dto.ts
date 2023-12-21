@@ -1,13 +1,12 @@
 import { Expose, instanceToPlain, Transform } from 'class-transformer';
-import { Role } from '../entities/role.entity';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { IPatient } from '../interfaces/IPatient.interface';
 export class UserDto {
   @Expose()
-  id?: number;
+  id!: number;
 
   @Expose()
-  email?: string;
+  email!: string;
 
   @Expose()
   phone?: string;
@@ -16,7 +15,7 @@ export class UserDto {
   name!: string;
 
   @Expose()
-  role!: Role[];
+  role!: string;
 
   @Expose()
   @Transform((value) => instanceToPlain(value.obj.psychologist))

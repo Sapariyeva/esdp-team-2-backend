@@ -16,8 +16,7 @@ export interface IUser {
   psychologist?: IPsychologist | null;
 }
 
-export interface IUserTokenData extends IUser {
-  refreshToken: string;
+export interface IUserTokens extends Pick<IUser, 'refreshToken'> {
   accessToken: string;
 }
 
