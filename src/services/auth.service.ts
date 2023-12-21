@@ -13,7 +13,7 @@ export class AuthService {
 
   signUp = async (userDto: AuthUserDto) => {
     const user = await this.repository.signUp(userDto);
-    if (user?.email) this.emailSendMessage(user.email);
+    if (user?.email) this.emailSendMessage(user.email, user.id);
     return user;
   };
 
@@ -58,7 +58,7 @@ export class AuthService {
     return updatedUser;
   };
 
-  emailSendMessage = async (email: string) => {
+  emailSendMessage = async (email: string, userId: number) => {
     if (email) {
       const message = {
         to: email,
@@ -68,7 +68,7 @@ export class AuthService {
           <ul>
             <li>login: ${email}</li>
           </ul>
-          <a href="http://localhost:8000/auth/activate/">Подтвердить почту</a>
+          <a href="http://localhost:5173/auth/activate/${userId}">Подтвердить почту</a>
         `,
       } as unknown as EmailMessage;
       mailer(message);

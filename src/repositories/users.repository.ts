@@ -28,7 +28,6 @@ export class UsersRepository extends Repository<User> {
       user.roles = this.addUserRole(user.roles, existingRole);
       const tokens = await this.generateAndSaveTokens(user);
       const userData = await this.findUserByIdWithRelations(user.id, existingRole.name);
-      console.log(userData);
       if (!userData) return null;
       return { ...userData, role: existingRole.name, ...tokens };
     }
