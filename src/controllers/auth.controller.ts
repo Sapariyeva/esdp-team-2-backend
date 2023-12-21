@@ -5,12 +5,14 @@ import { AuthUserDto } from '../dto/authUser.dto';
 import { ApiError } from '../helpers/api-error';
 import { validate } from 'class-validator';
 import { formatErrors } from '../helpers/formatErrors';
-import { IUser } from '../interfaces/IUser.interface';
+import { IUser, IUserJwtPayload, IUserTokens } from '../interfaces/IUser.interface';
 import { UserDto } from '../dto/user.dto';
 import DtoManager from '../helpers/dtoManager';
 import { UserEditAccountDto } from '../dto/userEditAccount.dto';
 import { PatientService } from '../services/patient.service';
 import { PatientDto } from '../dto/patient.dto';
+import jwt from 'jsonwebtoken';
+import config from '../config';
 
 export class AuthController {
   private service: AuthService;
@@ -75,19 +77,22 @@ export class AuthController {
     }
   };
 
-  refresh: RequestHandler = async (req, res, next) => {
+  updateRefreshTokenHandler: RequestHandler = async (req, res, next) => {
     try {
-      const userTokenData = req.customLocals.patientTokenData;
+      const oldRefreshToken = req.cookies.refreshToken as unknown;
+      if (typeof oldRefreshToken !== 'string') throw new Error('Отсутствует рефреш токен в запросе');
 
-      if (!userTokenData) throw ApiError.UnauthorizedError();
-      const refreshedUserData = await this.service.refresh(userTokenData);
+      const { id: userId } = jwt.verify(oldRefreshToken, config.secretKeyRefresh) as IUserJwtPayload;
+      if (!userId) throw new Error('id пользователя отсутствует');
 
-      if (!refreshedUserData) throw ApiError.BadRequest('Пользователь с такими данными не найден!');
+      const userTokens: IUserTokens | null = await this.service.generateRefreshTokenByUserId(userId, oldRefreshToken);
+      if (!userTokens) throw new Error('Запрещено обновление рефреш токена');
 
-      this.setRefreshTokenCookie(res, refreshedUserData.refreshToken);
-      res.send(this.mapUserDataToUserDto(refreshedUserData));
+      const { refreshToken, accessToken } = userTokens;
+      this.setRefreshTokenCookie(res, refreshToken);
+      res.send({ accessToken });
     } catch (e) {
-      next(e);
+      next(ApiError.Forbidden());
     }
   };
   activateEmail: RequestHandler = async (req, res, next) => {
