@@ -154,9 +154,9 @@ export class PatientController {
   getVeiewedPsychologists: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      //   const { id: userId } = req.customLocals.userJwtPayload;
+      const { id: userId } = req.customLocals.userJwtPayload;
 
-      const patient = await this.service.getPatientWithLastPsychologists(2);
+      const patient = await this.service.getPatientWithLastPsychologists(userId);
       if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
 
       const viewedPsychologists = await this.service.getVeiewedPsychologists(patient);

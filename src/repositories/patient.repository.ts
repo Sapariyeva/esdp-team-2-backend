@@ -85,7 +85,9 @@ export class PatientRepository extends Repository<IPatient> {
     while (patient.lastViewedPsychologists.length > 5) {
       const oldestPsychologist = patient.lastViewedPsychologists.pop();
       if (oldestPsychologist) {
-        await this.manager.getRepository(ViewedPsychologists).delete(oldestPsychologist.id);
+        if (oldestPsychologist.psychologist !== undefined) {
+          await this.manager.getRepository(ViewedPsychologists).delete(oldestPsychologist.psychologist.id);
+        }
       }
     }
 

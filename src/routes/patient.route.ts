@@ -17,7 +17,7 @@ export class PatientRouter implements IRoute {
     this.router.delete('/:id', this.controller.deletePatient);
     this.router.put('/edit/:id', authenticateUser, this.controller.editPatient);
     this.router.post('/favorites', authenticateUser, this.controller.changeToFavorites);
-    this.router.post('/lastPsychologists/:id', this.controller.updateLastPsychologists);
+    this.router.post('/viewedPsychologists/:id', this.controller.updateLastPsychologists);
     this.router.get('/viewedPsychologists', this.controller.getVeiewedPsychologists);
     this.router.get('/', this.controller.getPatients);
     this.router.get('/:id', this.controller.getPatient);
