@@ -33,8 +33,8 @@ export class RecordService {
     return await this.repository.createRecord(record);
   };
 
-  public getAllRecords = async (): Promise<IRecord[]> => {
-    return await this.repository.getAllRecords();
+  public getAllRecords = async (id: number, isActual: boolean): Promise<IRecord[]> => {
+    return await this.repository.getAllRecords(id, isActual);
   };
 
   public getOneRecord = async (id: number): Promise<IRecord | null> => {
