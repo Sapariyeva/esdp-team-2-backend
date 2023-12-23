@@ -3,6 +3,7 @@ export interface IRecord {
   address: string | null;
   patientId: number;
   psychologistId: number;
+  psychologistName: string;
   cityId: number;
   format: 'online' | 'offline';
   cost: number;

@@ -20,6 +20,7 @@ export class RecordService {
     const record: IRecord = {
       patientId: dto.patientId,
       psychologistId: psychologist.id,
+      psychologistName: psychologist.fullName,
       cityId: psychologist.cityId,
       datetime: dto.datetime,
       cost: psychologist.cost,
