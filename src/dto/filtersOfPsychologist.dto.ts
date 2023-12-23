@@ -1,5 +1,5 @@
 import { Expose, Transform } from 'class-transformer';
-import { IsEnum, IsNumber, Min, IsBoolean, IsOptional } from 'class-validator';
+import { IsEnum, Min, IsBoolean, IsOptional } from 'class-validator';
 import validateNumber from '../helpers/validateNumber';
 
 export class FiltersOfPsychologistDto {
@@ -24,10 +24,7 @@ export class FiltersOfPsychologistDto {
 
   @Expose()
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNumber()
-  @Min(0, { message: 'Стоимость должна быть больше или равна 0' })
-  cost!: number;
+  cost!: number[];
 
   @Expose()
   @IsOptional()

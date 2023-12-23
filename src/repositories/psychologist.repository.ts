@@ -86,7 +86,11 @@ export class PsychologistRepository extends Repository<Psychologist> {
     }
 
     if (filters.cost) {
-      queryBuilder.andWhere('psychologist.cost <= :cost', { cost: filters.cost });
+      if (Array.isArray(filters.cost)) {
+        const [minCost, maxCost] = filters.cost;
+        queryBuilder.andWhere('psychologist.cost >= :minCost', { minCost });
+        queryBuilder.andWhere('psychologist.cost <= :maxCost', { maxCost });
+      }
     }
 
     if (filters.lgbt) {
