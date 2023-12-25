@@ -7,6 +7,7 @@ import { RecordDto } from '../dto/record.dto';
 import { IRecord } from '../interfaces/IRecord.interface';
 import { WorkTImeService } from '../services/workTIme.service';
 import { ZoomService } from '../services/zoom.service';
+import { TransferRecord } from '../dto/transferRecord.dto';
 
 export class RecordController {
   private service: RecordService;
@@ -45,6 +46,30 @@ export class RecordController {
       next(e);
     }
   };
+  public transferRecord: RequestHandler = async (req, res, next) => {
+    try {
+      let broadcast;
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { dto } = await DtoManager.createDto(TransferRecord, { ...req.body }, { isValidate: true });
+
+      const record = await this.service.getOneRecord(dto.id);
+      if (!record) throw ApiError.BadRequest('Не удалось найти запись');
+
+      if (record.format === 'online') broadcast = await this.zoomService.zoom(`Сеанс у ${record.psychologistName}`, dto.newDateTime);
+
+      await this.workTimeService.changeStatusTime(record.psychologistId, record.slotId, false);
+
+      await this.workTimeService.changeStatusTime(record.psychologistId, dto.newSlotId, true);
+
+      const updateRecord = await this.service.transferRecord(record.id, dto.newDateTime, broadcast);
+      if (!updateRecord) throw ApiError.BadRequest('Не удалось перенести запись');
+
+      const newRecord = await this.service.getOneRecord(dto.id);
+      res.send(newRecord);
+    } catch (e) {
+      next(e);
+    }
+  };
 
   public getActualRecords: RequestHandler = async (req, res, next) => {
     try {
@@ -77,7 +102,7 @@ export class RecordController {
     }
   };
 
-  public cancelRecord: RequestHandler = async (req, res, next) => {
+  public deleteRecord: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
@@ -85,7 +110,11 @@ export class RecordController {
       const check = await this.service.checkRecord(id);
       if (!check) throw ApiError.BadRequest('Не существует такой записи');
 
-      const cancelRecord = await this.service.cancelRecord(check);
+      const cancelRecord = await this.service.deleteRecord(id);
+      if (!cancelRecord) throw ApiError.BadRequest('Не удалось удалить запись.');
+
+      await this.workTimeService.changeStatusTime(check.psychologistId, check.slotId, false);
+
       res.send(cancelRecord);
     } catch (e) {
       next(e);

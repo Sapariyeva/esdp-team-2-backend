@@ -16,6 +16,9 @@ export class Record implements IRecord {
   @Column({ name: 'psychologist_id' })
   psychologistId!: number;
 
+  @Column({ name: 'slot_id' })
+  slotId!: number;
+
   @Column({ name: 'psychologist_name' })
   psychologistName!: string;
 
