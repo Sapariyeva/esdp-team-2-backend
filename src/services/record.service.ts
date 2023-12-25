@@ -4,6 +4,7 @@ import { PsychologistRepository } from '../repositories/psychologist.repository'
 import { RecordRepository } from '../repositories/record.repository';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PatientRepository } from '../repositories/patient.repository';
+import { Record } from '../entities/record.entity';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -17,19 +18,21 @@ export class RecordService {
   }
 
   public createRecord = async (psychologist: IPsychologist, dto: RecordDto, link?: string) => {
-    const record: IRecord = {
+    const record = new Record();
+    Object.assign(record, {
       patientId: dto.patientId,
       psychologistId: psychologist.id,
+      slotId: dto.slotId,
       psychologistName: psychologist.fullName,
       cityId: psychologist.cityId,
       datetime: dto.datetime,
       cost: psychologist.cost,
       format: dto.format,
       broadcast: link ? link : null,
-      address: link ? '' : psychologist.address,
+      address: link ? null : psychologist.address,
       isCanceled: false,
       patientName: dto.patientName,
-    };
+    });
 
     return await this.repository.createRecord(record);
   };
@@ -42,9 +45,8 @@ export class RecordService {
     return await this.repository.getOneRecord(id);
   };
 
-  public cancelRecord = async (record: IRecord) => {
-    record.isCanceled = true;
-    return await this.repository.cancelRecord(record);
+  public deleteRecord = async (id: number) => {
+    return await this.repository.deleteRecord(id);
   };
 
   public checkPsychologists = async (id: number) => {
@@ -53,6 +55,9 @@ export class RecordService {
 
   public checkPatient = async (id: number) => {
     return await this.repositoryPatient.findOnePatient({ userId: id });
+  };
+  public transferRecord = async (id: number, newDataTime: string, broadcast?: string) => {
+    return await this.repository.transferRecord(id, newDataTime, broadcast);
   };
 
   public checkRecord = async (id: number) => {
