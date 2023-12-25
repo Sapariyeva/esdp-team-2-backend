@@ -2,6 +2,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { IPatient } from './IPatient.interface';
 import { IPsychologist } from './IPsychologist.interface';
 import { IRole } from './IRole.interface';
+import { UserRole } from './UserRole.enum';
 
 export interface IUser {
   id: number;
@@ -20,7 +21,9 @@ export interface IUserTokens extends Pick<IUser, 'refreshToken'> {
   accessToken: string;
 }
 
-export interface IUserJwtPayload extends Partial<Pick<IUser, 'id'>>, JwtPayload {}
+export interface IUserJwtPayload extends Partial<Pick<IUser, 'id'>>, JwtPayload {
+  role?: UserRole;
+}
 
 export interface IUserEditAccount extends Partial<Pick<IUser, 'email' | 'phone' | 'password'>> {
   сurrentPassword: string;

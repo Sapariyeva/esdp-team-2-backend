@@ -5,8 +5,6 @@ import validateNumber from '../helpers/validateNumber';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import DtoManager from '../helpers/dtoManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
-import FileManager from '../helpers/fileManager';
-import config from '../config';
 import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
 
 export class PsychologistController {
@@ -15,32 +13,6 @@ export class PsychologistController {
   constructor() {
     this.service = new PsychologistService();
   }
-
-  public createPsychologistHandler: RequestHandler = async (req, res, next) => {
-    try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
-      if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
-        throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
-
-      const { id: userId } = req.customLocals.userJwtPayload;
-      const isUserExists: IPsychologist | null = await this.service.getOnePsychologistByUserId(userId);
-      if (isUserExists) throw ApiError.BadRequest('Данные психолога у текущего пользователя уже существуют');
-
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, { ...req.body, userId }, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
-
-      const certificateList: string[] = req.files.certificates.map((file) => file.filename);
-      const photosList: string[] = req.files.photos.map((file) => file.filename);
-      const newPsychologist = await this.service.createPsychologist(dto, certificateList, photosList);
-      if (!newPsychologist) throw ApiError.BadRequest('Не удалось создать психолога');
-
-      res.send(newPsychologist);
-    } catch (e) {
-      FileManager.deleteFiles(config.uploadPath, req.files);
-      next(e);
-    }
-  };
 
   public getOnePsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
@@ -94,7 +66,7 @@ export class PsychologistController {
       const psychologist = await this.service.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
-      const { dto, errors } = await DtoManager.createDto(PsychologistDto, { ...req.body, userId }, { isValidate: true });
+      const { dto, errors } = await DtoManager.createDto(PsychologistDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
       const updatedPsychologist = await this.service.editPsychologist(psychologist.id, dto);

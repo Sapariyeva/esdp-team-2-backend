@@ -37,31 +37,6 @@ export class PatientController {
     }
   };
 
-  createPatient: RequestHandler = async (req, res, next) => {
-    try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
-      const { id: userId } = req.customLocals.userJwtPayload;
-
-      const userExists = await this.service.checkUserExists(userId);
-      if (!userExists) throw ApiError.NotFound('Пользователь с указанным user_id не найден.');
-
-      const isPatientAllowed: boolean = await this.service.isPatientCreatable(userId);
-      if (!isPatientAllowed) throw ApiError.BadRequest('Данные пациента у текущего пользователя уже существуют');
-
-      const patientRawData = { ...req.body, userId };
-      const { dto, errors } = await DtoManager.createDto(PatientDto, patientRawData, { isValidate: true });
-      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
-
-      const newPatient = await this.service.createPatient(dto);
-      if (!newPatient) throw ApiError.BadRequest('Не удалось создать пациента!');
-
-      res.send(newPatient);
-    } catch (error) {
-      next(error);
-    }
-  };
-
   deletePatient: RequestHandler = async (req, res, next) => {
     try {
       const id = validateNumber(req.params.id);
