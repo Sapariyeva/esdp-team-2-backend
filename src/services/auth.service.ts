@@ -75,6 +75,10 @@ export class AuthService {
     return updatedUser;
   };
 
+  findOneUserWithRealtions = async (id: number): Promise<IUser | null> => {
+    return await this.repository.findOneUserWithRealtions({ id });
+  };
+
   emailSendMessage = async (email: string, userId: number) => {
     if (email) {
       const message = {
