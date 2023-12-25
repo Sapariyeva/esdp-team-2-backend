@@ -104,6 +104,10 @@ export class AuthService {
     return await this.repository.findUserByEmail(email);
   };
 
+  findOneUserWithRealtions = async (id: number): Promise<User | null> => {
+    return await this.repository.findOneUserWithRealtions({ id });
+  };
+
   getUserByPhone = async (phone: string): Promise<IUser | null> => {
     return await this.repository.findUserByPhone(phone);
   };
