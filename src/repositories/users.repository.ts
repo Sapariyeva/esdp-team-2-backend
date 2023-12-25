@@ -63,6 +63,10 @@ export class UsersRepository extends Repository<User> {
     return await this.findOne({ where });
   };
 
+  findOneUserWithRealtions = async (where: FindOptionsWhere<User>): Promise<User | null> => {
+    return await this.findOne({ where, relations: { patient: true, psychologist: true } });
+  };
+
   findUserByPhone = async (phone: string): Promise<IUser | null> => {
     return await this.findOne({ where: { phone } });
   };
