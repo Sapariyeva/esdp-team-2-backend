@@ -1,11 +1,7 @@
-import { RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import { AuthService } from '../services/auth.service';
-import { plainToInstance } from 'class-transformer';
-import { AuthUserDto } from '../dto/authUser.dto';
 import { ApiError } from '../helpers/api-error';
-import { validate } from 'class-validator';
-import { formatErrors } from '../helpers/formatErrors';
-import { IUser, IUserJwtPayload, IUserTokens } from '../interfaces/IUser.interface';
+import { IUserJwtPayload, IUserTokens } from '../interfaces/IUser.interface';
 import { UserDto } from '../dto/user.dto';
 import DtoManager from '../helpers/dtoManager';
 import { UserEditAccountDto } from '../dto/userEditAccount.dto';
@@ -13,65 +9,140 @@ import { PatientService } from '../services/patient.service';
 import { PatientDto } from '../dto/patient.dto';
 import jwt from 'jsonwebtoken';
 import config from '../config';
+import { UserRole } from '../interfaces/UserRole.enum';
+import { UserRegisterRequestDto } from '../dto/userRegisterRequest.dto';
+import FileManager from '../helpers/fileManager';
+import { PsychologistDto } from '../dto/psychologist.dto';
+import { PsychologistService } from '../services/psychologist.service';
+import { UserLoginRequest } from '../dto/userLoginRequest.dto';
 
 export class AuthController {
+  private refreshToken = { name: 'refreshToken', options: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true } };
   private service: AuthService;
   private patientService: PatientService;
+  private psychologistService: PsychologistService;
+
   constructor() {
     this.service = new AuthService();
     this.patientService = new PatientService();
+    this.psychologistService = new PsychologistService();
   }
 
-  signUp: RequestHandler = async (req, res, next) => {
+  registerPatientHandler: RequestHandler = async (req, res, next) => {
     try {
-      const userDto = plainToInstance(AuthUserDto, req.body);
-      await this.validateDto(userDto);
+      const roleName: UserRole = UserRole.Patient;
 
-      const userData = await this.service.signUp(userDto);
-      if (!userData) throw ApiError.BadRequest('s');
+      const { dto: userDto, errors: userErrors } = await DtoManager.createDto(UserRegisterRequestDto, req.body, { isValidate: true });
+      if (userErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', userErrors);
 
-      this.setRefreshTokenCookie(res, userData.refreshToken);
+      const { dto: patientDto, errors: patientErrors } = await DtoManager.createDto(PatientDto, req.body, { isValidate: true });
+      if (patientErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', patientErrors);
 
-      const user = this.mapUserDataToUserDto(userData);
-      if (user.role.includes('patient')) {
-        const isPatientAllowed: boolean = await this.patientService.isPatientCreatable(user.id);
-        if (!isPatientAllowed) throw ApiError.BadRequest('Данные пациента у текущего пользователя уже существуют');
+      const existingUser = await this.service.getUserByEmail(userDto.email);
 
-        const { dto, errors } = await DtoManager.createDto(PatientDto, { name: userDto.name, userId: user.id }, { isValidate: true });
-        if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+      const isUserHavePatient: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleName);
+      if (isUserHavePatient) throw ApiError.BadRequest('Пользователь с таким email уже существует');
 
-        const newPatient = await this.patientService.createPatient(dto);
-        if (!newPatient) throw ApiError.BadRequest('Не удалось создать пациента!');
-      }
-      const getUser = await this.service.findUserByIdWithRelations(user.id, user.role);
-      if (!getUser) throw ApiError.BadRequest('Не удалось найти пациента!');
-      const getUserByRole = this.mapUserDataToUserDto(getUser);
+      const isValidPassword: boolean = !!existingUser && (await this.service.isValidPassword(existingUser, userDto.password));
+      if (existingUser && !isValidPassword) throw ApiError.BadRequest('Введен неверный пароль для указанного email');
 
-      res.send(getUserByRole);
+      const patientEntity = this.patientService.createPatientEntity(patientDto);
+
+      const newUserPatient = await this.service.registerUser(existingUser || userDto, patientEntity, roleName);
+      if (!newUserPatient) throw ApiError.BadRequest('Не удалось создать пользователя пациента!');
+
+      const { id, accessToken, refreshToken } = newUserPatient;
+      const userPatient = await this.service.getUserByIdWithRole(id, roleName);
+      if (!userPatient) throw ApiError.BadRequest('Не удалось найти созданного пользователя пациента!');
+
+      if (!userPatient.isActivated) this.service.emailSendMessage(userPatient.email, userPatient.id);
+
+      const { dto } = await DtoManager.createDto(UserDto, { ...userPatient, accessToken, role: roleName });
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
+      res.json(dto);
     } catch (e) {
       next(e);
     }
   };
-  signIn: RequestHandler = async (req, res, next) => {
-    try {
-      const userDto = plainToInstance(AuthUserDto, req.body);
-      await this.validateDto(userDto);
-      const user = await this.service.signIn(userDto);
-      if (!user) throw ApiError.BadRequest('Пользователь с такими данными не найден!');
 
-      this.setRefreshTokenCookie(res, user.refreshToken);
-      const userData = this.mapUserDataToUserDto(user);
-      res.send(userData);
+  registerPsychologistHandler: RequestHandler = async (req, res, next) => {
+    try {
+      const roleName: UserRole = UserRole.Psychologist;
+
+      if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
+        throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
+
+      const { dto: userDto, errors: userErrors } = await DtoManager.createDto(UserRegisterRequestDto, req.body, { isValidate: true });
+      if (userErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', userErrors);
+
+      const { dto: psychologistDto, errors: psychologistErrors } = await DtoManager.createDto(PsychologistDto, req.body, { isValidate: true });
+      if (psychologistErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', psychologistErrors);
+
+      const existingUser = await this.service.getUserByEmail(userDto.email);
+
+      const isUserHavePsychologist: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleName);
+      if (isUserHavePsychologist) throw ApiError.BadRequest('Пользователь с таким email уже существует');
+
+      const isValidPassword: boolean = !!existingUser && (await this.service.isValidPassword(existingUser, userDto.password));
+      if (existingUser && !isValidPassword) throw ApiError.BadRequest('Введен неверный пароль для указанного email');
+
+      const certificateList: string[] = req.files.certificates.map((file) => file.filename);
+      const photosList: string[] = req.files.photos.map((file) => file.filename);
+      const psychologistEntity = await this.psychologistService.createPsychologistEntity(psychologistDto, certificateList, photosList);
+
+      const newUserPsychologist = await this.service.registerUser(existingUser || userDto, psychologistEntity, roleName);
+      if (!newUserPsychologist) throw ApiError.BadRequest('Не удалось создать пользователя психолога!');
+
+      const { id, accessToken, refreshToken } = newUserPsychologist;
+      const userPsychologist = await this.service.getUserByIdWithRole(id, roleName);
+      if (!userPsychologist) throw ApiError.BadRequest('Не удалось найти созданного пользователя психолога!');
+
+      if (!userPsychologist.isActivated) this.service.emailSendMessage(userPsychologist.email, userPsychologist.id);
+
+      const { dto } = await DtoManager.createDto(UserDto, { ...userPsychologist, accessToken, role: roleName });
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
+      res.json(dto);
+    } catch (e) {
+      FileManager.deleteFiles(config.uploadPath, req.files);
+      next(e);
+    }
+  };
+
+  loginUserHandler: RequestHandler = async (req, res, next) => {
+    try {
+      const { dto: userDto, errors: userErrors } = await DtoManager.createDto(UserLoginRequest, req.body, { isValidate: true });
+      if (userErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', userErrors);
+
+      const existingUser = await this.service.getUserByEmail(userDto.email);
+
+      const isUserHaveRole: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, userDto.role);
+      if (!(existingUser && isUserHaveRole)) throw ApiError.BadRequest('Данного пользователя не существует');
+
+      const isValidPassword: boolean = await this.service.isValidPassword(existingUser, userDto.password);
+      if (!isValidPassword) throw ApiError.BadRequest('Введен неверный email или пароль');
+
+      const { id, accessToken, refreshToken } = await this.service.loginUser(existingUser, userDto.role);
+
+      const loggedUser = await this.service.getUserByIdWithRole(id, userDto.role);
+      if (!loggedUser) throw ApiError.BadRequest('Не удалось найти пользователя!');
+
+      const { dto } = await DtoManager.createDto(UserDto, { ...loggedUser, accessToken, role: userDto.role });
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
+      res.json(dto);
     } catch (e) {
       next(e);
     }
   };
-  signOut: RequestHandler = async (req, res, next) => {
+
+  logoutUserHandler: RequestHandler = async (req, res, next) => {
     try {
-      const { refreshToken } = req.cookies;
-      const token = await this.service.signOut(refreshToken);
-      res.clearCookie('refreshToken');
-      res.send(token);
+      if (!req.customLocals.userJwtPayload) throw ApiError.UnauthorizedError();
+
+      const { id, role } = req.customLocals.userJwtPayload;
+      if (!(id && role)) throw ApiError.UnauthorizedError();
+
+      await this.service.logoutUser(id, role);
+      res.status(204).send();
     } catch (e) {
       next(e);
     }
@@ -82,19 +153,20 @@ export class AuthController {
       const oldRefreshToken = req.cookies.refreshToken as unknown;
       if (typeof oldRefreshToken !== 'string') throw new Error('Отсутствует рефреш токен в запросе');
 
-      const { id: userId } = jwt.verify(oldRefreshToken, config.secretKeyRefresh) as IUserJwtPayload;
-      if (!userId) throw new Error('id пользователя отсутствует');
+      const { id, role } = jwt.verify(oldRefreshToken, config.secretKeyRefresh) as IUserJwtPayload;
+      if (!(id && role)) throw new Error('Необходимые данные токена отсутствуют');
 
-      const userTokens: IUserTokens | null = await this.service.generateRefreshTokenByUserId(userId, oldRefreshToken);
+      const userTokens: IUserTokens | null = await this.service.generateRefreshTokenByUserId(id, role, oldRefreshToken);
       if (!userTokens) throw new Error('Запрещено обновление рефреш токена');
 
       const { refreshToken, accessToken } = userTokens;
-      this.setRefreshTokenCookie(res, refreshToken);
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
       res.send({ accessToken });
     } catch (e) {
       next(ApiError.Forbidden());
     }
   };
+
   activateEmail: RequestHandler = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id, 10);
@@ -112,8 +184,10 @@ export class AuthController {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const id = req.customLocals.userJwtPayload.id;
+
       const user = await this.service.findOneUser(id);
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
+
       await this.service.emailSendMessage(user.email, user.id);
       res.send('Письмо для повторного подтверждение отправлено на почту');
     } catch (e) {
@@ -144,19 +218,4 @@ export class AuthController {
       next(e);
     }
   };
-
-  private setRefreshTokenCookie(res: Response, refreshToken: string): void {
-    res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-  }
-
-  private mapUserDataToUserDto(userData: IUser) {
-    return plainToInstance(UserDto, userData, { excludeExtraneousValues: true });
-  }
-  private async validateDto(dto: AuthUserDto) {
-    const errors = await validate(dto, {
-      whitelist: true,
-      validationError: { target: false, value: false },
-    });
-    if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', formatErrors(errors));
-  }
 }

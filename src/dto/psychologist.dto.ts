@@ -139,13 +139,6 @@ export class PsychologistDto implements IPsychologistClientData {
   cityId!: number;
 
   @Expose()
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
-  @IsNotEmpty({ message: messages.isNotEmpty })
-  @IsNumber({}, { message: messages.isNumber })
-  @Min(1, { message: messages.isPositive })
-  userId!: number;
-
-  @Expose()
   @Transform(({ value }) => Array.isArray(value) && value.map((number) => validateNumber(number)))
   @IsArray({ message: messages.isArray })
   @IsNumber({}, { each: true, message: messages.isNumberArray })

@@ -1,149 +1,56 @@
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { User } from '../entities/user.entity';
-import { ApiError } from '../helpers/api-error';
-import { RoleRepository } from './role.repository';
 import { UserRole } from '../interfaces/UserRole.enum';
 import { Role } from '../entities/role.entity';
 import { IUser, IUserEditAccount, IUserTokens } from '../interfaces/IUser.interface';
-import { AuthUserDto } from '../dto/authUser.dto';
+import { Patient } from '../entities/patient.entity';
+import { UserRegisterRequestDto } from '../dto/userRegisterRequest.dto';
+import { Psychologist } from '../entities/psychologist.entity';
 
 export class UsersRepository extends Repository<User> {
-  private roleRepository: RoleRepository;
-
   constructor() {
     super(User, appDataSource.createEntityManager());
-    this.roleRepository = new RoleRepository();
   }
 
-  async signUp(userDto: AuthUserDto) {
-    const existingRole = await this.checkRole(userDto.role);
-    const user = await this.emailOrPhoneSearch(userDto, userDto.role);
+  createUser = async (userData: UserRegisterRequestDto | User, relation: Patient | Psychologist, role: Role): Promise<User> => {
+    if (userData instanceof User) {
+      relation instanceof Patient ? (userData.patient = relation) : (userData.psychologist = relation);
 
-    if (user) {
-      if (this.userHasRole(user, userDto.role)) {
-        throw ApiError.BadRequest('Такой пользователь уже существует в базе данных');
-      }
-
-      user.roles = this.addUserRole(user.roles, existingRole);
-      const tokens = await this.generateAndSaveTokens(user);
-      const userData = await this.findUserByIdWithRelations(user.id, existingRole.name);
-      if (!userData) return null;
-      return { ...userData, role: existingRole.name, ...tokens };
+      userData.roles?.push(role);
+      return await this.save(userData);
     }
 
-    const newUser = this.create(userDto);
-    newUser.roles = [existingRole];
-    const tokens = await this.generateAndSaveTokens(newUser);
-    const userData = await this.findUserByIdWithRelations(newUser.id, existingRole.name);
-    if (!userData) return null;
-    const accessToken = userData.generateAccessToken();
-    return {
-      ...userData,
-      role: existingRole.name,
-      refreshToken: tokens.refreshToken,
-      accessToken,
-    };
-  }
+    const userEntity = this.create({ ...userData, [role.name]: relation, roles: [role] });
+    return await this.save(userEntity);
+  };
 
-  async signIn(userDto: AuthUserDto) {
-    const existingRole = await this.checkRole(userDto.role);
-    const user = await this.emailOrPhoneSearch(userDto, userDto.role);
-
-    if (!user || !this.userHasRole(user, userDto.role)) {
-      throw ApiError.BadRequest('Упс, такого пользователя нету в базе данных!');
-    }
-
-    const isMatch = await user.comparePassword(userDto.password);
-    if (!isMatch) {
-      throw ApiError.BadRequest('Введенные вами данные не соответствуют ожидаемым!');
-    }
-
-    const tokens = await this.generateAndSaveTokens(user);
-
-    return { accessToken: tokens.accessToken, role: existingRole.name, ...user };
-  }
-
-  async signOut(refreshToken: string) {
-    const user = await this.findOne({ where: { refreshToken } });
-
-    if (user) {
-      user.refreshToken = (await this.generateAndSaveTokens(user)).refreshToken;
-      await this.save(user);
-    }
-  }
-  async updateRefreshToken(userId: number, refreshToken: string): Promise<IUserTokens | null> {
-    const user = await this.findOneBy({ id: userId });
-    if (!user) return null;
-
-    if (user.refreshToken !== refreshToken) return null;
-
+  generateNewTokens = async (user: User, roleName: UserRole): Promise<IUserTokens> => {
     const userTokens: IUserTokens = {
-      refreshToken: user.generateRefreshToken(),
-      accessToken: user.generateAccessToken(),
+      refreshToken: user.generateRefreshToken(roleName),
+      accessToken: user.generateAccessToken(roleName),
     };
+
     await this.save(user);
     return userTokens;
-  }
+  };
 
-  userHasRole(user: User, role: string) {
-    return user.roles?.some((r) => r.name === role);
-  }
+  findUserByIdWithRole = async (id: number, roleName: UserRole): Promise<User | null> => {
+    const relations = { roles: true, [roleName]: true };
+    return await this.findOne({ where: { id }, relations });
+  };
 
-  addUserRole(existingRoles: Role[] | undefined, role: Role) {
-    return existingRoles ? [...existingRoles, role] : [role];
-  }
+  findUserByEmail = async (email: string): Promise<User | null> => {
+    const relations = { roles: true };
+    return await this.findOne({ where: { email }, relations });
+  };
 
-  async generateAndSaveTokens(user: User) {
-    const tokens = await this.generateTokens(user);
-    user.refreshToken = tokens.refreshToken;
-    await this.save(user);
-    return tokens;
-  }
+  checkPassword = async (user: User, password: string): Promise<boolean> => {
+    return await user.comparePassword(password);
+  };
 
-  async findUserByIdWithRelations(userId: number, role?: string): Promise<User | null> {
-    const relations = role ? { roles: true, [role]: true } : { roles: true };
-    return await this.findOne({ where: { id: userId }, relations });
-  }
-
-  async findUserByWithRelations(userId: number, role?: string): Promise<IUser | null> {
-    const relations = role ? { roles: true, [role]: true } : { roles: true };
-    return await this.findOne({ where: { id: userId }, relations });
-  }
-
-  private async generateTokens(userData: User) {
-    const accessToken = userData.generateAccessToken();
-    const refreshToken = userData.generateRefreshToken();
-    return {
-      accessToken,
-      refreshToken,
-    };
-  }
-  private async checkRole(role: UserRole) {
-    const existingRole = await this.roleRepository.findOne({ where: { name: role } });
-
-    if (!existingRole) {
-      throw ApiError.BadRequest('Упс, такой роли не существует');
-    }
-    return existingRole;
-  }
-
-  async emailOrPhoneSearch(dto: AuthUserDto, entityType: string) {
-    const { email, phone } = dto;
-    const whereCondition = email ? { email } : { phone };
-
-    return await this.findOne({
-      where: whereCondition,
-      relations: { roles: true, [entityType]: true },
-    });
-  }
-
-  async activateEmail(id: number) {
-    const userActive = await this.findOne({
-      where: {
-        id,
-      },
-    });
+  activateEmail = async (id: number) => {
+    const userActive = await this.findOne({ where: { id } });
 
     if (userActive?.email) {
       userActive.isActivated = true;
@@ -151,6 +58,7 @@ export class UsersRepository extends Repository<User> {
     }
     return userActive;
   }
+  
   findOneUser = async (where: FindOptionsWhere<User>): Promise<IUser | null> => {
     return await this.findOne({ where });
   };
@@ -169,14 +77,8 @@ export class UsersRepository extends Repository<User> {
     return user;
   };
 
-  findUserByEmail = async (email: string): Promise<IUser | null> => {
-    const user = await this.findOne({ where: { email: email } });
-    return user || null;
-  };
-
   findUserByPhone = async (phone: string): Promise<IUser | null> => {
-    const user = await this.findOne({ where: { phone: phone } });
-    return user || null;
+    return await this.findOne({ where: { phone } });
   };
 
   editUser = async (

@@ -6,6 +6,7 @@ import { Role } from './role.entity';
 import { Patient } from './patient.entity';
 import { Psychologist } from './psychologist.entity';
 import { IUser } from '../interfaces/IUser.interface';
+import { UserRole } from '../interfaces/UserRole.enum';
 
 @Entity('users')
 export class User implements IUser {
@@ -24,7 +25,7 @@ export class User implements IUser {
   @Column()
   password!: string;
 
-  @Column({ name: 'refresh_token' })
+  @Column({ name: 'refresh_token', nullable: true })
   refreshToken!: string;
 
   @Column({ default: false })
@@ -34,10 +35,10 @@ export class User implements IUser {
   @JoinTable()
   roles?: Role[];
 
-  @OneToOne(() => Patient, (patient) => patient.user)
+  @OneToOne(() => Patient, (patient) => patient.user, { cascade: true })
   patient?: Patient;
 
-  @OneToOne(() => Psychologist, (psychologist) => psychologist.user)
+  @OneToOne(() => Psychologist, (psychologist) => psychologist.user, { cascade: true })
   psychologist?: Psychologist;
 
   @BeforeInsert()
@@ -53,12 +54,12 @@ export class User implements IUser {
     return await bcrypt.compare(password, this.password);
   }
 
-  generateRefreshToken() {
-    this.refreshToken = jwt.sign({ id: this.id, role: this.roles }, config.secretKeyRefresh, { expiresIn: '30d' });
+  generateRefreshToken(role: UserRole) {
+    this.refreshToken = jwt.sign({ id: this.id, role }, config.secretKeyRefresh, { expiresIn: '30d' });
     return this.refreshToken;
   }
 
-  generateAccessToken() {
-    return jwt.sign({ id: this.id, role: this.roles }, config.secretKey, { expiresIn: '15m' });
+  generateAccessToken(role: UserRole) {
+    return jwt.sign({ id: this.id, role }, config.secretKey, { expiresIn: '15m' });
   }
 }

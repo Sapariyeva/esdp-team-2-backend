@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
 import { AuthController } from '../controllers/auth.controller';
 import authenticateUser from '../middlewares/authenticateUser';
+import { upload } from '../middlewares/ValidateUpload.middlewar';
 
 export class AuthRouter implements IRoute {
   public path = '/auth';
@@ -14,9 +15,14 @@ export class AuthRouter implements IRoute {
   }
 
   private init() {
-    this.router.post('/register', this.controller.signUp);
-    this.router.post('/login', this.controller.signIn);
-    this.router.post('/logout', this.controller.signOut);
+    this.router.post('/register/patient', this.controller.registerPatientHandler);
+    this.router.post(
+      '/register/psychologist',
+      upload.fields([{ name: 'photos' }, { name: 'certificates' }]),
+      this.controller.registerPsychologistHandler,
+    );
+    this.router.post('/login', this.controller.loginUserHandler);
+    this.router.post('/logout', this.controller.logoutUserHandler);
     this.router.get('/refresh-token', this.controller.updateRefreshTokenHandler);
     this.router.get('/activate/:id', this.controller.activateEmail);
     this.router.get('/sendConfirmationLinkToEmail', authenticateUser, this.controller.sendConfirmationLinkToEmail);

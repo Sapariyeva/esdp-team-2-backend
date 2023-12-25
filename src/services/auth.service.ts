@@ -1,53 +1,70 @@
 import { UsersRepository } from '../repositories/users.repository';
 import { IUser, IUserEditAccount, IUserTokens } from '../interfaces/IUser.interface';
-import { AuthUserDto } from '../dto/authUser.dto';
 import { EmailMessage } from '../interfaces/email/IEmailMessage';
 import mailer from '../email/nodemailer';
+import { Patient } from '../entities/patient.entity';
+import { RoleRepository } from '../repositories/role.repository';
+import { UserRole } from '../interfaces/UserRole.enum';
+import { UserRegisterRequestDto } from '../dto/userRegisterRequest.dto';
+import { User } from '../entities/user.entity';
+import { Psychologist } from '../entities/psychologist.entity';
 
 export class AuthService {
   private repository: UsersRepository;
+  private roleRepository: RoleRepository;
 
   constructor() {
     this.repository = new UsersRepository();
+    this.roleRepository = new RoleRepository();
   }
 
-  signUp = async (userDto: AuthUserDto) => {
-    const user = await this.repository.signUp(userDto);
-    if (user?.email) this.emailSendMessage(user.email, user.id);
-    return user;
+  registerUser = async (
+    userData: UserRegisterRequestDto | User,
+    relation: Patient | Psychologist,
+    roleName: UserRole,
+  ): Promise<(IUserTokens & Pick<IUser, 'id'>) | null> => {
+    const role = await this.roleRepository.findOne({ where: { name: roleName } });
+    if (!role) return null;
+
+    const user = await this.repository.createUser(userData, relation, role);
+    const tokens = await this.repository.generateNewTokens(user, roleName);
+
+    return { id: user.id, ...tokens };
   };
 
-  signIn = async (userDto: AuthUserDto) => {
-    return await this.repository.signIn(userDto);
+  loginUser = async (user: User, roleName: UserRole): Promise<IUserTokens & Pick<IUser, 'id'>> => {
+    const tokens = await this.repository.generateNewTokens(user, roleName);
+    return { id: user.id, ...tokens };
   };
 
-  signOut = async (refreshToken: string) => {
-    return await this.repository.signOut(refreshToken);
-  };
-  generateRefreshTokenByUserId = async (userId: number, refreshToken: string): Promise<IUserTokens | null> => {
-    return await this.repository.updateRefreshToken(userId, refreshToken);
+  logoutUser = async (userId: number, roleName: UserRole) => {
+    const user = await this.repository.findUserByIdWithRole(userId, roleName);
+    if (!user) return null;
+
+    return await this.repository.generateNewTokens(user, roleName);
   };
 
-  findUserByIdWithRelations = async (userId: number, role?: string) => {
-    return await this.repository.findUserByWithRelations(userId, role);
+  generateRefreshTokenByUserId = async (userId: number, roleName: UserRole, refreshToken: string): Promise<IUserTokens | null> => {
+    const user = await this.repository.findUserByIdWithRole(userId, roleName);
+    if (!user) return null;
+
+    if (user.refreshToken !== refreshToken) return null;
+
+    return await this.repository.generateNewTokens(user, roleName);
   };
+
   activateEmail = async (id: number) => {
     return await this.repository.activateEmail(id);
   };
-  findOneUser = async (id: number): Promise<IUser | null> => {
-    return await this.repository.findOneUser({ id });
-  };
 
-  checkPassword = async (id: number, сurrentPassword: string): Promise<IUser | null> => {
-    return await this.repository.checkPassword(id, сurrentPassword);
-  };
+  checkPassword = async (id: number, password: string): Promise<IUser | null> => {
+    const user: User | null = await this.repository.findOneBy({ id });
+    if (!user) return null;
 
-  findUserByEmail = async (email: string): Promise<IUser | null> => {
-    return await this.repository.findUserByEmail(email);
-  };
+    const isValidPassword: boolean = await this.repository.checkPassword(user, password);
+    if (!isValidPassword) return null;
 
-  findUserByPhone = async (phone: string): Promise<IUser | null> => {
-    return await this.repository.findUserByPhone(phone);
+    return user;
   };
 
   editUser = async (
@@ -77,5 +94,30 @@ export class AuthService {
       } as unknown as EmailMessage;
       mailer(message);
     }
+  };
+
+  findOneUser = async (id: number): Promise<User | null> => {
+    return await this.repository.findOneUser({ id });
+  };
+
+  getUserByIdWithRole = async (id: number, role: UserRole): Promise<User | null> => {
+    return await this.repository.findUserByIdWithRole(id, role);
+  };
+
+  getUserByEmail = async (email: string): Promise<User | null> => {
+    return await this.repository.findUserByEmail(email);
+  };
+
+  getUserByPhone = async (phone: string): Promise<IUser | null> => {
+    return await this.repository.findUserByPhone(phone);
+  };
+
+  isUserHaveRole = (user: User, roleName: UserRole): boolean => {
+    if (!Array.isArray(user.roles)) throw new Error('Отсутствует массив ролей');
+    return user.roles.some((role) => role.name === roleName);
+  };
+
+  isValidPassword = async (user: User, password: string): Promise<boolean> => {
+    return await this.repository.checkPassword(user, password);
   };
 }

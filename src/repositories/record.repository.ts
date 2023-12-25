@@ -33,7 +33,13 @@ export class RecordRepository extends Repository<Record> {
     });
   };
 
-  public cancelRecord = async (record: IRecord) => {
-    return this.save(record);
+  async transferRecord(id: number, newDataTime: string, broadcast?: string) {
+    const result = await this.createQueryBuilder().update(Record).set({ datetime: newDataTime, broadcast }).where('id = :id', { id }).execute();
+
+    return result.affected ? id : null;
+  }
+
+  public deleteRecord = async (id: number) => {
+    return this.delete(id);
   };
 }
