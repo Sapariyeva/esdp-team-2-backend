@@ -155,6 +155,10 @@ export class UsersRepository extends Repository<User> {
     return await this.findOne({ where });
   };
 
+  findOneUserWithRealtions = async (where: FindOptionsWhere<User>): Promise<IUser | null> => {
+    return await this.findOne({ where, relations: { patient: true, psychologist: true } });
+  };
+
   checkPassword = async (id: number, сurrentPassword: string): Promise<IUser | null> => {
     const user = await this.findOneBy({ id });
     if (!user) return null;

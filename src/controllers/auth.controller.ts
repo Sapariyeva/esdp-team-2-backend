@@ -129,25 +129,14 @@ export class AuthController {
       const { dto, errors } = await DtoManager.createDto(UserEditAccountDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
-      const existingEmail = await this.service.findUserByEmail(dto.email || '');
-      if (existingEmail) {
-        throw ApiError.BadRequest('Данный адрес электронной почты уже используется');
-      }
-
-      const existingPhone = await this.service.findUserByPhone(dto.phone || '');
-      if (existingPhone) {
-        throw ApiError.BadRequest('Данный номер телефона уже используется');
-      }
-
       const { сurrentPassword, ...restUserDto } = dto;
       const user = await this.service.checkPassword(userId, сurrentPassword);
       if (!user) throw ApiError.NotFound('Неверный пароль!');
-
       const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
       if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
-
+      const newUser = await this.service.findOneUserWithRealtions(userId);
       if (passwordUpdated) {
-        res.send('Пароль успешно обновлен');
+        res.send(newUser);
       } else {
         res.send({ email: restUserDto.email, phone: restUserDto.phone });
       }
