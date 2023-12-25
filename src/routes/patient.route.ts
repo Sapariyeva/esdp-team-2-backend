@@ -13,7 +13,6 @@ export class PatientRouter implements IRoute {
     this.init();
   }
   private init() {
-    this.router.post('/create', authenticateUser, this.controller.createPatient);
     this.router.delete('/:id', this.controller.deletePatient);
     this.router.put('/edit/:id', authenticateUser, this.controller.editPatient);
     this.router.post('/favorites', authenticateUser, this.controller.changeToFavorites);

@@ -11,11 +11,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
     super(Psychologist, appDataSource.createEntityManager());
   }
 
-  public savePsychologist = async (
-    psychologistNewData: IPsychologistNewData,
-    certificateList: string[],
-    photosList: string[],
-  ): Promise<IPsychologist> => {
+  public createPsychologistEntity = (psychologistNewData: IPsychologistNewData, certificateList: string[], photosList: string[]): Psychologist => {
     const certificates = certificateList.map((certificate) => {
       const certificateSchema = new Certificate();
       certificateSchema.certificate = certificate;
@@ -28,8 +24,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
       return photoSchema;
     });
 
-    const psychologistEntity = this.create({ ...psychologistNewData, certificates, photos });
-    return await this.save(psychologistEntity);
+    return this.create({ ...psychologistNewData, certificates, photos });
   };
 
   public findOnePsychologist = async (where: FindOptionsWhere<Psychologist>): Promise<IPsychologist | null> => {
