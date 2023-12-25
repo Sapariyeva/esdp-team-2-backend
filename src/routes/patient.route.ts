@@ -20,6 +20,7 @@ export class PatientRouter implements IRoute {
     this.router.post('/viewedPsychologists/:id', this.controller.updateLastPsychologists);
     this.router.get('/viewedPsychologists', this.controller.getVeiewedPsychologists);
     this.router.get('/', this.controller.getPatients);
+    this.router.get('/history', this.controller.getRecordsHistory);
     this.router.get('/:id', this.controller.getPatient);
   }
 }

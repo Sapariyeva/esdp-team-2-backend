@@ -5,14 +5,18 @@ import DtoManager from '../helpers/dtoManager';
 import { PatientService } from '../services/patient.service';
 import { PatientDto } from '../dto/patient.dto';
 import { PsychologistService } from '../services/psychologist.service';
+import { RecordService } from '../services/record.service';
+import { IRecord } from '../interfaces/IRecord.interface';
 
 export class PatientController {
   private service: PatientService;
   private psychologistService: PsychologistService;
+  private recordService: RecordService;
 
   constructor() {
     this.service = new PatientService();
     this.psychologistService = new PsychologistService();
+    this.recordService = new RecordService();
   }
 
   getPatients: RequestHandler = async (req, res, next) => {
@@ -165,6 +169,23 @@ export class PatientController {
       res.send(viewedPsychologists);
     } catch (error) {
       next(error);
+    }
+  };
+
+  public getRecordsHistory: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const checkPatient = await this.recordService.checkPatient(userId);
+      if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
+
+      const record: IRecord[] = await this.recordService.getAllRecords(checkPatient.id, false);
+      if (!record) throw ApiError.BadRequest('Ошибка при получение актуальных записей');
+
+      res.send(record);
+    } catch (e) {
+      next(e);
     }
   };
 }
