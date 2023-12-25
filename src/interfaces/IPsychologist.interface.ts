@@ -31,7 +31,7 @@ interface IPsychologistDataOnly {
   cityId: number;
 }
 
-interface IPsychologistNewDataOnly extends Omit<IPsychologistDataOnly, 'id' | 'isPublish'> {}
+interface IPsychologistNewDataOnly extends Omit<IPsychologistDataOnly, 'id' | 'isPublish' | 'userId'> {}
 
 interface IPsychologistRelations {
   user: IUser;

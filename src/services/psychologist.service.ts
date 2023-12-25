@@ -1,4 +1,5 @@
 import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
+import { Psychologist } from '../entities/psychologist.entity';
 import { IPsychologist, IPsychologistClientData, IPsychologistNewData } from '../interfaces/IPsychologist.interface';
 import { ISymptom } from '../interfaces/ISymptom.interface';
 import { ITechnique } from '../interfaces/ITechnique.interface';
@@ -26,16 +27,14 @@ export class PsychologistService {
     this.patientRepository = new PatientRepository();
   }
 
-  public createPsychologist = async (
+  public createPsychologistEntity = async (
     { therapyMethodIds, techniqueIds, symptomIds, ...restPsychologistClientData }: IPsychologistClientData,
     certificateList: string[],
     photosList: string[],
-  ): Promise<IPsychologist | null> => {
+  ): Promise<Psychologist> => {
     const psychologistSkills = await this.getAllPsychologistSkillById(therapyMethodIds, techniqueIds, symptomIds);
     const psychologistNewData: IPsychologistNewData = { ...restPsychologistClientData, ...psychologistSkills };
-    const { id } = await this.repository.savePsychologist(psychologistNewData, certificateList, photosList);
-
-    return await this.repository.findOnePsychologist({ id });
+    return this.repository.createPsychologistEntity(psychologistNewData, certificateList, photosList);
   };
 
   public getOnePsychologist = async (id: number): Promise<IPsychologist | null> => {

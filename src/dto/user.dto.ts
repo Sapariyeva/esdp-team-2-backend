@@ -12,9 +12,6 @@ export class UserDto {
   phone?: string;
 
   @Expose()
-  name!: string;
-
-  @Expose()
   role!: string;
 
   @Expose()

@@ -7,13 +7,12 @@ import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { IViewedPsychologist } from '../interfaces/IViewedPsychologist';
 import { ViewedPsychologists } from '../entities/viewedPsychologists.entity';
 
-export class PatientRepository extends Repository<IPatient> {
+export class PatientRepository extends Repository<Patient> {
   constructor() {
     super(Patient, appDataSource.createEntityManager());
   }
-  async createPatient(dto: PatientDto): Promise<IPatient> {
-    const patient = this.create(dto);
-    return await this.save(patient);
+  createPatientEntity(dto: PatientDto): Patient {
+    return this.create(dto);
   }
   async deletePatient(id: number) {
     const deletedPatient = await this.delete(id);
@@ -47,7 +46,7 @@ export class PatientRepository extends Repository<IPatient> {
   }
 
   async editPatient(patient: IPatient, dto: PatientDto): Promise<IPatient | null> {
-    const updatedPatient = this.merge(patient, dto);
+    const updatedPatient = this.merge(patient as Patient, dto);
     return await this.save(updatedPatient);
   }
   async changeToFavorites(patient: IPatient, psychologist: IPsychologist): Promise<IPsychologist[] | undefined> {
@@ -57,7 +56,7 @@ export class PatientRepository extends Repository<IPatient> {
     } else {
       patient.favorites = (patient.favorites || []).filter((fav) => fav.id !== psychologist.id);
     }
-    this.save(patient);
+    this.save(patient as Patient);
     if (patient.favorites) {
       return patient.favorites;
     } else return;
@@ -91,7 +90,7 @@ export class PatientRepository extends Repository<IPatient> {
       }
     }
 
-    await this.save(patient);
+    await this.save(patient as Patient);
 
     return patient.lastViewedPsychologists;
   }

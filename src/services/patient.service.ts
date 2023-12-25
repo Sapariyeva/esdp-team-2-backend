@@ -1,4 +1,5 @@
 import { PatientDto } from '../dto/patient.dto';
+import { Patient } from '../entities/patient.entity';
 import { IPatient } from '../interfaces/IPatient.interface';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PatientRepository } from '../repositories/patient.repository';
@@ -17,8 +18,8 @@ export class PatientService {
     return await this.repository.getPatients();
   };
 
-  createPatient = async (dto: PatientDto): Promise<IPatient> => {
-    return await this.repository.createPatient(dto);
+  createPatientEntity = (dto: PatientDto): Patient => {
+    return this.repository.createPatientEntity(dto);
   };
 
   getPatient = async (id: number): Promise<IPatient | null> => {
