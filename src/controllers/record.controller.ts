@@ -4,7 +4,6 @@ import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
 import { RecordService } from '../services/record.service';
 import { RecordDto } from '../dto/record.dto';
-import { IRecord } from '../interfaces/IRecord.interface';
 import { WorkTImeService } from '../services/workTIme.service';
 import { ZoomService } from '../services/zoom.service';
 import { TransferRecord } from '../dto/transferRecord.dto';
@@ -70,24 +69,6 @@ export class RecordController {
       next(e);
     }
   };
-
-  public getActualRecords: RequestHandler = async (req, res, next) => {
-    try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      const { id: userId } = req.customLocals.userJwtPayload;
-
-      const checkPatient = await this.service.checkPatient(userId);
-      if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
-
-      const record: IRecord[] = await this.service.getAllRecords(checkPatient.id, true);
-      if (!record) throw ApiError.BadRequest('Ошибка при получение актуальных записей');
-
-      res.send(record);
-    } catch (e) {
-      next(e);
-    }
-  };
-
   public getOneRecord: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
