@@ -48,7 +48,11 @@ export class PsychologistController {
 
   public getPsychologistsHandler: RequestHandler = async (req, res, next) => {
     try {
-      const psychologists: IPsychologist[] = await this.service.getPsychologists();
+      const isPublish = req.query.isPublish as string;
+      if (isPublish === undefined) throw ApiError.NotFound('Не верный статус');
+      const status = isPublish.toLowerCase() === 'true';
+
+      const psychologists: IPsychologist[] = await this.service.getPsychologists(status);
       const userId = req.customLocals.userJwtPayload?.id;
       const psychologistsWithFavorites: IPsychologist[] = await this.service.markFavoritePsychologists(psychologists, userId);
 

@@ -58,6 +58,12 @@ function routes(app: Express) {
    *     tags:
    *       - Psychologists
    *     summary: Get all psychologists
+   *     parameters:
+   *       - in: query
+   *         name: isPublish
+   *         schema:
+   *           type: boolean
+   *         description: Filter psychologists by publish status
    *     responses:
    *       200:
    *         description: Success
