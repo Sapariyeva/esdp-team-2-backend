@@ -120,4 +120,28 @@ export class AuthService {
   isValidPassword = async (user: User, password: string): Promise<boolean> => {
     return await this.repository.checkPassword(user, password);
   };
+
+  emailMessagePasswordForgot = async (user: User) => {
+    const tokenPasswordReset = this.repository.generateTokenPasswordReset(user);
+
+    const link = `http://localhost:5173/auth/reset-password?token=${tokenPasswordReset}`;
+
+    const message = {
+      to: user.email,
+      subject: 'Восстановление пароля',
+      html: `<h2>Здравствуйте, ${user.email}!</h2>
+          <p>Мы получили запрос на восстановление пароля для вашей учетной записи.</p>
+          <a href="${link}">Для восстановления пароля перейдите по ссылке</a>
+          <p>Если вы не запрашивали этот код, можете смело игнорировать это сообщение электронной почты. Возможно, кто-то ввел ваш адрес электронной почты по ошибке.</p>
+  
+          <p>С уважением, Gamma</p>
+        `,
+    } as unknown as EmailMessage;
+
+    mailer(message);
+  };
+
+  resetPassword = async (user: User, password: string) => {
+    await this.repository.generateNewPassword(user, password);
+  };
 }

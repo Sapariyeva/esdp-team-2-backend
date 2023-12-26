@@ -62,4 +62,8 @@ export class User implements IUser {
   generateAccessToken(role: UserRole) {
     return jwt.sign({ id: this.id, role }, config.secretKey, { expiresIn: '15m' });
   }
+
+  generatePasswordResetToken() {
+    return jwt.sign({ id: this.id }, config.secretKeyPasswordReset, { expiresIn: '15m' });
+  }
 }

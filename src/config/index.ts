@@ -7,6 +7,7 @@ const config = {
   uploadPath: path.join(rootPath, 'public/uploads'),
   secretKey: 'secretKey',
   secretKeyRefresh: 'secretKeyRefresh',
+  secretKeyPasswordReset: 'secretKeyPasswordReset',
 };
 
 export default config;
