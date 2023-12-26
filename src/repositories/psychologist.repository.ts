@@ -31,10 +31,9 @@ export class PsychologistRepository extends Repository<Psychologist> {
     return await this.findOne({ where, relations: { city: true } });
   };
 
-  public findPsychologists = async (): Promise<IPsychologist[]> => {
-    return await this.find();
+  public findPsychologists = async (isPublish: boolean): Promise<IPsychologist[]> => {
+    return await this.find({ where: { isPublish } });
   };
-
   public findPsychologistsByIds = async (ids: number[]): Promise<Psychologist[] | null> => {
     return await this.find({
       where: {
