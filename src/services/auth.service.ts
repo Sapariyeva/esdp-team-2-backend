@@ -104,6 +104,10 @@ export class AuthService {
     return await this.repository.findUserByEmail(email);
   };
 
+  getUserByUsername = async (username: string): Promise<User | null> => {
+    return await this.repository.findUserByUsername(username);
+  };
+
   findOneUserWithRealtions = async (id: number): Promise<User | null> => {
     return await this.repository.findOneUserWithRealtions({ id });
   };

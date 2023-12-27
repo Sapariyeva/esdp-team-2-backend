@@ -15,6 +15,7 @@ import FileManager from '../helpers/fileManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import { PsychologistService } from '../services/psychologist.service';
 import { UserLoginRequest } from '../dto/userLoginRequest.dto';
+import { AdminLoginRequest } from '../dto/adminLoginRequest.dto';
 
 export class AuthController {
   private refreshToken = { name: 'refreshToken', options: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true } };
@@ -127,6 +128,34 @@ export class AuthController {
       if (!loggedUser) throw ApiError.BadRequest('Не удалось найти пользователя!');
 
       const { dto } = await DtoManager.createDto(UserDto, { ...loggedUser, accessToken, role: userDto.role });
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
+      res.json(dto);
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  loginAdminHandler: RequestHandler = async (req, res, next) => {
+    try {
+      const roleAdmin: UserRole = UserRole.Admin;
+
+      const { dto: userDto, errors: userErrors } = await DtoManager.createDto(AdminLoginRequest, req.body, { isValidate: true });
+      if (userErrors.length) throw ApiError.BadRequest('Ошибка при валидации формы', userErrors);
+
+      const existingUser = await this.service.getUserByUsername(userDto.username);
+
+      const isUserHaveRole: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleAdmin);
+      if (!(existingUser && isUserHaveRole)) throw ApiError.BadRequest('Введен неверно имя пользователя или пароль');
+
+      const isValidPassword: boolean = await this.service.isValidPassword(existingUser, userDto.password);
+      if (!isValidPassword) throw ApiError.BadRequest('Введен неверно имя пользователя или пароль');
+
+      const { id, accessToken, refreshToken } = await this.service.loginUser(existingUser, roleAdmin);
+
+      const loggedUser = await this.service.findOneUser(id);
+      if (!loggedUser) throw ApiError.BadRequest('Не удалось найти пользователя!');
+
+      const { dto } = await DtoManager.createDto(UserDto, { ...loggedUser, accessToken, role: roleAdmin });
       res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
       res.json(dto);
     } catch (e) {

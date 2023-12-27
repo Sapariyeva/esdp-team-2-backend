@@ -45,6 +45,11 @@ export class UsersRepository extends Repository<User> {
     return await this.findOne({ where: { email }, relations });
   };
 
+  findUserByUsername = async (username: string): Promise<User | null> => {
+    const relations = { roles: true };
+    return await this.findOne({ where: { username }, relations });
+  };
+
   checkPassword = async (user: User, password: string): Promise<boolean> => {
     return await user.comparePassword(password);
   };

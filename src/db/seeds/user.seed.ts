@@ -10,8 +10,13 @@ export default class UserSeeder implements Seeder {
     if (!roles.length) throw new Error('Не удалось получить роли для пользователей');
 
     const userFactory = factoryManager.get(User);
+
     const userPromises: Promise<User[]>[] = roles.map(async (role) => {
-      let amount: number = 1;
+      if (role.name === UserRole.Admin) {
+        return await userFactory.saveMany(1, { username: 'admin', email: undefined, isActivated: true, roles: [role] });
+      }
+
+      let amount: number = 0;
       if (role.name === UserRole.Psychologist) amount = 70;
       if (role.name === UserRole.Patient) amount = 20;
 
