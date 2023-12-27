@@ -15,6 +15,8 @@ import FileManager from '../helpers/fileManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import { PsychologistService } from '../services/psychologist.service';
 import { UserLoginRequest } from '../dto/userLoginRequest.dto';
+import { UserRequestPasswordForgotDto } from '../dto/userRequestPasswordForgot';
+import { UserRequestPasswordResetDto } from '../dto/userRequestPasswordReset';
 import { AdminLoginRequest } from '../dto/adminLoginRequest.dto';
 
 export class AuthController {
@@ -243,6 +245,43 @@ export class AuthController {
       } else {
         res.send({ email: restUserDto.email, phone: restUserDto.phone });
       }
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  passwordForgotHandler: RequestHandler = async (req, res, next) => {
+    try {
+      const { dto, errors } = await DtoManager.createDto(UserRequestPasswordForgotDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
+      const user = await this.service.getUserByEmail(dto.email);
+      if (!user) throw ApiError.BadRequest('Email не существует');
+
+      await this.service.emailMessagePasswordForgot(user);
+      res.send('Письмо для сброса пароля отправлено на почту');
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  passwordResetHandler: RequestHandler = async (req, res, next) => {
+    try {
+      const token = req.query.token;
+      if (typeof token !== 'string') throw ApiError.UnauthorizedError();
+      console.log(token);
+
+      const { id } = jwt.verify(token, config.secretKeyPasswordReset) as IUserJwtPayload;
+      if (!id) throw ApiError.UnauthorizedError();
+
+      const { dto, errors } = await DtoManager.createDto(UserRequestPasswordResetDto, req.body, { isValidate: true });
+      if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
+      const user = await this.service.findOneUser(id);
+      if (!user) throw ApiError.BadRequest('Данные не найдены');
+
+      await this.service.resetPassword(user, dto.password);
+      res.send('Пароль изменен успешно');
     } catch (e) {
       next(e);
     }

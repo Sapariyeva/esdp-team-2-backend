@@ -98,4 +98,14 @@ export class UsersRepository extends Repository<User> {
     const updatedUser = await this.save(userEntity, { listeners: false });
     return { updatedUser, passwordUpdated };
   };
+
+  generateTokenPasswordReset = (user: User): string => {
+    return user.generatePasswordResetToken();
+  };
+
+  generateNewPassword = async (user: User, password: string) => {
+    user.password = password;
+    await user.hashPassword();
+    await this.save(user);
+  };
 }

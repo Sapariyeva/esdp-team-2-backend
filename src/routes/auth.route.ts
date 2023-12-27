@@ -28,5 +28,7 @@ export class AuthRouter implements IRoute {
     this.router.get('/activate/:id', this.controller.activateEmail);
     this.router.get('/sendConfirmationLinkToEmail', authenticateUser, this.controller.sendConfirmationLinkToEmail);
     this.router.put('/edit', authenticateUser, this.controller.editUserHandler);
+    this.router.post('/reset-forgot', this.controller.passwordForgotHandler);
+    this.router.post('/reset-password', this.controller.passwordResetHandler);
   }
 }
