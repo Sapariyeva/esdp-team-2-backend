@@ -19,7 +19,7 @@ import { WorkTimeRoute } from './routes/workTime.route';
 
 const app = new App({
   port: 8000,
-  middlewares: [initCustomLocals(), logger(), cookieParser(), cors({ credentials: true, origin: 'http://localhost:5173' })],
+  middlewares: [initCustomLocals(), logger(), cookieParser(), cors()],
   controllers: [
     new PsychologistRouter(),
     new AuthRouter(),
