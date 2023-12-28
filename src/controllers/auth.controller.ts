@@ -58,7 +58,7 @@ export class AuthController {
       const userPatient = await this.service.getUserByIdWithRole(id, roleName);
       if (!userPatient) throw ApiError.BadRequest('Не удалось найти созданного пользователя пациента!');
 
-      if (!userPatient.isActivated) this.service.emailSendMessage(userPatient.email, userPatient.id);
+      if (!userPatient.isActivated) this.service.emailSendMessage(userPatient.email, userPatient.id, roleName);
 
       const { dto } = await DtoManager.createDto(UserDto, { ...userPatient, accessToken, role: roleName });
       res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
@@ -100,7 +100,7 @@ export class AuthController {
       const userPsychologist = await this.service.getUserByIdWithRole(id, roleName);
       if (!userPsychologist) throw ApiError.BadRequest('Не удалось найти созданного пользователя психолога!');
 
-      if (!userPsychologist.isActivated) this.service.emailSendMessage(userPsychologist.email, userPsychologist.id);
+      if (!userPsychologist.isActivated) this.service.emailSendMessage(userPsychologist.email, userPsychologist.id, roleName);
 
       const { dto } = await DtoManager.createDto(UserDto, { ...userPsychologist, accessToken, role: roleName });
       res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
@@ -128,6 +128,8 @@ export class AuthController {
 
       const loggedUser = await this.service.getUserByIdWithRole(id, userDto.role);
       if (!loggedUser) throw ApiError.BadRequest('Не удалось найти пользователя!');
+
+      if (!loggedUser.isActivated) this.service.emailSendMessage(loggedUser.email, loggedUser.id, userDto.role);
 
       const { dto } = await DtoManager.createDto(UserDto, { ...loggedUser, accessToken, role: userDto.role });
       res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
@@ -201,11 +203,17 @@ export class AuthController {
   activateEmail: RequestHandler = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id, 10);
-      if (!id) throw ApiError.BadRequest('Неверный id');
+      const roleName = req.query.role as string;
+      if (!id && !roleName) throw ApiError.BadRequest('Неверный id');
 
-      const user = await this.service.activateEmail(id);
+      const user = await this.service.activateEmail(id, roleName);
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
-      res.send(user);
+
+      const { accessToken, refreshToken } = await this.service.loginUser(user, roleName as UserRole);
+
+      const { dto } = await DtoManager.createDto(UserDto, { ...user, accessToken, role: roleName });
+      res.cookie(this.refreshToken.name, refreshToken, this.refreshToken.options);
+      res.json(dto);
     } catch (error) {
       next(error);
     }
@@ -215,11 +223,13 @@ export class AuthController {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
       const id = req.customLocals.userJwtPayload.id;
+      const role = req.customLocals.userJwtPayload.role;
+      if (!role) throw ApiError.BadRequest('Role не существует');
 
       const user = await this.service.findOneUser(id);
       if (!user?.email) throw ApiError.BadRequest('Email не существует');
 
-      await this.service.emailSendMessage(user.email, user.id);
+      await this.service.emailSendMessage(user.email, user.id, role);
       res.send('Письмо для повторного подтверждение отправлено на почту');
     } catch (e) {
       next(e);
