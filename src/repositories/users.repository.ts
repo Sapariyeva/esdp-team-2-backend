@@ -54,8 +54,9 @@ export class UsersRepository extends Repository<User> {
     return await user.comparePassword(password);
   };
 
-  activateEmail = async (id: number) => {
-    const userActive = await this.findOne({ where: { id } });
+  activateEmail = async (id: number, roleName: string) => {
+    const relations = { roles: true, [roleName]: true };
+    const userActive = await this.findOne({ where: { id }, relations: relations });
 
     if (userActive?.email) {
       userActive.isActivated = true;

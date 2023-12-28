@@ -53,8 +53,8 @@ export class AuthService {
     return await this.repository.generateNewTokens(user, roleName);
   };
 
-  activateEmail = async (id: number) => {
-    return await this.repository.activateEmail(id);
+  activateEmail = async (id: number, roleName: string) => {
+    return await this.repository.activateEmail(id, roleName);
   };
 
   checkPassword = async (id: number, password: string): Promise<IUser | null> => {
@@ -75,7 +75,7 @@ export class AuthService {
     return updatedUser;
   };
 
-  emailSendMessage = async (email: string, userId: number) => {
+  emailSendMessage = async (email: string, userId: number, roleName: string) => {
     if (email) {
       const message = {
         to: email,
@@ -85,7 +85,7 @@ export class AuthService {
           <ul>
             <li>login: ${email}</li>
           </ul>
-          <a href="http://localhost:5173/auth/activate/${userId}">Подтвердить почту</a>
+          <a href="http://localhost:5173/auth/activate/${userId}?role=${roleName}">Подтвердить почту</a>
         `,
       } as unknown as EmailMessage;
       mailer(message);
