@@ -34,7 +34,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
   public findPsychologists = async (isPublish: boolean): Promise<IPsychologist[]> => {
     return await this.find({ where: { isPublish } });
   };
-  public findPsychologistsByIds = async (ids: number[]): Promise<Psychologist[] | null> => {
+  public findPsychologistsByIds = async (ids: number[]): Promise<Psychologist[]> => {
     return await this.find({
       where: {
         id: In(ids),
@@ -56,7 +56,7 @@ export class PsychologistRepository extends Repository<Psychologist> {
     return result.affected ? id : null;
   };
 
-  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[] | null> => {
+  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<Psychologist[]> => {
     const queryBuilder = this.createQueryBuilder('psychologist');
 
     queryBuilder.andWhere('psychologist.isPublish = :isPublish', { isPublish: true });
@@ -130,8 +130,6 @@ export class PsychologistRepository extends Repository<Psychologist> {
         queryBuilder.andWhere('psychologist.birthday >= :birthDateMaxLimit', { birthDateMaxLimit });
       }
     }
-
-    queryBuilder.leftJoinAndSelect('psychologist.photos', 'photos');
     return await queryBuilder.getMany();
   };
 }
