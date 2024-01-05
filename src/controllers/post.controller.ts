@@ -5,6 +5,7 @@ import config from '../config';
 import { PsychologistService } from '../services/psychologist.service';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
+import { IPost } from '../interfaces/IPost.interface';
 
 export class PostController {
   private service: PostService = new PostService();
@@ -103,6 +104,23 @@ export class PostController {
       res.send(updatedPostImage);
     } catch (e) {
       req.file ? FileManager.deleteFile(config.uploadPath, req.file.filename) : null;
+      next(e);
+    }
+  };
+
+  publishPost: RequestHandler = async (req, res, next) => {
+    try {
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id поста');
+
+      const post: IPost | null = await this.service.getOnePost(id);
+      if (!post) throw ApiError.NotFound('Не удалось найти пост!');
+
+      const result = await this.service.publishPost(id);
+      if (!result) throw ApiError.BadRequest('Не удалось опубликовать пост!');
+
+      res.send({ message: `Пост с идентификатором ${id} успешно добавлен.` });
+    } catch (e) {
       next(e);
     }
   };

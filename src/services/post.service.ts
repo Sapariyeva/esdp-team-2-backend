@@ -25,6 +25,10 @@ export class PostService {
     return await this.repository.editPostImage(dto, id);
   };
 
+  publishPost = async (id: number) => {
+    return await this.repository.publishPost(id);
+  };
+
   deletePost = async (id: number) => {
     return await this.repository.deletePost(id);
   };
