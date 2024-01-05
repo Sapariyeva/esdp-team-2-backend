@@ -6,9 +6,6 @@ export class Post implements IPost {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'psychologist_id' })
-  psychologistId?: number;
-
   @Column()
   title!: string;
 
@@ -17,4 +14,7 @@ export class Post implements IPost {
 
   @Column()
   image?: string;
+
+  @Column({ default: false })
+  isPublish?: boolean;
 }

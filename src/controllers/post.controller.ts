@@ -16,16 +16,10 @@ export class PostController {
 
       if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
 
-      const { id: userId } = req.customLocals.userJwtPayload;
-
-      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
-      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
-
-      const psychologistId = psychologist.id;
       const image = req.file.filename;
       const description = req.body.description;
       const title = req.body.title;
-      const dto = { psychologistId, image, description, title };
+      const dto = { image, description, title };
       const newPost = await this.service.createPost(dto);
       res.send(newPost);
     } catch (e) {
@@ -59,21 +53,12 @@ export class PostController {
   editPostText: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      const { id: userId } = req.customLocals.userJwtPayload;
 
       const postId = validateNumber(req.params.id);
       if (!postId) throw ApiError.BadRequest('Не верно указан id');
 
-      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
-      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
-
-      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
-      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
-
-      const psychologistId = psychologist.id;
-
       const { title, description } = req.body;
-      const postRawData = { title, description, psychologistId };
+      const postRawData = { title, description };
 
       const updatedPost = await this.service.editPostText(postRawData, postId);
       if (!updatedPost) throw ApiError.BadRequest('Не удалось изменить пост!');
@@ -97,8 +82,8 @@ export class PostController {
       const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
-      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
-      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
+      // const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
+      // if (!postBelongsToPsychologist) throw ApiError.Forbidden();
 
       const psychologistId = psychologist.id;
       const image = req.file.filename;
@@ -133,8 +118,8 @@ export class PostController {
       const id = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(id, psychologist.id);
-      if (!postBelongsToPsychologist) throw ApiError.Forbidden();
+      // const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(id, psychologist.id);
+      // if (!postBelongsToPsychologist) throw ApiError.Forbidden();
 
       const deleteImage = await this.service.getOnePost(id);
       if (!deleteImage) throw ApiError.NotFound('Не удалось найти пост!');
