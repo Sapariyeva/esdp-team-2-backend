@@ -2,14 +2,12 @@ import { RequestHandler } from 'express';
 import { PostService } from '../services/post.service';
 import FileManager from '../helpers/fileManager';
 import config from '../config';
-import { PsychologistService } from '../services/psychologist.service';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
 import { IPost } from '../interfaces/IPost.interface';
 
 export class PostController {
   private service: PostService = new PostService();
-  private servicePsychologist = new PsychologistService();
 
   createPost: RequestHandler = async (req, res, next) => {
     try {
@@ -73,23 +71,14 @@ export class PostController {
   editPostImage: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-      const { id: userId } = req.customLocals.userJwtPayload;
 
       if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
 
       const postId = validateNumber(req.params.id);
       if (!postId) throw ApiError.BadRequest('Не верно указан id');
 
-      const psychologist = await this.servicePsychologist.getOnePsychologistByUserId(userId);
-      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
-
-      // const postBelongsToPsychologist = await this.service.checkPostBelongsToPsychologist(postId, psychologist.id);
-      // if (!postBelongsToPsychologist) throw ApiError.Forbidden();
-
-      const psychologistId = psychologist.id;
       const image = req.file.filename;
-
-      const dto = { psychologistId, image };
+      const dto = { image };
 
       const oldPost = await this.service.getOnePost(postId);
       if (!oldPost) throw ApiError.NotFound('Не удалось найти старый пост!');
