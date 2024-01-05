@@ -22,6 +22,6 @@ export class PostRouter implements IRoute {
     this.router.get('/', this.controller.getAllPost);
     this.router.put('/:id/edit', authenticateUser, checkUserRole('admin'), this.controller.editPostText);
     this.router.put('/:id/change-image', authenticateUser, checkUserRole('psychologist'), upload.single('image'), this.controller.editPostImage);
-    this.router.delete('/:id', authenticateUser, checkUserRole('psychologist'), this.controller.deletePost);
+    this.router.delete('/:id', authenticateUser, checkUserRole('admin'), this.controller.deletePost);
   }
 }
