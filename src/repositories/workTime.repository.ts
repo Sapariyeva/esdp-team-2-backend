@@ -48,6 +48,23 @@ export class WorkTimeRepository extends Repository<WorkTime> {
     queryBuilder.orderBy('work_time.time', 'ASC');
     return await queryBuilder.getMany();
   }
+  async getUpcomingRecordings(psychologistId: number): Promise<WorkTime[]> {
+    const currentDate = dayjs();
+    const date = currentDate.format('YYYY-MM-DD');
+    const time = currentDate.format('HH:MM');
+    console.log(time);
+    const queryBuilder = this.createQueryBuilder('work_time')
+      .where('work_time.psychologistId = :psychologistId', { psychologistId })
+      .andWhere('(DATE(work_time.date) > :date OR (DATE(work_time.date) = :date AND work_time.time > :time))', {
+        date,
+        time,
+      })
+      .andWhere('work_time.available = 0')
+      .orderBy('work_time.date', 'ASC')
+      .limit(5);
+
+    return await queryBuilder.getMany();
+  }
   async deleteTime(psychologistId: number, id: number) {
     const result = await this.createQueryBuilder()
       .delete()

@@ -16,10 +16,11 @@ import { TechniqueRouter } from './routes/technique.route';
 import { CityRouter } from './routes/city.route';
 import { PostRouter } from './routes/post.route';
 import { WorkTimeRoute } from './routes/workTime.route';
+import { env } from './env';
 
 const app = new App({
-  port: 8000,
-  middlewares: [initCustomLocals(), logger(), cookieParser(), cors()],
+  port: env.port,
+  middlewares: [initCustomLocals(), logger(), cookieParser(), cors({ credentials: true, origin: env.dbHost })],
   controllers: [
     new PsychologistRouter(),
     new AuthRouter(),

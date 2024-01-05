@@ -15,6 +15,10 @@ export class WorkTImeService {
   public getWorkDaysForPsychologistInDate = async (psychologistId: number, date: string, available?: boolean): Promise<IWorkTime[]> => {
     return await this.repository.getWorkDaysForPsychologistInDate(psychologistId, date, available);
   };
+  public getUpcomingRecordings = async (psychologistId: number): Promise<IWorkTime[]> => {
+    return await this.repository.getUpcomingRecordings(psychologistId);
+  };
+
   public deleteTime = async (psychologistId: number, id: number) => {
     return await this.repository.deleteTime(psychologistId, id);
   };

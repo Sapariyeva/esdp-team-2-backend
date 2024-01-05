@@ -95,7 +95,10 @@ export class PsychologistService {
     return { therapyMethods, techniques, symptoms };
   };
 
-  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[] | null> => {
-    return await this.repository.filterPsychologists(filters);
+  public filterPsychologists = async (filters: FiltersOfPsychologistDto): Promise<IPsychologist[]> => {
+    const psychologistsIdFiltered = await this.repository.filterPsychologists(filters);
+    const psychologistsIdFilteredArray: number[] = psychologistsIdFiltered.map((psychologist) => psychologist.id);
+
+    return await this.repository.findPsychologistsByIds(psychologistsIdFilteredArray);
   };
 }

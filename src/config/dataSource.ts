@@ -16,14 +16,15 @@ import PsychologistSeeder from '../db/seeds/psychologist.seeds';
 import { PsychologistFactory } from '../db/factories/psychologist.factory';
 import PostSeeder from '../db/seeds/post.seeds';
 import { PostFactory } from '../db/factories/post.factory';
+import { env } from '../env';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
   host: 'localhost',
   port: 3306,
   database: 'psyhelp_online',
-  username: 'root',
-  password: '123123',
+  username: env.dbUser,
+  password: env.dbPassword,
   synchronize: true,
   logging: true,
   entities: ['src/entities/*.ts'],

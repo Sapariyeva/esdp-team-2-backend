@@ -52,6 +52,21 @@ export class WorkTimeController {
       next(e);
     }
   };
+  getUpcomingRecordings: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
+
+      const psychologist = await this.psychologistService.getOnePsychologistByUserId(id);
+      if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
+
+      res.send(await this.service.getUpcomingRecordings(psychologist.id));
+    } catch (e) {
+      next(e);
+    }
+  };
 
   getFreeWorkTime: RequestHandler = async (req, res, next) => {
     try {
