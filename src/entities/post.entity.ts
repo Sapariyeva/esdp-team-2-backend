@@ -6,15 +6,15 @@ export class Post implements IPost {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'psychologist_id' })
-  psychologistId?: number;
-
   @Column()
   title!: string;
 
-  @Column()
+  @Column({ type: 'longtext' })
   description!: string;
 
   @Column()
   image?: string;
+
+  @Column({ default: false })
+  isPublish?: boolean;
 }

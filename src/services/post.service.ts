@@ -25,12 +25,11 @@ export class PostService {
     return await this.repository.editPostImage(dto, id);
   };
 
-  deletePost = async (id: number) => {
-    return await this.repository.deletePost(id);
+  publishPost = async (id: number) => {
+    return await this.repository.publishPost(id);
   };
 
-  checkPostBelongsToPsychologist = async (postId: number, psychologistId: number): Promise<boolean> => {
-    const post = await this.repository.getOnePost(postId);
-    return post?.psychologistId === psychologistId;
+  deletePost = async (id: number) => {
+    return await this.repository.deletePost(id);
   };
 }

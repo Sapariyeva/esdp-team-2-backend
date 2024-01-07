@@ -34,6 +34,11 @@ export class PostRepository extends Repository<Post> {
     return result.affected ? dto : null;
   }
 
+  public publishPost = async (id: number): Promise<number | null> => {
+    const result = await this.update(id, { isPublish: () => 'NOT isPublish' });
+    return result.affected ? id : null;
+  };
+
   async deletePost(id: number): Promise<number | null> {
     const result = await this.delete(id);
     return result.affected ? id : null;
