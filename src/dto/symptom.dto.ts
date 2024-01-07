@@ -4,7 +4,7 @@ import { IsString, IsNotEmpty, Length } from 'class-validator';
 export class SymptomDto {
   @Expose()
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Поле name обязательное' })
   @Length(1, 200)
   name!: string;
 }
