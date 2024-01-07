@@ -37,6 +37,8 @@ export class SymptomController {
 
   createSymptom: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const { dto, errors } = await DtoManager.createDto(SymptomDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
 
@@ -51,6 +53,8 @@ export class SymptomController {
 
   deleteSymptom: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
@@ -68,6 +72,8 @@ export class SymptomController {
 
   editSymptom: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
