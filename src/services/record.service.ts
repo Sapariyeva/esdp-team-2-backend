@@ -5,6 +5,7 @@ import { RecordRepository } from '../repositories/record.repository';
 import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PatientRepository } from '../repositories/patient.repository';
 import { Record } from '../entities/record.entity';
+import dayjs from 'dayjs';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -30,7 +31,7 @@ export class RecordService {
       format: dto.format,
       broadcast: link ? link : null,
       address: link ? null : psychologist.address,
-      isCanceled: false,
+      status: 'active',
       patientName: dto.patientName,
     });
 
@@ -38,16 +39,22 @@ export class RecordService {
   };
 
   public getAllRecords = async (id: number, isActual: boolean): Promise<IRecord[]> => {
-    return await this.repository.getAllRecords(id, isActual);
+    const date = dayjs().format('YYYY-MM-DDTHH:mm:ss');
+    return await this.repository.getAllRecords(date, id, isActual);
+  };
+  public getDateRecords = async (date: string, id: number, isActual: boolean): Promise<IRecord[]> => {
+    const startTime = dayjs(date).format('YYYY-MM-DDTHH:mm:ss');
+    const endTime = dayjs(date).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+    return await this.repository.getDateRecords(startTime, endTime, id, isActual);
   };
 
   public getOneRecord = async (id: number): Promise<IRecord | null> => {
     return await this.repository.getOneRecord(id);
   };
 
-  public deleteRecord = async (id: number) => {
-    return await this.repository.deleteRecord(id);
-  };
+  async updateRecordStatus(id: number, newStatus: 'active' | 'canceled' | 'inactive') {
+    return await this.repository.updateRecordStatus(id, newStatus);
+  }
 
   public checkPsychologists = async (id: number) => {
     return await this.repositoryPsycho.findOnePsychologist({ id: id });

@@ -91,8 +91,8 @@ export class RecordController {
       const check = await this.service.checkRecord(id);
       if (!check) throw ApiError.BadRequest('Не существует такой записи');
 
-      const cancelRecord = await this.service.deleteRecord(id);
-      if (!cancelRecord) throw ApiError.BadRequest('Не удалось удалить запись.');
+      const cancelRecord = await this.service.updateRecordStatus(id, 'canceled');
+      if (!cancelRecord) throw ApiError.BadRequest('Не удалось отменить запись.');
 
       await this.workTimeService.changeStatusTime(check.psychologistId, check.slotId, false);
 

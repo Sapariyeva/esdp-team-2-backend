@@ -10,7 +10,7 @@ export interface IRecord {
   cost: number;
   duration?: number;
   broadcast: string | null;
-  isCanceled: boolean;
+  status: 'active' | 'canceled' | 'inactive';
   datetime: string;
   patientName: string;
 }
