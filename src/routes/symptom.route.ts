@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
 import { SymptomController } from '../controllers/symptom.controller';
+import authenticateUser from '../middlewares/authenticateUser';
+import { checkUserRole } from '../middlewares/checkUserRole.middleware';
 
 export class SymptomRouter implements IRoute {
   public path = '/symptoms';
@@ -12,9 +14,9 @@ export class SymptomRouter implements IRoute {
     this.init();
   }
   private init() {
-    this.router.post('/create', this.controller.createSymptom);
-    this.router.delete('/:id', this.controller.deleteSymptom);
-    this.router.put('/edit/:id', this.controller.editSymptom);
+    this.router.post('/create', authenticateUser, checkUserRole('admin'), this.controller.createSymptom);
+    this.router.delete('/:id', authenticateUser, checkUserRole('admin'), this.controller.deleteSymptom);
+    this.router.put('/edit/:id', authenticateUser, checkUserRole('admin'), this.controller.editSymptom);
 
     this.router.get('/', this.controller.getSymptoms);
     this.router.get('/:id', this.controller.getSymptom);

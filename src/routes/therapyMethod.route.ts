@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { IRoute } from '../interfaces/IRoute.interface';
 import { TherapyMethodController } from '../controllers/therapyMethod.controller';
+import authenticateUser from '../middlewares/authenticateUser';
+import { checkUserRole } from '../middlewares/checkUserRole.middleware';
 
 export class TherapyMethodRouter implements IRoute {
   public path = '/methods';
@@ -15,8 +17,8 @@ export class TherapyMethodRouter implements IRoute {
   private init() {
     this.router.get('/', this.controller.getAllTherapyMethod);
     this.router.get('/:id', this.controller.getOneTherapyMethod);
-    this.router.post('/create', this.controller.createTherapyMethod);
-    this.router.put('/edit/:id', this.controller.updateOneTherapyMethod);
-    this.router.delete('/:id', this.controller.deleteOneTherapyMethod);
+    this.router.post('/create', authenticateUser, checkUserRole('admin'), this.controller.createTherapyMethod);
+    this.router.put('/edit/:id', authenticateUser, checkUserRole('admin'), this.controller.updateOneTherapyMethod);
+    this.router.delete('/:id', authenticateUser, checkUserRole('admin'), this.controller.deleteOneTherapyMethod);
   }
 }
