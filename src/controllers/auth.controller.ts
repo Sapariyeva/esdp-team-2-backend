@@ -247,13 +247,25 @@ export class AuthController {
       const { сurrentPassword, ...restUserDto } = dto;
       const user = await this.service.checkPassword(userId, сurrentPassword);
       if (!user) throw ApiError.NotFound('Неверный пароль!');
-      const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
-      if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
-      const newUser = await this.service.findOneUserWithRealtions(userId);
-      if (passwordUpdated) {
-        res.send(newUser);
+      const existingUser = await this.service.getUserByEmail(dto.email as string);
+      console.log(existingUser);
+      console.log(user);
+
+      if (!existingUser || existingUser.email === user.email) {
+        const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
+        if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
+        const newUser = await this.service.findOneUserWithRealtions(userId);
+        if (passwordUpdated) {
+          res.send(newUser);
+        } else {
+          res.send({ email: restUserDto.email, phone: restUserDto.phone });
+        }
       } else {
-        res.send({ email: restUserDto.email, phone: restUserDto.phone });
+        const roleName: UserRole = UserRole.Patient;
+        const isUserHavePatient: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleName);
+        console.log(isUserHavePatient);
+
+        if (!isUserHavePatient) throw ApiError.BadRequest('Пользователь с таким email уже существует');
       }
     } catch (e) {
       next(e);
