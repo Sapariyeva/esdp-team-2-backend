@@ -258,10 +258,7 @@ export class AuthController {
           res.send({ email: restUserDto.email, phone: restUserDto.phone });
         }
       } else {
-        const roleName: UserRole = UserRole.Patient;
-        const isUserHavePatient: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleName);
-
-        if (!isUserHavePatient) throw ApiError.BadRequest('Пользователь с таким email уже существует');
+        throw ApiError.BadRequest('Пользователь с таким email уже существует');
       }
     } catch (e) {
       next(e);
