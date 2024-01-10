@@ -28,7 +28,7 @@ export class FiltersOfPsychologistDto {
 
   @Expose()
   @IsOptional()
-  @IsEnum(['solo', 'duo'], { message: 'Выберите формат дуо или соло!' })
+  @IsEnum(['solo', 'duo', 'group', 'children'], { message: 'Выберите формат дуо или соло!' })
   consultationType!: 'solo' | 'duo';
 
   @Expose()
