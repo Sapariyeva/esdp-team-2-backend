@@ -248,9 +248,6 @@ export class AuthController {
       const user = await this.service.checkPassword(userId, сurrentPassword);
       if (!user) throw ApiError.NotFound('Неверный пароль!');
       const existingUser = await this.service.getUserByEmail(dto.email as string);
-      console.log(existingUser);
-      console.log(user);
-
       if (!existingUser || existingUser.email === user.email) {
         const { updatedUser, passwordUpdated } = await this.service.editUser(user, restUserDto);
         if (!updatedUser) throw ApiError.BadRequest('Не удалось получить обновленные данные пользователя');
@@ -263,7 +260,6 @@ export class AuthController {
       } else {
         const roleName: UserRole = UserRole.Patient;
         const isUserHavePatient: boolean = !!existingUser && this.service.isUserHaveRole(existingUser, roleName);
-        console.log(isUserHavePatient);
 
         if (!isUserHavePatient) throw ApiError.BadRequest('Пользователь с таким email уже существует');
       }
