@@ -8,6 +8,7 @@ import { WorkTImeService } from '../services/workTIme.service';
 import { ZoomService } from '../services/zoom.service';
 import { TransferRecord } from '../dto/transferRecord.dto';
 import { PsychologistService } from '../services/psychologist.service';
+import { CommentDto } from '../dto/recordComment.dto';
 
 export class RecordController {
   private service: RecordService;
@@ -108,6 +109,8 @@ export class RecordController {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
 
+      const { dto } = await DtoManager.createDto(CommentDto, { ...req.body }, { isValidate: true });
+
       const { id: userId } = req.customLocals.userJwtPayload;
 
       const id: number | null = validateNumber(req.params.id);
@@ -120,7 +123,7 @@ export class RecordController {
       if (Patient === null) throw ApiError.NotFound('Не правильный id пациента');
 
       if (Patient.id !== record.patientId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
-      const updatedComment = await this.service.createCommentPatient(id, req.body.comment);
+      const updatedComment = await this.service.createCommentPatient(id, dto.comment);
 
       res.send(updatedComment);
     } catch (error) {
@@ -131,6 +134,8 @@ export class RecordController {
   public createCommentPsychologist: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const { dto } = await DtoManager.createDto(CommentDto, { ...req.body }, { isValidate: true });
 
       const { id: userId } = req.customLocals.userJwtPayload;
 
@@ -144,9 +149,9 @@ export class RecordController {
 
       if (Psycho === null) throw ApiError.NotFound('Не правильный id психолога');
 
-      if (Psycho.id !== record.patientId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
+      if (Psycho.id !== record.psychologistId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
 
-      const updatedComment = await this.service.createCommentPsychologist(id, req.body.comment);
+      const updatedComment = await this.service.createCommentPsychologist(id, dto.comment);
 
       res.send(updatedComment);
     } catch (error) {
