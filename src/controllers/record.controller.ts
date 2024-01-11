@@ -7,16 +7,19 @@ import { RecordDto } from '../dto/record.dto';
 import { WorkTImeService } from '../services/workTIme.service';
 import { ZoomService } from '../services/zoom.service';
 import { TransferRecord } from '../dto/transferRecord.dto';
+import { PsychologistService } from '../services/psychologist.service';
 
 export class RecordController {
   private service: RecordService;
   private workTimeService: WorkTImeService;
   private zoomService: ZoomService;
+  private psychologistService: PsychologistService;
 
   constructor() {
     this.service = new RecordService();
     this.workTimeService = new WorkTImeService();
     this.zoomService = new ZoomService();
+    this.psychologistService = new PsychologistService();
   }
 
   public createRecord: RequestHandler = async (req, res, next) => {
@@ -99,6 +102,52 @@ export class RecordController {
       res.send(cancelRecord);
     } catch (e) {
       next(e);
+    }
+  };
+  public createCommentPatient: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const check = await this.service.checkRecord(id);
+      if (!check) throw ApiError.BadRequest('Не существует такой записи');
+
+      const checkPatient = await this.service.checkPatient(userId);
+      if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
+
+      const updatedComment = await this.service.createCommentPatient(id, req.body.comment);
+
+      res.send(updatedComment);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public createCommentPsychologist: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const check = await this.service.checkRecord(id);
+      if (!check) throw ApiError.BadRequest('Не существует такой записи');
+
+      const checkPsycho = await this.psychologistService.getOnePsychologistByUserId(userId);
+
+      if (checkPsycho === null) throw ApiError.NotFound('Не правильный id психолога');
+
+      const updatedComment = await this.service.createCommentPsychologist(id, req.body.comment);
+
+      res.send(updatedComment);
+    } catch (error) {
+      next(error);
     }
   };
 }

@@ -37,4 +37,9 @@ export class RecordDto {
   @IsOptional()
   @IsEnum(['online', 'offline'], { message: 'Выберите формат' })
   format!: 'online' | 'offline';
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  comment!: string;
 }

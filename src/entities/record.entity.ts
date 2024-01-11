@@ -49,4 +49,10 @@ export class Record implements IRecord {
   @ManyToOne(() => City)
   @JoinColumn({ name: 'city_id' })
   city?: City;
+
+  @Column({ nullable: true, default: null, name: 'patient_comment' })
+  commentPatient!: string;
+
+  @Column({ nullable: true, default: null, name: 'psychologist_comment' })
+  commentPsychologist!: string;
 }
