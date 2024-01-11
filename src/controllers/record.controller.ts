@@ -113,12 +113,13 @@ export class RecordController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const check = await this.service.checkRecord(id);
-      if (!check) throw ApiError.BadRequest('Не существует такой записи');
+      const record = await this.service.checkRecord(id);
+      if (!record) throw ApiError.BadRequest('Не существует такой записи');
 
-      const checkPatient = await this.service.checkPatient(userId);
-      if (checkPatient === null) throw ApiError.NotFound('Не правильный id пациента');
+      const Patient = await this.service.checkPatient(userId);
+      if (Patient === null) throw ApiError.NotFound('Не правильный id пациента');
 
+      if (Patient.id !== record.patientId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
       const updatedComment = await this.service.createCommentPatient(id, req.body.comment);
 
       res.send(updatedComment);
@@ -136,12 +137,14 @@ export class RecordController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const check = await this.service.checkRecord(id);
-      if (!check) throw ApiError.BadRequest('Не существует такой записи');
+      const record = await this.service.checkRecord(id);
+      if (!record) throw ApiError.BadRequest('Не существует такой записи');
 
-      const checkPsycho = await this.psychologistService.getOnePsychologistByUserId(userId);
+      const Psycho = await this.psychologistService.getOnePsychologistByUserId(userId);
 
-      if (checkPsycho === null) throw ApiError.NotFound('Не правильный id психолога');
+      if (Psycho === null) throw ApiError.NotFound('Не правильный id психолога');
+
+      if (Psycho.id !== record.patientId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
 
       const updatedComment = await this.service.createCommentPsychologist(id, req.body.comment);
 
