@@ -10,6 +10,6 @@ export class Symptom implements ISymptom {
   @Column({ unique: true })
   name!: string;
 
-  @ManyToMany(() => Psychologist, (psychologist) => psychologist.symptoms)
+  @ManyToMany(() => Psychologist, (psychologist) => psychologist.symptoms, { onDelete: 'CASCADE' })
   psychologists?: Psychologist[];
 }

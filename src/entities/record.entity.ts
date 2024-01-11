@@ -37,8 +37,8 @@ export class Record implements IRecord {
   @Column({ nullable: true, type: 'text' })
   broadcast!: string | null;
 
-  @Column({ default: false, name: 'is_canceled' })
-  isCanceled!: boolean;
+  @Column()
+  status!: 'active' | 'canceled' | 'inactive';
 
   @Column()
   datetime!: string;

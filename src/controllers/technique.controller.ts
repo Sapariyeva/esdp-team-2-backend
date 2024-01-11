@@ -15,10 +15,14 @@ export class TechniqueController {
 
   public createTechnique: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const { dto, errors } = await DtoManager.createDto(TechniqueDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
       const technique = await this.service.createTeqchnique(dto);
       if (!technique) throw ApiError.BadRequest('Не удалось создать!');
+
       res.send(technique);
     } catch (e) {
       next(e);
@@ -38,8 +42,10 @@ export class TechniqueController {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
+
       const technique = await this.service.getOneTechnique(id);
       if (!technique) throw ApiError.NotFound('Не удалось найти техники');
+
       res.send(technique);
     } catch (error) {
       next(error);
@@ -48,6 +54,8 @@ export class TechniqueController {
 
   public updateOneTechnique: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
 
@@ -66,6 +74,8 @@ export class TechniqueController {
 
   public deleteOneTechnique: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id техники');
 
@@ -74,6 +84,7 @@ export class TechniqueController {
 
       const result = await this.service.deleteOneTechnique(id);
       if (!result) throw ApiError.BadRequest('Не удалось удалить!');
+
       res.json({ id });
     } catch (e) {
       next(e);

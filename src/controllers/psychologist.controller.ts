@@ -6,12 +6,15 @@ import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import DtoManager from '../helpers/dtoManager';
 import { PsychologistDto } from '../dto/psychologist.dto';
 import { FiltersOfPsychologistDto } from '../dto/filtersOfPsychologist.dto';
+import { IRecord } from '../interfaces/IRecord.interface';
+import { RecordService } from '../services/record.service';
 
 export class PsychologistController {
   private service: PsychologistService;
-
+  private recordService: RecordService;
   constructor() {
     this.service = new PsychologistService();
+    this.recordService = new RecordService();
   }
 
   public getOnePsychologistHandler: RequestHandler = async (req, res, next) => {
@@ -130,6 +133,28 @@ export class PsychologistController {
       res.send(psychologistsWithFavorites);
     } catch (error) {
       next(error);
+    }
+  };
+
+  public getDateRecords: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const { date, status } = req.query as { date: string; status: string };
+      if (!date && !status) throw ApiError.NotFound('Не верные параметры запроса');
+
+      const statusBoolean = status.toLowerCase() === 'true';
+
+      const checkPsychologist = await this.service.getOnePsychologistByUserId(userId);
+      if (!checkPsychologist) throw ApiError.NotFound('Не правильный id психолога');
+
+      const record: IRecord[] = await this.recordService.getDateRecords(date, checkPsychologist.id, statusBoolean);
+      if (!record) throw ApiError.BadRequest('Ошибка при получение записей');
+
+      res.send(record);
+    } catch (e) {
+      next(e);
     }
   };
 }

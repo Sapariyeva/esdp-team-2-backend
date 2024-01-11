@@ -10,6 +10,6 @@ export class Technique implements ITechnique {
   @Column({ unique: true })
   name!: string;
 
-  @ManyToMany(() => Psychologist, (psychologist) => psychologist.techniques)
+  @ManyToMany(() => Psychologist, (psychologist) => psychologist.techniques, { onDelete: 'CASCADE' })
   psychologists?: Psychologist[];
 }

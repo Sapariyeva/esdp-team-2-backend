@@ -15,8 +15,11 @@ export class TherapyMethodController {
 
   public createTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const { dto, errors } = await DtoManager.createDto(TherapyMethodDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
       const therapyMethod = await this.service.createTherapyMethod(dto);
       res.send(therapyMethod);
     } catch (e) {
@@ -37,8 +40,10 @@ export class TherapyMethodController {
     try {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+
       const therapyMethod = await this.service.getOneTherapyMethod(id);
       if (!therapyMethod) throw ApiError.NotFound('Не удалось найти метод терапии');
+
       res.send(therapyMethod);
     } catch (error) {
       next(error);
@@ -47,10 +52,14 @@ export class TherapyMethodController {
 
   public updateOneTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+
       const { dto, errors } = await DtoManager.createDto(TherapyMethodDto, req.body, { isValidate: true });
       if (errors.length) throw ApiError.BadRequest('Ошибка при валидации формы', errors);
+
       const therapyMethod = await this.service.getOneTherapyMethod(id);
       if (!therapyMethod) throw ApiError.NotFound('Не удалось найти метод терапии');
 
@@ -63,8 +72,11 @@ export class TherapyMethodController {
 
   public deleteOneTherapyMethod: RequestHandler = async (req, res, next) => {
     try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id метода терапии');
+
       await this.service.deleteOneTherapyMethod(id);
       res.json({ id });
     } catch (e) {

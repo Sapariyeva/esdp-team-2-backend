@@ -2,7 +2,6 @@ import { Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Record } from '../entities/record.entity';
 import { IRecord } from '../interfaces/IRecord.interface';
-import dayjs from 'dayjs';
 
 export class RecordRepository extends Repository<Record> {
   constructor() {
@@ -13,17 +12,27 @@ export class RecordRepository extends Repository<Record> {
     return await this.save(record);
   };
 
-  public getAllRecords = async (id: number, isActual: boolean): Promise<IRecord[]> => {
-    const date = dayjs().format('YYYY-MM-DDTHH:mm:ss');
-
-    const queryBuilder = this.createQueryBuilder('records').where('records.patientId = :id', { id });
+  public getAllRecords = async (date: string, id: number, isActual: boolean): Promise<IRecord[]> => {
+    const queryBuilder = this.createQueryBuilder('records').where(`records.patientId = :id`, { id });
 
     if (isActual) {
+      queryBuilder.andWhere('records.status = :status', { status: 'active' });
       queryBuilder.andWhere('records.datetime >= :date', { date });
     } else {
-      queryBuilder.andWhere('records.datetime < :date', { date });
+      queryBuilder.andWhere('records.status != :status', { status: 'active' });
     }
 
+    return await queryBuilder.getMany();
+  };
+  public getDateRecords = async (startTime: string, endTime: string, id: number, isActual: boolean): Promise<IRecord[]> => {
+    const queryBuilder = this.createQueryBuilder('records').where(`records.psychologist_id = :id`, { id });
+    if (isActual) {
+      queryBuilder.andWhere('records.status = :status', { status: 'active' });
+      queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
+    } else {
+      queryBuilder.andWhere('records.status != :status', { status: 'active' });
+      queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
+    }
     return await queryBuilder.getMany();
   };
 
@@ -39,7 +48,8 @@ export class RecordRepository extends Repository<Record> {
     return result.affected ? id : null;
   }
 
-  public deleteRecord = async (id: number) => {
-    return this.delete(id);
+  public updateRecordStatus = async (id: number, newStatus: 'active' | 'canceled' | 'inactive') => {
+    const result = await this.update(id, { status: newStatus });
+    return result.affected ? id : null;
   };
 }
