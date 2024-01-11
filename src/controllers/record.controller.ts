@@ -7,16 +7,20 @@ import { RecordDto } from '../dto/record.dto';
 import { WorkTImeService } from '../services/workTIme.service';
 import { ZoomService } from '../services/zoom.service';
 import { TransferRecord } from '../dto/transferRecord.dto';
+import { PsychologistService } from '../services/psychologist.service';
+import { CommentDto } from '../dto/recordComment.dto';
 
 export class RecordController {
   private service: RecordService;
   private workTimeService: WorkTImeService;
   private zoomService: ZoomService;
+  private psychologistService: PsychologistService;
 
   constructor() {
     this.service = new RecordService();
     this.workTimeService = new WorkTImeService();
     this.zoomService = new ZoomService();
+    this.psychologistService = new PsychologistService();
   }
 
   public createRecord: RequestHandler = async (req, res, next) => {
@@ -99,6 +103,59 @@ export class RecordController {
       res.send(cancelRecord);
     } catch (e) {
       next(e);
+    }
+  };
+  public createCommentPatient: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const { dto } = await DtoManager.createDto(CommentDto, { ...req.body }, { isValidate: true });
+
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const record = await this.service.checkRecord(id);
+      if (!record) throw ApiError.BadRequest('Не существует такой записи');
+
+      const Patient = await this.service.checkPatient(userId);
+      if (Patient === null) throw ApiError.NotFound('Не правильный id пациента');
+
+      if (Patient.id !== record.patientId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
+      const updatedComment = await this.service.createCommentPatient(id, dto.comment);
+
+      res.send(updatedComment);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public createCommentPsychologist: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+
+      const { dto } = await DtoManager.createDto(CommentDto, { ...req.body }, { isValidate: true });
+
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const id: number | null = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const record = await this.service.checkRecord(id);
+      if (!record) throw ApiError.BadRequest('Не существует такой записи');
+
+      const Psycho = await this.psychologistService.getOnePsychologistByUserId(userId);
+
+      if (Psycho === null) throw ApiError.NotFound('Не правильный id психолога');
+
+      if (Psycho.id !== record.psychologistId) throw ApiError.BadRequest('Id пациента не совпадает с id записи');
+
+      const updatedComment = await this.service.createCommentPsychologist(id, dto.comment);
+
+      res.send(updatedComment);
+    } catch (error) {
+      next(error);
     }
   };
 }

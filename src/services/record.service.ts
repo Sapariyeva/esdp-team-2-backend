@@ -70,4 +70,12 @@ export class RecordService {
   public checkRecord = async (id: number) => {
     return await this.getOneRecord(id);
   };
+
+  public createCommentPatient = async (id: number, comment: string) => {
+    return await this.repository.createCommentPatient(id, comment);
+  };
+
+  public createCommentPsychologist = async (id: number, comment: string) => {
+    return await this.repository.createCommentPsychologist(id, comment);
+  };
 }
