@@ -20,14 +20,13 @@
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsrsasign": "^10.9.0",
     "nodemailer": "^6.9.7",
     "swagger-jsdoc": "^6.2.8",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.0",
     "typescript": "^5.1.6",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
+    "zod": "^3.22.4",
     "@faker-js/faker": "^8.2.0",
     "@types/bcrypt": "^5.0.1",
     "@types/cookie-parser": "^1.4.5",
@@ -35,6 +34,7 @@
     "@types/express": "^4.17.17",
     "@types/express-jwt": "^7.4.2",
     "@types/jsonwebtoken": "^9.0.4",
+    "@types/jsrsasign": "^10.5.12",
     "@types/multer": "^1.4.10",
     "@types/node": "^20.4.2",
     "@types/nodemailer": "^6.4.14",
@@ -63,6 +63,7 @@
     "typeorm": "^0.3.17",
     "typeorm-extension": "^3.1.1"
   },
+  "devDependencies": {},
   "lint-staged": {
     "src/**/*.{js,ts}": [
       "prettier --write --ignore-unknown",

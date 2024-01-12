@@ -85,7 +85,7 @@ export class AuthService {
           <ul>
             <li>login: ${email}</li>
           </ul>
-          <a href="http://localhost:5173/auth/activate/${userId}?role=${roleName}">Подтвердить почту</a>
+          <a href="http://64.226.100.37/auth/activate/${userId}?role=${roleName}">Подтвердить почту</a>
         `,
       } as unknown as EmailMessage;
       mailer(message);
