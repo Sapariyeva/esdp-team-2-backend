@@ -52,4 +52,26 @@ export class RecordRepository extends Repository<Record> {
     const result = await this.update(id, { status: newStatus });
     return result.affected ? id : null;
   };
+
+  public createCommentPatient = async (id: number, comment: string) => {
+    const result = await this.update(id, { commentPatient: comment });
+    if (result.affected && result.affected > 0) {
+      return await this.findOne({
+        where: { id },
+      });
+    } else {
+      return null;
+    }
+  };
+
+  public createCommentPsychologist = async (id: number, comment: string) => {
+    const result = await this.update(id, { commentPsychologist: comment });
+    if (result.affected && result.affected > 0) {
+      return await this.findOne({
+        where: { id },
+      });
+    } else {
+      return null;
+    }
+  };
 }

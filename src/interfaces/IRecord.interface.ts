@@ -13,4 +13,6 @@ export interface IRecord {
   status: 'active' | 'canceled' | 'inactive';
   datetime: string;
   patientName: string;
+  commentPatient: string;
+  commentPsychologist: string;
 }
