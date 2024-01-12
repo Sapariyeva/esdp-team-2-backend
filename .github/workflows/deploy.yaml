@@ -1,0 +1,41 @@
+name: CI / CD Test
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 'Create env file'
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Build Docker Image
+        run: |
+          docker build -t tester/gamma:latest --force-rm .
+          docker save tester/gamma | gzip > gamma.tar.gz
+
+      - name: Copy Docker Image Archive via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'gamma.tar.gz'
+          target: '/opt'
+
+      - name: Deploy Docker Image on Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker rmi tester/gamma:latest
+            docker load -i /opt/gamma.tar.gz
+            rm /opt/gamma.tar.gz
+            docker-compose -f docker-compose.yml up -d
