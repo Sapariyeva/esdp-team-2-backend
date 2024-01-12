@@ -17,8 +17,8 @@ export default class UserSeeder implements Seeder {
       }
 
       let amount: number = 0;
-      if (role.name === UserRole.Psychologist) amount = 70;
-      if (role.name === UserRole.Patient) amount = 20;
+      if (role.name === UserRole.Psychologist) amount = 1;
+      if (role.name === UserRole.Patient) amount = 1;
 
       return await userFactory.saveMany(amount, { roles: [role] });
     });

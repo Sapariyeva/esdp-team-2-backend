@@ -9,9 +9,6 @@ import { TechniqueFactory } from '../db/factories/technique.factory';
 import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
 import { UserFactory } from '../db/factories/user.factory';
 import MainSeeder from '../db/seeds/main.seeds';
-import PatientSeeder from '../db/seeds/patient.seeds';
-import PostSeeder from '../db/seeds/post.seeds';
-import PsychologistSeeder from '../db/seeds/psychologist.seeds';
 import SymptomsSeeder from '../db/seeds/symptoms.seeds';
 import TechniqueSeeder from '../db/seeds/technique.seeds';
 import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
@@ -58,7 +55,7 @@ const options: DataSourceOptions & SeederOptions = {
     ViewedPsychologists,
     WorkTime,
   ],
-  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder, PsychologistSeeder, PatientSeeder, PostSeeder],
+  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder],
   factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory, UserFactory, PsychologistFactory, PatientFactory, PostFactory],
 };
 
