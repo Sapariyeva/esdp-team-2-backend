@@ -35,6 +35,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            docker image prune -f
             docker load -i /opt/gamma.tar.gz
             rm /opt/gamma.tar.gz
             docker-compose -f docker-compose.yml up -d
