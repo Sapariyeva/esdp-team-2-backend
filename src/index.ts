@@ -17,7 +17,6 @@ import { CityRouter } from './routes/city.route';
 import { PostRouter } from './routes/post.route';
 import { WorkTimeRoute } from './routes/workTime.route';
 import { env } from './env';
-import { ZoomRoute } from './routes/zoom.route';
 
 const app = new App({
   port: env.port,
@@ -35,7 +34,6 @@ const app = new App({
     new CityRouter(),
     new PostRouter(),
     new WorkTimeRoute(),
-    new ZoomRoute(),
   ],
 });
 
