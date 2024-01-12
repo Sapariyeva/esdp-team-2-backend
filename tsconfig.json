@@ -3,31 +3,25 @@
     "target": "es6",
     "module": "commonjs",
     "pretty": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
     "sourceMap": true,
     "outDir": "dist",
     "importHelpers": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    // "paths": {
-    //   "@/*": ["src/*"]
-    // },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "files": [
-    "./src/@types/requestLocals.d.ts",
-  ],
-  "include": ["src/**/*.ts", "src/*.d.ts" ],
+  "files": ["./src/@types/requestLocals.d.ts"],
+  "include": ["src/**/*.ts", "src/*.d.ts"],
   "exclude": ["node_modules"]
 }
