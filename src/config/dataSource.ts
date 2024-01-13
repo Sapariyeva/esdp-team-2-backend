@@ -1,20 +1,8 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
-import { PatientFactory } from '../db/factories/patient.factory';
-import { PostFactory } from '../db/factories/post.factory';
-import { PsychologistFactory } from '../db/factories/psychologist.factory';
 import { RoleFactory } from '../db/factories/role.factory';
-import { SymptomsFactory } from '../db/factories/symptoms.factory';
-import { TechniqueFactory } from '../db/factories/technique.factory';
-import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
 import { UserFactory } from '../db/factories/user.factory';
 import MainSeeder from '../db/seeds/main.seeds';
-import PatientSeeder from '../db/seeds/patient.seeds';
-import PostSeeder from '../db/seeds/post.seeds';
-import PsychologistSeeder from '../db/seeds/psychologist.seeds';
-import SymptomsSeeder from '../db/seeds/symptoms.seeds';
-import TechniqueSeeder from '../db/seeds/technique.seeds';
-import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
 import UserSeeder from '../db/seeds/user.seed';
 import { Certificate } from '../entities/certificate.entity';
 import { City } from '../entities/city.entity';
@@ -57,8 +45,8 @@ const options: DataSourceOptions & SeederOptions = {
     ViewedPsychologists,
     WorkTime,
   ],
-  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder, PsychologistSeeder, PatientSeeder, PostSeeder],
-  factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory, UserFactory, PsychologistFactory, PatientFactory, PostFactory],
+  seeds: [MainSeeder, UserSeeder],
+  factories: [RoleFactory, UserFactory],
 };
 
 export const appDataSource = new DataSource(options);
