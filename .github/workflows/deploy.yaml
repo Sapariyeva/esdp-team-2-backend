@@ -16,7 +16,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t tester/gamma .
+          docker build -t tester/gamma:latest --force-rm .
           docker save tester/gamma | gzip > gamma.tar.gz
 
       - name: Copy Docker Image Archive via SCP
@@ -35,6 +35,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            docker rmi tester/gamma:latest
             docker load -i /opt/gamma.tar.gz
             rm /opt/gamma.tar.gz
             docker-compose -f docker-compose.yml up -d

@@ -30,16 +30,15 @@ import { TherapyMethod } from '../entities/therapyMethod.entity';
 import { User } from '../entities/user.entity';
 import { ViewedPsychologists } from '../entities/viewedPsychologists.entity';
 import { WorkTime } from '../entities/workTime.entity';
-
 import { env } from '../env';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
-  host: 'mysql',
+  host: env.host || 'mysql',
   port: 3306,
   database: 'psyhelp_online',
-  username: env.dbUser,
-  password: env.dbPassword,
+  username: 'root',
+  password: 'dilnaz1n',
   synchronize: true,
   logging: true,
   entities: [

@@ -8,6 +8,7 @@ import { UserRole } from '../interfaces/UserRole.enum';
 import { UserRegisterRequestDto } from '../dto/userRegisterRequest.dto';
 import { User } from '../entities/user.entity';
 import { Psychologist } from '../entities/psychologist.entity';
+import { env } from '../env';
 
 export class AuthService {
   private repository: UsersRepository;
@@ -85,7 +86,7 @@ export class AuthService {
           <ul>
             <li>login: ${email}</li>
           </ul>
-          <a href="http://64.226.100.37/auth/activate/${userId}?role=${roleName}">Подтвердить почту</a>
+          <a href="${env.dbHost}/auth/activate/${userId}?role=${roleName}">Подтвердить почту</a>
         `,
       } as unknown as EmailMessage;
       mailer(message);
@@ -128,7 +129,7 @@ export class AuthService {
   emailMessagePasswordForgot = async (user: User) => {
     const tokenPasswordReset = this.repository.generateTokenPasswordReset(user);
 
-    const link = `http://localhost:5173/auth/reset-password?token=${tokenPasswordReset}`;
+    const link = `${env.dbHost}/auth/reset-password?token=${tokenPasswordReset}`;
 
     const message = {
       to: user.email,
