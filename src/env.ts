@@ -7,6 +7,7 @@ export type IConfig = {
   dbUser: string;
   dbPassword: string;
   dbHost: string;
+  host: string;
 };
 
 export const env: IConfig = {
@@ -14,4 +15,5 @@ export const env: IConfig = {
   dbUser: process.env.DB_USER!,
   dbPassword: process.env.DB_PASSWORD!,
   port: parseInt(process.env.PORT!),
+  host: process.env.HOST,
 };

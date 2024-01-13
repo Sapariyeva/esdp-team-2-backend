@@ -4,11 +4,7 @@
     "module": "commonjs",
     "pretty": true,
     "outDir": "dist",
-    "baseUrl": ".",                           /* Base directory to resolve non-absolute module names. */
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]},
+    "baseUrl": ".",
     "sourceMap": true,
     "importHelpers": true,
     "noImplicitThis": true,
