@@ -25,8 +25,8 @@ const options: DataSourceOptions & SeederOptions = {
   host: env.host || 'mysql',
   port: 3306,
   database: 'psyhelp_online',
-  username: 'root',
-  password: 'dilnaz1n',
+  username: env.dbUser,
+  password: env.dbPassword,
   synchronize: true,
   logging: true,
   entities: [
