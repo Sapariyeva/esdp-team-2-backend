@@ -5,14 +5,13 @@ import config from '../config';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
 import { IPost } from '../interfaces/IPost.interface';
+import { UserRole } from 'src/interfaces/UserRole.enum';
 
 export class PostController {
   private service: PostService = new PostService();
 
   createPost: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
       if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
 
       const image = req.file.filename;
@@ -29,10 +28,13 @@ export class PostController {
 
   getOnePost: RequestHandler = async (req, res, next) => {
     try {
+      let isAdmin: boolean = false;
+      if (req.customLocals.userJwtPayload && req.customLocals.userJwtPayload.role === UserRole.Admin) isAdmin = true;
+
       const id = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const post = await this.service.getOnePost(id);
+      const post = isAdmin ? await this.service.getOnePostByAdmin(id) : await this.service.getOnePost(id);
       if (!post) throw ApiError.NotFound('Такого поста нет!');
 
       res.send(post);
@@ -43,7 +45,12 @@ export class PostController {
 
   getAllPost: RequestHandler = async (req, res, next) => {
     try {
-      res.send(await this.service.getAllPost());
+      let isAdmin: boolean = false;
+      if (req.customLocals.userJwtPayload && req.customLocals.userJwtPayload.role === UserRole.Admin) isAdmin = true;
+
+      const posts = isAdmin ? await this.service.getAllPostByAdmin() : await this.service.getAllPost();
+
+      res.send(posts);
     } catch (e) {
       next(e);
     }
@@ -51,8 +58,6 @@ export class PostController {
 
   editPostText: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
       const postId = validateNumber(req.params.id);
       if (!postId) throw ApiError.BadRequest('Не верно указан id');
 
@@ -70,8 +75,6 @@ export class PostController {
 
   editPostImage: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
       if (!req.file) throw ApiError.BadRequest('Ошибка при обработке изображения');
 
       const postId = validateNumber(req.params.id);
@@ -80,7 +83,7 @@ export class PostController {
       const image = req.file.filename;
       const dto = { image };
 
-      const oldPost = await this.service.getOnePost(postId);
+      const oldPost = await this.service.getOnePostByAdmin(postId);
       if (!oldPost) throw ApiError.NotFound('Не удалось найти старый пост!');
 
       const oldImage = oldPost.image;
@@ -102,7 +105,7 @@ export class PostController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id поста');
 
-      const post: IPost | null = await this.service.getOnePost(id);
+      const post: IPost | null = await this.service.getOnePostByAdmin(id);
       if (!post) throw ApiError.NotFound('Не удалось найти пост!');
 
       const result = await this.service.publishPost(id);
@@ -116,12 +119,10 @@ export class PostController {
 
   deletePost: RequestHandler = async (req, res, next) => {
     try {
-      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
-
       const id = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id');
 
-      const post = await this.service.getOnePost(id);
+      const post = await this.service.getOnePostByAdmin(id);
       if (!post) throw ApiError.NotFound('Не удалось найти пост!');
 
       const fileName = post.image;

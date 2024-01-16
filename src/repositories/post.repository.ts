@@ -15,11 +15,19 @@ export class PostRepository extends Repository<Post> {
   }
 
   async getOnePost(id: number): Promise<IPost | null> {
+    return await this.findOne({ where: { id, isPublish: true } });
+  }
+
+  async getOnePostByAdmin(id: number): Promise<IPost | null> {
     return await this.findOne({ where: { id } });
   }
 
   async getAllPost(): Promise<IPost[]> {
-    return await this.find();
+    return await this.find({ where: { isPublish: true }, order: { publicationDate: 'DESC' } });
+  }
+
+  async getAllPostByAdmin(): Promise<IPost[]> {
+    return await this.find({ order: { publicationDate: 'DESC', id: 'DESC' } });
   }
 
   async editPostText(dto: PostDto, id: number): Promise<IPost | null> {
@@ -34,8 +42,8 @@ export class PostRepository extends Repository<Post> {
     return result.affected ? dto : null;
   }
 
-  public publishPost = async (id: number): Promise<number | null> => {
-    const result = await this.update(id, { isPublish: () => 'NOT isPublish' });
+  public publishPost = async (id: number, date: Date): Promise<number | null> => {
+    const result = await this.update(id, { isPublish: () => 'NOT isPublish', publicationDate: date });
     return result.affected ? id : null;
   };
 
@@ -43,8 +51,4 @@ export class PostRepository extends Repository<Post> {
     const result = await this.delete(id);
     return result.affected ? id : null;
   }
-
-  getPostById = async (id: number): Promise<IPost | null> => {
-    return await this.findOne({ where: { id } });
-  };
 }

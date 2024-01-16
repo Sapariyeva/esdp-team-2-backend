@@ -13,8 +13,16 @@ export class PostService {
     return await this.repository.getOnePost(id);
   };
 
+  getOnePostByAdmin = async (id: number): Promise<IPost | null> => {
+    return await this.repository.getOnePostByAdmin(id);
+  };
+
   getAllPost = async (): Promise<IPost[]> => {
     return await this.repository.getAllPost();
+  };
+
+  getAllPostByAdmin = async (): Promise<IPost[]> => {
+    return await this.repository.getAllPostByAdmin();
   };
 
   editPostText = async (dto: PostDto, id: number): Promise<IPost | null> => {
@@ -26,7 +34,8 @@ export class PostService {
   };
 
   publishPost = async (id: number) => {
-    return await this.repository.publishPost(id);
+    const publicationDate: Date = new Date();
+    return await this.repository.publishPost(id, publicationDate);
   };
 
   deletePost = async (id: number) => {

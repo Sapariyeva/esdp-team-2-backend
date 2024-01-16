@@ -17,4 +17,7 @@ export class Post implements IPost {
 
   @Column({ default: false })
   isPublish?: boolean;
+
+  @Column({ name: 'publication_date', nullable: true })
+  publicationDate?: Date | null;
 }

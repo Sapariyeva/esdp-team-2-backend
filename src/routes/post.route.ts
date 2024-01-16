@@ -4,6 +4,7 @@ import authenticateUser from '../middlewares/authenticateUser';
 import { checkUserRole } from '../middlewares/checkUserRole.middleware';
 import { PostController } from '../controllers/post.controller';
 import { upload } from '../middlewares/ValidateUpload.middlewar';
+import { UserRole } from 'src/interfaces/UserRole.enum';
 
 export class PostRouter implements IRoute {
   public path = '/posts';
@@ -16,12 +17,12 @@ export class PostRouter implements IRoute {
   }
 
   private init() {
-    this.router.post('/create', authenticateUser, checkUserRole('admin'), upload.single('image'), this.controller.createPost);
-    this.router.post('/publish/:id', authenticateUser, checkUserRole('admin'), this.controller.publishPost);
+    this.router.post('/create', authenticateUser, checkUserRole(UserRole.Admin), upload.single('image'), this.controller.createPost);
+    this.router.post('/publish/:id', authenticateUser, checkUserRole(UserRole.Admin), this.controller.publishPost);
     this.router.get('/:id', this.controller.getOnePost);
     this.router.get('/', this.controller.getAllPost);
-    this.router.put('/:id/edit', authenticateUser, checkUserRole('admin'), this.controller.editPostText);
-    this.router.put('/:id/change-image', authenticateUser, checkUserRole('admin'), upload.single('image'), this.controller.editPostImage);
-    this.router.delete('/:id', authenticateUser, checkUserRole('admin'), this.controller.deletePost);
+    this.router.put('/:id/edit', authenticateUser, checkUserRole(UserRole.Admin), this.controller.editPostText);
+    this.router.put('/:id/change-image', authenticateUser, checkUserRole(UserRole.Admin), upload.single('image'), this.controller.editPostImage);
+    this.router.delete('/:id', authenticateUser, checkUserRole(UserRole.Admin), this.controller.deletePost);
   }
 }
