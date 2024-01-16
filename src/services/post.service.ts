@@ -26,7 +26,8 @@ export class PostService {
   };
 
   publishPost = async (id: number) => {
-    return await this.repository.publishPost(id);
+    const publicationDate: Date = new Date();
+    return await this.repository.publishPost(id, publicationDate);
   };
 
   deletePost = async (id: number) => {

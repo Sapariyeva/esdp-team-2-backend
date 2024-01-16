@@ -71,7 +71,7 @@ export class AuthController {
   registerPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       const roleName: UserRole = UserRole.Psychologist;
-      console.log(req.body);
+
       if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
         throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
 

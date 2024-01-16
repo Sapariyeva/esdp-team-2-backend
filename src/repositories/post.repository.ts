@@ -34,8 +34,8 @@ export class PostRepository extends Repository<Post> {
     return result.affected ? dto : null;
   }
 
-  public publishPost = async (id: number): Promise<number | null> => {
-    const result = await this.update(id, { isPublish: () => 'NOT isPublish' });
+  public publishPost = async (id: number, date: Date): Promise<number | null> => {
+    const result = await this.update(id, { isPublish: () => 'NOT isPublish', publicationDate: date });
     return result.affected ? id : null;
   };
 
@@ -43,8 +43,4 @@ export class PostRepository extends Repository<Post> {
     const result = await this.delete(id);
     return result.affected ? id : null;
   }
-
-  getPostById = async (id: number): Promise<IPost | null> => {
-    return await this.findOne({ where: { id } });
-  };
 }
