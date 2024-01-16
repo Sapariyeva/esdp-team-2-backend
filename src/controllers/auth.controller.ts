@@ -284,7 +284,6 @@ export class AuthController {
     try {
       const token = req.query.token;
       if (typeof token !== 'string') throw ApiError.UnauthorizedError();
-      console.log(token);
 
       const { id } = jwt.verify(token, config.secretKeyPasswordReset) as IUserJwtPayload;
       if (!id) throw ApiError.UnauthorizedError();

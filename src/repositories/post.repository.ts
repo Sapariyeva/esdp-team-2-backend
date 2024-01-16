@@ -15,11 +15,19 @@ export class PostRepository extends Repository<Post> {
   }
 
   async getOnePost(id: number): Promise<IPost | null> {
+    return await this.findOne({ where: { id, isPublish: true } });
+  }
+
+  async getOnePostByAdmin(id: number): Promise<IPost | null> {
     return await this.findOne({ where: { id } });
   }
 
   async getAllPost(): Promise<IPost[]> {
-    return await this.find();
+    return await this.find({ where: { isPublish: true }, order: { publicationDate: 'DESC' } });
+  }
+
+  async getAllPostByAdmin(): Promise<IPost[]> {
+    return await this.find({ order: { publicationDate: 'DESC', id: 'DESC' } });
   }
 
   async editPostText(dto: PostDto, id: number): Promise<IPost | null> {
