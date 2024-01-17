@@ -6,6 +6,7 @@ import { IPsychologist } from '../interfaces/IPsychologist.interface';
 import { PatientRepository } from '../repositories/patient.repository';
 import { Record } from '../entities/record.entity';
 import dayjs from 'dayjs';
+import { EStatus } from '../enum/EStatus';
 
 export class RecordService {
   private repository: RecordRepository;
@@ -52,8 +53,12 @@ export class RecordService {
     return await this.repository.getOneRecord(id);
   };
 
-  async updateRecordStatus(id: number, newStatus: 'active' | 'canceled' | 'inactive') {
+  async updateRecordStatus(id: number, newStatus: EStatus) {
     return await this.repository.updateRecordStatus(id, newStatus);
+  }
+  async changePresenceStatus(id: number, role: 'psychologistAbsent' | 'patientAbsent') {
+    await this.repository.changePresenceStatus(id, role);
+    return await this.repository.updatePresenceStatus(id);
   }
 
   public checkPsychologists = async (id: number) => {

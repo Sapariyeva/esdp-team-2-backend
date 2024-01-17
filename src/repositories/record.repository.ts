@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Record } from '../entities/record.entity';
 import { IRecord } from '../interfaces/IRecord.interface';
+import { EStatus } from '../enum/EStatus';
 
 export class RecordRepository extends Repository<Record> {
   constructor() {
@@ -16,10 +17,10 @@ export class RecordRepository extends Repository<Record> {
     const queryBuilder = this.createQueryBuilder('records').where(`records.patientId = :id`, { id });
 
     if (isActual) {
-      queryBuilder.andWhere('records.status = :status', { status: 'active' });
+      queryBuilder.andWhere('records.status = :status', { status: 'Ожидается' });
       queryBuilder.andWhere('records.datetime >= :date', { date });
     } else {
-      queryBuilder.andWhere('records.status != :status', { status: 'active' });
+      queryBuilder.andWhere('records.status != :status', { status: 'Ожидается' });
     }
 
     return await queryBuilder.getMany();
@@ -27,10 +28,10 @@ export class RecordRepository extends Repository<Record> {
   public getDateRecords = async (startTime: string, endTime: string, id: number, isActual: boolean): Promise<IRecord[]> => {
     const queryBuilder = this.createQueryBuilder('records').where(`records.psychologist_id = :id`, { id });
     if (isActual) {
-      queryBuilder.andWhere('records.status = :status', { status: 'active' });
+      queryBuilder.andWhere('records.status = :status', { status: 'Ожидается' });
       queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
     } else {
-      queryBuilder.andWhere('records.status != :status', { status: 'active' });
+      queryBuilder.andWhere('records.status != :status', { status: 'Ожидается' });
       queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
     }
     return await queryBuilder.getMany();
@@ -44,11 +45,28 @@ export class RecordRepository extends Repository<Record> {
 
   async transferRecord(id: number, newDataTime: string, broadcast?: string) {
     const result = await this.createQueryBuilder().update(Record).set({ datetime: newDataTime, broadcast }).where('id = :id', { id }).execute();
-
     return result.affected ? id : null;
   }
+  public changePresenceStatus = async (id: number, role: 'psychologistAbsent' | 'patientAbsent') => {
+    const updateResult = await this.update(id, { [role]: true });
+    return updateResult.affected ? id : null;
+  };
 
-  public updateRecordStatus = async (id: number, newStatus: 'active' | 'canceled' | 'inactive') => {
+  async updatePresenceStatus(id: number) {
+    const record = await this.getOneRecord(id);
+
+    let overallStatus;
+    if (record.patientAbsent && record.psychologistAbsent) {
+      overallStatus = EStatus.conducted;
+    } else if (record.patientAbsent && !record.psychologistAbsent) {
+      overallStatus = EStatus.psychologist_absent;
+    } else if (!record.patientAbsent && record.psychologistAbsent) {
+      overallStatus = EStatus.patient_absent;
+    }
+
+    return await this.updateRecordStatus(id, overallStatus);
+  }
+  public updateRecordStatus = async (id: number, newStatus: EStatus) => {
     const result = await this.update(id, { status: newStatus });
     return result.affected ? id : null;
   };
