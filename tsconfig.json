@@ -3,22 +3,16 @@
     "target": "es6",
     "module": "commonjs",
     "pretty": true,
+    "rootDir": "./",
     "outDir": "dist",
-    "baseUrl": ".",
+    "baseUrl": ".",                           /* Base directory to resolve non-absolute module names. */
     "sourceMap": true,
     "importHelpers": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "rootDir": "."
+    "esModuleInterop": true
   },
   "files": ["./src/@types/requestLocals.d.ts"],
-  "include": ["src/**/*"]
+  "include": ["src/*.ts", "src/*.d.ts"],
+  "exclude": ["node_modules"]
 }
