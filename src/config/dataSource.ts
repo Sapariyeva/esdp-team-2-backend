@@ -18,7 +18,7 @@ import { env } from '../env';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
-  host: 'localhost',
+  host: env.host || 'mysql'
   port: 3306,
   database: 'psyhelp_online',
   username: env.dbUser,
