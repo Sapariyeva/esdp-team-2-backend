@@ -12,8 +12,11 @@ jobs:
 
       - name: 'Create env file'
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-
+          echo "PORT=8000" > .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASSWORD=\"gfy$%@$%jkx@#n7632bjasK37TYAS\"" >> .env
+          echo "DB_HOST=http://64.226.100.37:3000" >> .env
+          
       - name: Build Docker Image
         run: |
           docker build -t tester/gamma:latest --force-rm .
