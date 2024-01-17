@@ -38,7 +38,7 @@ const options: DataSourceOptions & SeederOptions = {
   port: 3306,
   database: 'psyhelp_online',
   username: env.dbUser,
-  password: 'gfy$%@$%jkx@#n7632bjasK37TYAS',
+  password: env.dbPassword,
   synchronize: true,
   logging: true,
   entities: [
