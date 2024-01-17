@@ -71,7 +71,7 @@ export class AuthController {
   registerPsychologistHandler: RequestHandler = async (req, res, next) => {
     try {
       const roleName: UserRole = UserRole.Psychologist;
-      console.log(req.body);
+
       if (!req.files || Array.isArray(req.files) || !req.files['photos'] || !req.files['certificates'])
         throw ApiError.BadRequest('Отсутствие фотографий или сертификатов в заявке!');
 
@@ -284,7 +284,6 @@ export class AuthController {
     try {
       const token = req.query.token;
       if (typeof token !== 'string') throw ApiError.UnauthorizedError();
-      console.log(token);
 
       const { id } = jwt.verify(token, config.secretKeyPasswordReset) as IUserJwtPayload;
       if (!id) throw ApiError.UnauthorizedError();

@@ -59,7 +59,7 @@ export class WorkTimeController {
       const id: number | null = validateNumber(req.params.id);
       if (!id) throw ApiError.BadRequest('Не верно указан id психолога');
 
-      const psychologist = await this.psychologistService.getOnePsychologistByUserId(id);
+      const psychologist = await this.psychologistService.getOnePsychologist(id);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога!');
 
       res.send(await this.service.getUpcomingRecordings(psychologist.id));

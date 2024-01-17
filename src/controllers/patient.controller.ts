@@ -7,6 +7,7 @@ import { PatientDto } from '../dto/patient.dto';
 import { PsychologistService } from '../services/psychologist.service';
 import { RecordService } from '../services/record.service';
 import { IRecord } from '../interfaces/IRecord.interface';
+import { IPsychologist } from '../interfaces/IPsychologist.interface';
 
 export class PatientController {
   private service: PatientService;
@@ -141,7 +142,9 @@ export class PatientController {
       const viewedPsychologists = await this.service.getVeiewedPsychologists(patient);
       if (!viewedPsychologists) throw ApiError.BadRequest('Не удалось получить просмотренных психологов!');
 
-      res.send(viewedPsychologists);
+      const psychologistsWithFavorites: IPsychologist[] = await this.psychologistService.markFavoritePsychologists(viewedPsychologists, userId);
+
+      res.send(psychologistsWithFavorites);
     } catch (error) {
       next(error);
     }

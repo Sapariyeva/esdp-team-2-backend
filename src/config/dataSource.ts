@@ -1,17 +1,8 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
-import { PatientFactory } from '../db/factories/patient.factory';
-import { PostFactory } from '../db/factories/post.factory';
-import { PsychologistFactory } from '../db/factories/psychologist.factory';
 import { RoleFactory } from '../db/factories/role.factory';
-import { SymptomsFactory } from '../db/factories/symptoms.factory';
-import { TechniqueFactory } from '../db/factories/technique.factory';
-import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
 import { UserFactory } from '../db/factories/user.factory';
 import MainSeeder from '../db/seeds/main.seeds';
-import SymptomsSeeder from '../db/seeds/symptoms.seeds';
-import TechniqueSeeder from '../db/seeds/technique.seeds';
-import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
 import UserSeeder from '../db/seeds/user.seed';
 import { Certificate } from '../entities/certificate.entity';
 import { City } from '../entities/city.entity';
@@ -27,12 +18,23 @@ import { TherapyMethod } from '../entities/therapyMethod.entity';
 import { User } from '../entities/user.entity';
 import { ViewedPsychologists } from '../entities/viewedPsychologists.entity';
 import { WorkTime } from '../entities/workTime.entity';
-
 import { env } from '../env';
+import SymptomsSeeder from 'src/db/seeds/symptoms.seeds';
+import { PatientFactory } from 'src/db/factories/patient.factory';
+import { PostFactory } from 'src/db/factories/post.factory';
+import { PsychologistFactory } from 'src/db/factories/psychologist.factory';
+import { SymptomsFactory } from 'src/db/factories/symptoms.factory';
+import { TechniqueFactory } from 'src/db/factories/technique.factory';
+import { TherapyMethodFactory } from 'src/db/factories/therapyMethod.factory';
+import PatientSeeder from 'src/db/seeds/patient.seeds';
+import PostSeeder from 'src/db/seeds/post.seeds';
+import PsychologistSeeder from 'src/db/seeds/psychologist.seeds';
+import TechniqueSeeder from 'src/db/seeds/technique.seeds';
+import TherapyMethodSeeder from 'src/db/seeds/therapyMethod.seeds';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
-  host: 'mysql',
+  host: env.host || 'mysql',
   port: 3306,
   database: 'psyhelp_online',
   username: env.dbUser,
@@ -55,7 +57,7 @@ const options: DataSourceOptions & SeederOptions = {
     ViewedPsychologists,
     WorkTime,
   ],
-  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder],
+  seeds: [MainSeeder, SymptomsSeeder, TherapyMethodSeeder, TechniqueSeeder, UserSeeder, PsychologistSeeder, PatientSeeder, PostSeeder],
   factories: [RoleFactory, SymptomsFactory, TherapyMethodFactory, TechniqueFactory, UserFactory, PsychologistFactory, PatientFactory, PostFactory],
 };
 
