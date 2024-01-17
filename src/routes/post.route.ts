@@ -4,7 +4,7 @@ import authenticateUser from '../middlewares/authenticateUser';
 import { checkUserRole } from '../middlewares/checkUserRole.middleware';
 import { PostController } from '../controllers/post.controller';
 import { upload } from '../middlewares/ValidateUpload.middlewar';
-import { UserRole } from 'src/interfaces/UserRole.enum';
+import { UserRole } from '../interfaces/UserRole.enum';
 
 export class PostRouter implements IRoute {
   public path = '/posts';
