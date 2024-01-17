@@ -3,9 +3,9 @@
     "target": "es6",
     "module": "commonjs",
     "pretty": true,
-    "outDir": "dist",
     "baseUrl": ".",
     "sourceMap": true,
+    "outDir": "dist",
     "importHelpers": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
@@ -19,7 +19,6 @@
     "esModuleInterop": true
   },
   "files": ["./src/@types/requestLocals.d.ts"],
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*.ts", "src/*.d.ts"],
+  "exclude": ["node_modules"]
 }
