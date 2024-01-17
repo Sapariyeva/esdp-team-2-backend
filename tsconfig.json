@@ -3,7 +3,6 @@
     "target": "es6",
     "module": "commonjs",
     "pretty": true,
-    "baseUrl": ".",
     "sourceMap": true,
     "outDir": "dist",
     "importHelpers": true,
