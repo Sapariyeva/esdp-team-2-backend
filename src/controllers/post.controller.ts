@@ -5,7 +5,7 @@ import config from '../config';
 import { ApiError } from '../helpers/api-error';
 import validateNumber from '../helpers/validateNumber';
 import { IPost } from '../interfaces/IPost.interface';
-import { UserRole } from 'src/interfaces/UserRole.enum';
+import { UserRole } from '../interfaces/UserRole.enum';
 
 export class PostController {
   private service: PostService = new PostService();
