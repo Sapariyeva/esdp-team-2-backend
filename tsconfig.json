@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "pretty": true,
-    "baseUrl": ".".
+    "baseUrl": ".",
     "rootDir": "./",
     "sourceMap": true,
     "outDir": "dist",
