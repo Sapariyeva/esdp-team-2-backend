@@ -4,7 +4,6 @@
     "module": "commonjs",
     "pretty": true,
     "baseUrl": ".",
-    "rootDir": "./",
     "sourceMap": true,
     "outDir": "dist",
     "importHelpers": true,
