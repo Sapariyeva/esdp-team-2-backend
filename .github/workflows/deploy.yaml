@@ -13,7 +13,7 @@ jobs:
       - name: 'Create env file'
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
-
+          
       - name: Build Docker Image
         run: |
           docker build -t tester/gamma:latest --force-rm .
@@ -38,4 +38,4 @@ jobs:
             docker rmi tester/gamma:latest
             docker load -i /opt/gamma.tar.gz
             rm /opt/gamma.tar.gz
-            docker-compose -f docker-compose.yml up -d
+            docker compose up -d --build

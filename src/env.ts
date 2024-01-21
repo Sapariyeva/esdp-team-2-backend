@@ -11,9 +11,9 @@ export type IConfig = {
 };
 
 export const env: IConfig = {
-  dbHost: process.env.DB_HOST!,
-  dbUser: process.env.DB_USER!,
-  dbPassword: process.env.DB_PASSWORD!,
-  port: parseInt(process.env.PORT!),
+  dbHost: process.env.DB_HOST,
+  dbUser: process.env.DB_USER,
+  dbPassword: process.env.DB_PASSWORD,
+  port: parseInt(process.env.PORT),
   host: process.env.HOST,
 };
