@@ -1,5 +1,9 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
+import { RoleFactory } from '../db/factories/role.factory';
+import { UserFactory } from '../db/factories/user.factory';
+import MainSeeder from '../db/seeds/main.seeds';
+import UserSeeder from '../db/seeds/user.seed';
 import { Certificate } from '../entities/certificate.entity';
 import { City } from '../entities/city.entity';
 import { Patient } from '../entities/patient.entity';
@@ -15,22 +19,18 @@ import { User } from '../entities/user.entity';
 import { ViewedPsychologists } from '../entities/viewedPsychologists.entity';
 import { WorkTime } from '../entities/workTime.entity';
 import { env } from '../env';
-import MainSeeder from '../db/seeds/main.seeds';
+import { PatientFactory } from '../db/factories/patient.factory';
+import { PostFactory } from '../db/factories/post.factory';
+import { PsychologistFactory } from '../db/factories/psychologist.factory';
+import { SymptomsFactory } from '../db/factories/symptoms.factory';
+import { TechniqueFactory } from '../db/factories/technique.factory';
+import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
 import PatientSeeder from '../db/seeds/patient.seeds';
 import PostSeeder from '../db/seeds/post.seeds';
 import PsychologistSeeder from '../db/seeds/psychologist.seeds';
 import SymptomsSeeder from '../db/seeds/symptoms.seeds';
 import TechniqueSeeder from '../db/seeds/technique.seeds';
 import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
-import UserSeeder from '../db/seeds/user.seed';
-import { PatientFactory } from '../db/factories/patient.factory';
-import { PostFactory } from '../db/factories/post.factory';
-import { PsychologistFactory } from '../db/factories/psychologist.factory';
-import { RoleFactory } from '../db/factories/role.factory';
-import { SymptomsFactory } from '../db/factories/symptoms.factory';
-import { TechniqueFactory } from '../db/factories/technique.factory';
-import { TherapyMethodFactory } from '../db/factories/therapyMethod.factory';
-import { UserFactory } from '../db/factories/user.factory';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
