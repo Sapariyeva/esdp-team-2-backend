@@ -9,6 +9,8 @@ import { ZoomService } from '../services/zoom.service';
 import { TransferRecord } from '../dto/transferRecord.dto';
 import { PsychologistService } from '../services/psychologist.service';
 import { CommentDto } from '../dto/recordComment.dto';
+import { EStatus } from '../enum/EStatus';
+import { ChangePresenceStatusDto } from '../dto/ChangePresenceStatus.dto';
 
 export class RecordController {
   private service: RecordService;
@@ -73,6 +75,24 @@ export class RecordController {
       next(e);
     }
   };
+
+  public changePresenceStatus: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { dto } = await DtoManager.createDto(ChangePresenceStatusDto, { ...req.body }, { isValidate: true });
+
+      const record = await this.service.getOneRecord(dto.recordId);
+      if (!record) throw ApiError.BadRequest('Не удалось найти запись');
+
+      const changePresenceStatus = await this.service.changePresenceStatus(record.id, dto.role);
+      if (!changePresenceStatus) throw ApiError.BadRequest('Не удалось поменять статус присустствия');
+
+      const newRecord = await this.service.getOneRecord(record.id);
+      res.send(newRecord);
+    } catch (e) {
+      next(e);
+    }
+  };
   public getOneRecord: RequestHandler = async (req, res, next) => {
     try {
       const id: number | null = validateNumber(req.params.id);
@@ -95,7 +115,7 @@ export class RecordController {
       const check = await this.service.checkRecord(id);
       if (!check) throw ApiError.BadRequest('Не существует такой записи');
 
-      const cancelRecord = await this.service.updateRecordStatus(id, 'canceled');
+      const cancelRecord = await this.service.updateRecordStatus(id, EStatus.canceled);
       if (!cancelRecord) throw ApiError.BadRequest('Не удалось отменить запись.');
 
       await this.workTimeService.changeStatusTime(check.psychologistId, check.slotId, false);

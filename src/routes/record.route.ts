@@ -18,6 +18,7 @@ export class RecordRouter implements IRoute {
     this.router.get('/:id', authenticateUser, this.controller.getOneRecord);
     this.router.post('/create', authenticateUser, this.controller.createRecord);
     this.router.put('/', authenticateUser, this.controller.transferRecord);
+    this.router.put('/presence', authenticateUser, this.controller.changePresenceStatus);
     this.router.delete('/:id', authenticateUser, checkUserRole('patient'), this.controller.deleteRecord);
     this.router.post('/comment/patient/:id', authenticateUser, checkUserRole('patient'), this.controller.createCommentPatient);
     this.router.post('/comment/psychologist/:id', authenticateUser, checkUserRole('psychologist'), this.controller.createCommentPsychologist);

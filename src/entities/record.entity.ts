@@ -38,9 +38,6 @@ export class Record implements IRecord {
   broadcast!: string | null;
 
   @Column()
-  status!: 'active' | 'canceled' | 'inactive';
-
-  @Column()
   datetime!: string;
 
   @Column()
@@ -55,4 +52,13 @@ export class Record implements IRecord {
 
   @Column({ nullable: true, default: null, name: 'psychologist_comment' })
   commentPsychologist!: string;
+
+  @Column({ name: 'patient_absent', default: false })
+  patientAbsent!: boolean;
+
+  @Column({ name: 'psychologist_absent', default: false })
+  psychologistAbsent!: boolean;
+
+  @Column()
+  status!: 'Ожидается' | 'Отменёно' | 'Проведено' | 'Психолог не присутствовал' | 'Пациент не присутствовал' | 'Не состоялось';
 }

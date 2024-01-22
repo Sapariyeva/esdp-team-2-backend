@@ -2,6 +2,8 @@ import { Repository } from 'typeorm';
 import { appDataSource } from '../config/dataSource';
 import { Record } from '../entities/record.entity';
 import { IRecord } from '../interfaces/IRecord.interface';
+import { EStatus } from '../enum/EStatus';
+import dayjs from 'dayjs';
 
 export class RecordRepository extends Repository<Record> {
   constructor() {
@@ -11,26 +13,42 @@ export class RecordRepository extends Repository<Record> {
   public createRecord = async (record: IRecord) => {
     return await this.save(record);
   };
+  public getSumByMonth = async (id: number) => {
+    const queryBuilder = this.createQueryBuilder('records')
+      .select('DATE_FORMAT(records.datetime, "%Y-%m") AS month')
+      .addSelect('SUM(records.cost) AS sum')
+      .addSelect('COUNT(records.id) AS count')
+      .where('records.status = :status', { status: EStatus.conducted })
+      .andWhere('records.psychologist_id = :id', { id });
 
+    queryBuilder.groupBy('month');
+
+    return await queryBuilder.getRawMany();
+  };
   public getAllRecords = async (date: string, id: number, isActual: boolean): Promise<IRecord[]> => {
     const queryBuilder = this.createQueryBuilder('records').where(`records.patientId = :id`, { id });
 
     if (isActual) {
-      queryBuilder.andWhere('records.status = :status', { status: 'active' });
+      const statuses = [EStatus.active, EStatus.patient_absent, EStatus.psychologist_absent];
+
+      queryBuilder.andWhere('records.status IN (:...statuses)', { statuses });
       queryBuilder.andWhere('records.datetime >= :date', { date });
     } else {
-      queryBuilder.andWhere('records.status != :status', { status: 'active' });
+      queryBuilder.andWhere('records.status != :status', { status: EStatus.active });
     }
-
     return await queryBuilder.getMany();
   };
   public getDateRecords = async (startTime: string, endTime: string, id: number, isActual: boolean): Promise<IRecord[]> => {
     const queryBuilder = this.createQueryBuilder('records').where(`records.psychologist_id = :id`, { id });
     if (isActual) {
-      queryBuilder.andWhere('records.status = :status', { status: 'active' });
-      queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
+      const date = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
+      const statuses = [EStatus.active, EStatus.patient_absent, EStatus.psychologist_absent];
+      queryBuilder
+        .andWhere('records.status IN (:...statuses)', { statuses })
+        .andWhere('records.datetime >= :date', { date })
+        .andWhere('records.datetime BETWEEN :startTime AND :endTime', { startTime, endTime });
     } else {
-      queryBuilder.andWhere('records.status != :status', { status: 'active' });
+      queryBuilder.andWhere('records.status != :status', { status: EStatus.active });
       queryBuilder.andWhere(`records.datetime BETWEEN :startTime AND :endTime`, { startTime, endTime });
     }
     return await queryBuilder.getMany();
@@ -44,13 +62,40 @@ export class RecordRepository extends Repository<Record> {
 
   async transferRecord(id: number, newDataTime: string, broadcast?: string) {
     const result = await this.createQueryBuilder().update(Record).set({ datetime: newDataTime, broadcast }).where('id = :id', { id }).execute();
-
     return result.affected ? id : null;
   }
 
-  public updateRecordStatus = async (id: number, newStatus: 'active' | 'canceled' | 'inactive') => {
+  public changePresenceStatus = async (id: number, role: 'psychologistAbsent' | 'patientAbsent') => {
+    const updateResult = await this.update(id, { [role]: true });
+    return updateResult.affected ? id : null;
+  };
+
+  async updatePresenceStatus(id: number) {
+    const record = await this.getOneRecord(id);
+
+    let overallStatus;
+    if (record.patientAbsent && record.psychologistAbsent) {
+      overallStatus = EStatus.conducted;
+    } else if (record.patientAbsent && !record.psychologistAbsent) {
+      overallStatus = EStatus.psychologist_absent;
+    } else if (!record.patientAbsent && record.psychologistAbsent) {
+      overallStatus = EStatus.patient_absent;
+    }
+
+    return await this.updateRecordStatus(id, overallStatus);
+  }
+  public updateRecordStatus = async (id: number, newStatus: EStatus) => {
     const result = await this.update(id, { status: newStatus });
     return result.affected ? id : null;
+  };
+  public updatingOfPendingEntries = async (currentDateTime: string) => {
+    const updateResult = await this.createQueryBuilder('records')
+      .update()
+      .set({ status: EStatus.didnt_happen })
+      .where('records.status = :status', { status: EStatus.active })
+      .andWhere('records.datetime <= :currentDateTime', { currentDateTime })
+      .execute();
+    return updateResult.affected ? currentDateTime : null;
   };
 
   public createCommentPatient = async (id: number, comment: string) => {
