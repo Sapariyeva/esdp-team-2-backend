@@ -75,6 +75,7 @@ export class RecordController {
       next(e);
     }
   };
+
   public changePresenceStatus: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();

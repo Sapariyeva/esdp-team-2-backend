@@ -4,4 +4,5 @@ export enum EStatus {
   conducted = 'Проведено',
   psychologist_absent = 'Психолог не присутствовал',
   patient_absent = 'Пациент не присутствовал',
+  didnt_happen = 'Не состоялось',
 }

@@ -1,5 +1,6 @@
 import express, { Application, RequestHandler } from 'express';
 import { appDataSource } from './config/dataSource';
+import './cronJobs';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
 import { errorsHandler } from './middlewares/errorsHandler.middleware';

@@ -32,7 +32,7 @@ export class RecordService {
       format: dto.format,
       broadcast: link ? link : null,
       address: link ? null : psychologist.address,
-      status: 'active',
+      status: EStatus.active,
       patientName: dto.patientName,
     });
 
@@ -40,9 +40,13 @@ export class RecordService {
   };
 
   public getAllRecords = async (id: number, isActual: boolean): Promise<IRecord[]> => {
-    const date = dayjs().format('YYYY-MM-DDTHH:mm:ss');
+    const date = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
     return await this.repository.getAllRecords(date, id, isActual);
   };
+  public getSumByMonth = async (id: number) => {
+    return await this.repository.getSumByMonth(id);
+  };
+
   public getDateRecords = async (date: string, id: number, isActual: boolean): Promise<IRecord[]> => {
     const startTime = dayjs(date).format('YYYY-MM-DDTHH:mm:ss');
     const endTime = dayjs(date).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
@@ -76,6 +80,10 @@ export class RecordService {
     return await this.getOneRecord(id);
   };
 
+  public updatingOfPendingEntries = async () => {
+    const currentDateTime = dayjs().format('YYYY-MM-DDTHH:mm:ss');
+    return await this.repository.updatingOfPendingEntries(currentDateTime);
+  };
   public createCommentPatient = async (id: number, comment: string) => {
     return await this.repository.createCommentPatient(id, comment);
   };

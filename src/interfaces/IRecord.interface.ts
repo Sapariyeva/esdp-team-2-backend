@@ -10,7 +10,7 @@ export interface IRecord {
   cost: number;
   duration?: number;
   broadcast: string | null;
-  status: 'Ожидается' | 'Отменёно' | 'Проведено' | 'Психолог не присутствовал' | 'Пациент не присутствовал';
+  status: 'Ожидается' | 'Отменёно' | 'Проведено' | 'Психолог не присутствовал' | 'Пациент не присутствовал' | 'Не состоялось';
   datetime: string;
   patientName: string;
   psychologistAbsent: boolean;
