@@ -157,4 +157,20 @@ export class PsychologistController {
       next(e);
     }
   };
+  public getSumByMonth: RequestHandler = async (req, res, next) => {
+    try {
+      if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
+      const { id: userId } = req.customLocals.userJwtPayload;
+
+      const checkPsychologist = await this.service.getOnePsychologistByUserId(userId);
+      if (!checkPsychologist) throw ApiError.NotFound('Не правильный id психолога');
+
+      const record: IRecord[] = await this.recordService.getSumByMonth(checkPsychologist.id);
+      if (!record) throw ApiError.BadRequest('Ошибка при получение актуальных записей');
+
+      res.send(record);
+    } catch (e) {
+      next(e);
+    }
+  };
 }
