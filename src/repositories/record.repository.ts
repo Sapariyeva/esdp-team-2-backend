@@ -29,9 +29,6 @@ export class RecordRepository extends Repository<Record> {
     const queryBuilder = this.createQueryBuilder('records').where(`records.patientId = :id`, { id });
 
     if (isActual) {
-      const statuses = [EStatus.active, EStatus.patient_absent, EStatus.psychologist_absent];
-
-      queryBuilder.andWhere('records.status IN (:...statuses)', { statuses });
       queryBuilder.andWhere('records.datetime >= :date', { date });
     } else {
       queryBuilder.andWhere('records.status != :status', { status: EStatus.active });
@@ -42,9 +39,7 @@ export class RecordRepository extends Repository<Record> {
     const queryBuilder = this.createQueryBuilder('records').where(`records.psychologist_id = :id`, { id });
     if (isActual) {
       const date = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
-      const statuses = [EStatus.active, EStatus.patient_absent, EStatus.psychologist_absent];
       queryBuilder
-        .andWhere('records.status IN (:...statuses)', { statuses })
         .andWhere('records.datetime >= :date', { date })
         .andWhere('records.datetime BETWEEN :startTime AND :endTime', { startTime, endTime });
     } else {
