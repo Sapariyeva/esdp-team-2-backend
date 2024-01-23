@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon",
     "build": "npx tsc",
     "lint": "eslint ./src",
@@ -72,6 +72,9 @@
     ]
   },
   "devDependencies": {
-    "@types/node-cron": "^3.0.11"
+    "@types/jest": "^29.5.11",
+    "@types/node-cron": "^3.0.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   }
 }
