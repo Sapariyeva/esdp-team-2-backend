@@ -14,7 +14,7 @@ export class CertificateRouter implements IRoute {
     this.init();
   }
   private init() {
-    this.router.post('/create', authenticateUser, upload.single('certificate'), this.controller.saveCertificate);
+    this.router.post('/create', authenticateUser, upload.single('certificates'), this.controller.saveCertificate);
     this.router.delete('/:id', authenticateUser, this.controller.deleteCertificate);
   }
 }
