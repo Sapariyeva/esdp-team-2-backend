@@ -36,6 +36,9 @@ export class PatientController {
       const patient = await this.service.getPatient(id);
       if (!patient) throw ApiError.NotFound('Не удалось найти пациента!');
 
+      const userId = req.customLocals.userJwtPayload?.id;
+      await this.psychologistService.markFavoritePsychologists(patient.favorites, userId);
+
       res.send(patient);
     } catch (error) {
       next(error);

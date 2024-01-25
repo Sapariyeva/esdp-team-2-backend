@@ -25,7 +25,10 @@ export class PsychologistController {
       const psychologist: IPsychologist | null = await this.service.getOnePsychologist(id);
       if (!psychologist) throw ApiError.NotFound('Не удалось найти психолога');
 
-      res.send(psychologist);
+      const userId = req.customLocals.userJwtPayload?.id;
+      const [psychologistsWithFavorites]: IPsychologist[] = await this.service.markFavoritePsychologists([psychologist], userId);
+
+      res.send(psychologistsWithFavorites);
     } catch (e) {
       next(e);
     }
