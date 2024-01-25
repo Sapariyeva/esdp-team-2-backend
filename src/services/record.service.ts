@@ -43,8 +43,8 @@ export class RecordService {
     const date = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
     return await this.repository.getAllRecords(date, id, isActual);
   };
-  public getSumByMonth = async (id: number) => {
-    return await this.repository.getSumByMonth(id);
+  public getSumByMonth = async (id: number, clean: boolean) => {
+    return await this.repository.getSumByMonth(id, clean);
   };
 
   public getDateRecords = async (date: string, id: number, isActual: boolean): Promise<IRecord[]> => {
