@@ -157,6 +157,22 @@ export class PsychologistController {
       next(e);
     }
   };
+  public getSumByMonthAdmin: RequestHandler = async (req, res, next) => {
+    try {
+      const id = validateNumber(req.params.id);
+      if (!id) throw ApiError.BadRequest('Не верно указан id');
+
+      const checkPsychologist = await this.service.getOnePsychologist(id);
+      if (!checkPsychologist) throw ApiError.NotFound('Не правильный id психолога');
+
+      const profits = await this.recordService.getSumByMonth(checkPsychologist.id, true);
+      if (!profits) throw ApiError.BadRequest('Ошибка при получение дохода.');
+
+      res.send(profits);
+    } catch (e) {
+      next(e);
+    }
+  };
   public getSumByMonth: RequestHandler = async (req, res, next) => {
     try {
       if (!req.customLocals.userJwtPayload || !req.customLocals.userJwtPayload.id) throw ApiError.UnauthorizedError();
@@ -165,10 +181,10 @@ export class PsychologistController {
       const checkPsychologist = await this.service.getOnePsychologistByUserId(userId);
       if (!checkPsychologist) throw ApiError.NotFound('Не правильный id психолога');
 
-      const record: IRecord[] = await this.recordService.getSumByMonth(checkPsychologist.id);
-      if (!record) throw ApiError.BadRequest('Ошибка при получение актуальных записей');
+      const profits = await this.recordService.getSumByMonth(checkPsychologist.id, true);
+      if (!profits) throw ApiError.BadRequest('Ошибка при получение дохода.');
 
-      res.send(record);
+      res.send(profits);
     } catch (e) {
       next(e);
     }

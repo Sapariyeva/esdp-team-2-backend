@@ -13,13 +13,16 @@ export class RecordRepository extends Repository<Record> {
   public createRecord = async (record: IRecord) => {
     return await this.save(record);
   };
-  public getSumByMonth = async (id: number) => {
+  public getSumByMonth = async (id: number, clean: boolean) => {
     const queryBuilder = this.createQueryBuilder('records')
       .select('DATE_FORMAT(records.datetime, "%Y-%m") AS month')
-      .addSelect('SUM(records.cost) AS sum')
+      .addSelect(`SUM(records.cost) AS totalSum`)
+      .addSelect(`SUM(0.9 * records.cost) AS cleanSum`)
       .addSelect('COUNT(records.id) AS count')
       .where('records.status = :status', { status: EStatus.conducted })
       .andWhere('records.psychologist_id = :id', { id });
+
+    if (clean) queryBuilder.addSelect(`SUM(records.cost) - SUM(0.9 * records.cost) AS deduction`);
 
     queryBuilder.groupBy('month');
 
