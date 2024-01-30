@@ -21,5 +21,5 @@ export class WorkTime implements IWorkTime {
 
   @ManyToOne(() => Psychologist, (psychologist) => psychologist.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'psychologist_id' })
-  psychologist?: Psychologist;
+  psychologist!: Psychologist;
 }
