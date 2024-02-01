@@ -36,5 +36,5 @@ const app = new App({
     new WorkTimeRoute(),
   ],
 });
-
 app.listen();
+export default app;

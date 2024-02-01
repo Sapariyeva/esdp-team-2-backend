@@ -32,7 +32,7 @@ import SymptomsSeeder from '../db/seeds/symptoms.seeds';
 import TechniqueSeeder from '../db/seeds/technique.seeds';
 import TherapyMethodSeeder from '../db/seeds/therapyMethod.seeds';
 
-const options: DataSourceOptions & SeederOptions = {
+export const options: DataSourceOptions & SeederOptions = {
   type: 'mysql',
   host: env.host || 'mysql',
   port: 3306,
